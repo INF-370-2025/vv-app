@@ -341,6 +341,10 @@ export class ApiService {
 
     general_ep = 'general';
 
+    get_faqs() {
+      return this.http.get<any>(environment.api_url + this.general_ep + `/get_faqs`);
+    }
+
     getTitles() {
       return this.http.get<any>(environment.api_url + this.general_ep + `/get_titles`)
     }

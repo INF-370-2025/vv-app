@@ -1,51 +1,111 @@
-<nz-collapse>
-  @for (panel of panels; track panel) {
-    <nz-collapse-panel
-      [nzHeader]="panel.name"
-      [nzActive]="panel.active"
-      [nzDisabled]="panel.disabled"
-    >
-      <!-- Conditional rendering for different content -->
-      <ng-container [ngSwitch]="panel.type">
+<!-- help.component.html -->
+<div nz-row [nzJustify]="'center'">
+  <div nz-col [nzSpan]="22" style="text-align: start;">
+    <h1><b>Help Center</b></h1>
+  </div>
+</div>
 
-        <!-- Video Panel -->
-        <ng-container *ngSwitchCase="'video'">
-          <nz-card nzTitle="Tutorial Video" class="w-full max-w-xl mx-auto">
-            <iframe
-              class="w-full aspect-video"
-              [src]="'https://www.youtube.com/embed/' + panel.videoId"
-              title="YouTube video player"
-              frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen
-            ></iframe>
-          </nz-card>
-        </ng-container>
+<div nz-row [nzJustify]="'center'">
+  <div nz-col nzSpan="22">
+    <nz-collapse>
+      <!-- Help PDF Panel -->
+      <nz-collapse-panel
+        [nzHeader]="panels[0].name"
+        [nzActive]="panels[0].active"
+        [nzDisabled]="panels[0].disabled"
+        [nzExtra]="pdfExtra"
+      >
+        <div class="panel-content">
+          <nz-alert nzType="info" nzMessage="PDF Resources"
+                   nzDescription="Download helpful PDF guides and documentation"
+                   nzShowIcon></nz-alert>
+          <div class="download-section">
+            <button nz-button nzType="primary">
+              <span nz-icon nzType="file-pdf" nzTheme="outline"></span>
+              Download User Guide
+            </button>
+          </div>
+        </div>
+        <ng-template #pdfExtra>
+          <span nz-icon [nzType]="panels[0].icon" nzTheme="outline"></span>
+        </ng-template>
+      </nz-collapse-panel>
 
-        <!-- Image Panel -->
-        <ng-container *ngSwitchCase="'image'">
-          <img [src]="panel.imageUrl" class="w-full rounded shadow" alt="Panel Image">
-        </ng-container>
+      <!-- Help Video Panel -->
+      <nz-collapse-panel
+        [nzHeader]="panels[1].name"
+        [nzActive]="panels[1].active"
+        [nzDisabled]="panels[1].disabled"
+        [nzExtra]="videoExtra"
+      >
+        <div class="panel-content">
+          <nz-alert nzType="info" nzMessage="Video Tutorials"
+                   nzDescription="Watch instructional videos to learn how to use the system"
+                   nzShowIcon></nz-alert>
+          <div class="video-placeholder">
+            <span nz-icon nzType="play-circle" nzTheme="outline" style="font-size: 48px;"></span>
+            <p>Video tutorials coming soon</p>
+          </div>
+        </div>
+        <ng-template #videoExtra>
+          <span nz-icon [nzType]="panels[1].icon" nzTheme="outline"></span>
+        </ng-template>
+      </nz-collapse-panel>
 
-        <!-- Text Panel -->
-        <ng-container *ngSwitchCase="'text'">
-          <p class="p-4">{{ panel.text }}</p>
-        </ng-container>
+      <!-- FAQs Panel -->
+      <nz-collapse-panel
+        [nzHeader]="panels[2].name"
+        [nzActive]="panels[2].active"
+        [nzDisabled]="panels[2].disabled"
+        [nzExtra]="faqExtra"
+      >
+        <div class="panel-content">
+          <nz-spin [nzSpinning]="isLoading">
+            <!-- Search Bar -->
+            <div class="search-bar">
+              <nz-input-group [nzSuffix]="suffixIconSearch">
+                <input
+                  nz-input
+                  placeholder="Search FAQs..."
+                  [(ngModel)]="searchQuery"
+                  (input)="filterFAQs()"
+                />
+              </nz-input-group>
+              <ng-template #suffixIconSearch>
+                <span nz-icon nzType="search"></span>
+              </ng-template>
+            </div>
 
-      </ng-container>
-    </nz-collapse-panel>
-  }
-</nz-collapse>
+            <!-- Error message -->
+            <div *ngIf="errorMessage" class="error-message">
+              <nz-alert nzType="error" [nzMessage]="errorMessage" nzShowIcon></nz-alert>
+              <button nz-button nzType="primary" (click)="loadFAQs()" style="margin-top: 16px;">
+                <span nz-icon nzType="reload"></span> Retry
+              </button>
+            </div>
 
+            <!-- FAQs List -->
+            <nz-collapse *ngIf="!isLoading && !errorMessage" nzAccordion>
+              <nz-collapse-panel
+                *ngFor="let faq of filteredFaqs"
+                [nzHeader]="faq.faq_q"
+              >
+                <p>{{ faq.faq_a }}</p>
+              </nz-collapse-panel>
+            </nz-collapse>
 
-<!-- Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)
-
-<a href="https://www.youtube.com/watch?v=VIDEO_ID" target="_blank" rel="noopener noreferrer">
-  <i nz-icon nzType="youtube" nzTheme="fill" class="text-red-500 text-2xl"></i>
-  Watch on YouTube
-</a> -->
-
-
-
-
-
+            <!-- Empty state -->
+            <div *ngIf="!isLoading && !errorMessage && filteredFaqs.length === 0" class="empty-state">
+              <nz-empty
+                [nzNotFoundContent]="searchQuery ? 'No matching FAQs found' : 'No FAQs available'"
+              ></nz-empty>
+            </div>
+          </nz-spin>
+        </div>
+        <ng-template #faqExtra>
+          <span nz-icon [nzType]="panels[2].icon" nzTheme="outline"></span>
+        </ng-template>
+      </nz-collapse-panel>
+    </nz-collapse>
+  </div>
+</div>
