@@ -1,0 +1,95 @@
+<!-- update-job-card.component.html -->
+<div class="form-container">
+  <h2>Update Job Card #{{jobCardForm.value.job_card_id}}</h2>
+
+  <form nz-form [formGroup]="jobCardForm" nzLayout="vertical">
+    <!-- Job Card ID (Readonly) -->
+    <nz-form-item>
+      <nz-form-label nzRequired>Job Card ID</nz-form-label>
+      <nz-form-control>
+        <input nz-input formControlName="job_card_id" readonly>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- Pattern Dropdown -->
+    <nz-form-item>
+      <nz-form-label nzRequired>Pattern</nz-form-label>
+      <nz-form-control>
+        <nz-select formControlName="pattern_id"
+          nzPlaceHolder="Select pattern" nzShowSearch nzAllowClear>
+          <nz-option *ngFor="let pattern of patterns"
+            [nzValue]="pattern.pattern_id"
+            [nzLabel]="pattern.design">
+          </nz-option>
+        </nz-select>
+        <div *ngIf="jobCardForm.get('pattern_id')?.invalid" class="error-message">
+          Pattern is required
+        </div>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- Job Card Status -->
+    <nz-form-item>
+      <nz-form-label nzRequired>Status</nz-form-label>
+      <nz-form-control>
+        <nz-select formControlName="job_card_status_id"
+          nzPlaceHolder="Select status" nzShowSearch nzAllowClear>
+          <nz-option *ngFor="let status of jobCardStatuses"
+            [nzValue]="status.job_card_status_id"
+            [nzLabel]="status.status">
+          </nz-option>
+        </nz-select>
+        <div *ngIf="jobCardForm.get('job_card_status_id')?.invalid" class="error-message">
+          Status is required
+        </div>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- Quotation Dropdown -->
+    <nz-form-item>
+      <nz-form-label nzRequired>Quotation</nz-form-label>
+      <nz-form-control>
+        <nz-select formControlName="quotation_id"
+          nzPlaceHolder="Select quotation" nzShowSearch nzAllowClear>
+          <nz-option *ngFor="let quotation of quotations"
+            [nzValue]="quotation.quotation_id"
+            [nzLabel]="quotation.quotation_number">
+          </nz-option>
+        </nz-select>
+        <div *ngIf="jobCardForm.get('quotation_id')?.invalid" class="error-message">
+          Quotation is required
+        </div>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- Special Instructions -->
+    <nz-form-item>
+      <nz-form-label>Special Instructions</nz-form-label>
+      <nz-form-control>
+        <textarea nz-input formControlName="special_instructions"
+          placeholder="Any special instructions" rows="3"></textarea>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- Completion Date -->
+    <nz-form-item>
+      <nz-form-label>Completion Date</nz-form-label>
+      <nz-form-control>
+        <nz-date-picker
+          formControlName="completed_at"
+          nzPlaceholder="Select completion date"
+          style="width: 100%">
+        </nz-date-picker>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <button nz-button nzType="default" (click)="cancel()">Cancel</button>
+      <button nz-button nzType="primary" (click)="submitForm()"
+        [nzLoading]="isSubmitting" [disabled]="jobCardForm.invalid">
+        Update Job Card
+      </button>
+    </div>
+  </form>
+</div>

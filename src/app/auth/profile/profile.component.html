@@ -1,0 +1,283 @@
+<!-- Container Row Centered -->
+<br>
+<div nz-row [nzJustify]="'center'" [nzAlign]="'middle'">
+
+  <!-- Responsive Column Layout -->
+  <div nz-col nzXs="22" nzSm="22" nzMd="22" nzLg="18" nzXL="22">
+    <nz-card>
+
+      <!-- === Avatar Upload Section === -->
+       <nz-spin [nzSpinning]="isuploading">
+          <nz-upload
+            [nzBeforeUpload]="beforeUpload"
+            nzListType="picture"
+            [(nzFileList)]="fileList"
+            [nzLimit]="1"
+            [nzSize]="50000"
+            [nzFileType]="'image/png,image/jpeg,image/gif,image/bmp'"
+            [nzShowUploadList]="{ showPreviewIcon: true, showRemoveIcon: true}">
+            <nz-avatar
+              [nz-tooltip]="'Click to change'"
+              [nzSrc]="(this.image_url || this.auth.user?.image) || 'https://ui-avatars.com/api/?background=random&color=fff&&name='+ auth.user?.name + ' ' + auth.user?.surname"
+              [nzSize]="100">
+            </nz-avatar>
+          </nz-upload>
+        </nz-spin>
+
+      <!-- Divider -->
+      <nz-divider></nz-divider>
+      <br>
+
+      <!-- === Personal & Company Details Form === -->
+      <form nz-form [formGroup]="customerForm" *ngIf="auth.user && auth.user?.role_id == 6">
+
+        <!-- Personal Details Section -->
+        <nz-divider nzText="Personal Details"></nz-divider>
+        <div nz-row [nzJustify]="'center'" [nzAlign]="'middle'" [nzGutter]="[24,24]">
+
+          <!-- Name Field -->
+          <div nz-col nzXs="22" nzSm="22" nzMd="12" nzLg="12" nzXL="12">
+            <nz-form-item>
+              <nz-form-label>Name</nz-form-label>
+              <nz-form-control nzErrorTip="Please input your Name">
+                <nz-input-group nzPrefixIcon="user">
+                  <input type="text" nz-input formControlName="name" placeholder="Name" />
+                </nz-input-group>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <!-- Surname Field -->
+          <div nz-col nzXs="22" nzSm="22" nzMd="12" nzLg="12" nzXL="12">
+            <nz-form-item>
+              <nz-form-label>Surname</nz-form-label>
+              <nz-form-control nzErrorTip="Please input your Surname">
+                <nz-input-group nzPrefixIcon="user">
+                  <input type="text" nz-input formControlName="surname" placeholder="Surname" />
+                </nz-input-group>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+
+        <div nz-row [nzJustify]="'center'" [nzAlign]="'middle'" [nzGutter]="[24,24]">
+          
+          <!-- Email Field (Read-only) -->
+          <div nz-col nzXs="22" nzSm="22" nzMd="12" nzLg="12" nzXL="12">
+            <nz-form-item>
+              <nz-form-label>Email</nz-form-label>
+              <nz-form-control nzErrorTip="Please input your Email">
+                <nz-input-group nzPrefixIcon="mail">
+                  <input type="text" readonly nz-input formControlName="email" placeholder="Email" />
+                </nz-input-group>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <!-- Phone Field (Read-only) -->
+          <div nz-col nzXs="22" nzSm="22" nzMd="12" nzLg="12" nzXL="12">
+            <nz-form-item>
+              <nz-form-label>Phone</nz-form-label>
+              <nz-form-control nzErrorTip="Please input your Phone">
+                <nz-input-group nzPrefixIcon="phone">
+                  <input type="text" readonly nz-input formControlName="phone" placeholder="Phone" />
+                </nz-input-group>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+
+        <!-- Company Details Section -->
+        <nz-divider nzText="Company Details"></nz-divider>
+        <div nz-row [nzJustify]="'center'" [nzAlign]="'middle'" [nzGutter]="[24,24]">
+
+          <!-- Company Name -->
+          <div nz-col nzXs="22" nzSm="22" nzMd="12" nzLg="12" nzXL="12">
+            <nz-form-item>
+              <nz-form-label>Company Name</nz-form-label>
+              <nz-form-control nzErrorTip="Please input your Company Name">
+                <nz-input-group nzPrefixIcon="apartment">
+                  <input type="text" nz-input formControlName="companyName" placeholder="Company Name" />
+                </nz-input-group>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <!-- Company Telephone -->
+          <div nz-col nzXs="22" nzSm="22" nzMd="12" nzLg="12" nzXL="12">
+            <nz-form-item>
+              <nz-form-label>Telephone</nz-form-label>
+              <nz-form-control nzErrorTip="Please input your Telephone">
+                <nz-input-group nzPrefixIcon="phone">
+                  <input type="text" nz-input formControlName="telephone" placeholder="Telephone" />
+                </nz-input-group>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <!-- Registration Number -->
+          <div nz-col nzXs="22" nzSm="22" nzMd="12" nzLg="12" nzXL="12">
+            <nz-form-item>
+              <nz-form-label>Registration No</nz-form-label>
+              <nz-form-control nzErrorTip="Please input your Registration Number">
+                <nz-input-group nzPrefixIcon="number">
+                  <input type="text" nz-input formControlName="registrationNumber" placeholder="Registration Number" />
+                </nz-input-group>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <!-- VAT Number -->
+          <div nz-col nzXs="22" nzSm="22" nzMd="12" nzLg="12" nzXL="12">
+            <nz-form-item>
+              <nz-form-label>VAT No</nz-form-label>
+              <nz-form-control nzErrorTip="Please input your VAT Number">
+                <nz-input-group nzPrefixIcon="file-text">
+                  <input type="text" nz-input formControlName="vatNumber" placeholder="VAT Number" />
+                </nz-input-group>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <!-- Company Address -->
+          <div nz-col nzSpan="24">
+            <nz-form-item>
+              <nz-form-label>Address</nz-form-label>
+              <nz-form-control nzErrorTip="Please input your Address">
+                <nz-input-group nzPrefixIcon="home">
+                  <textarea nz-input formControlName="address" placeholder="Address" rows="2"></textarea>
+                </nz-input-group>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          [disabled]="!customerForm.valid"
+          [nzLoading]="btnLoading"
+          nz-button
+          class="login-form-button login-form-margin"
+          [nzType]="'primary'"
+          (click)="submitForm()">
+          Save
+        </button>
+      </form>
+
+
+      <form nz-form [formGroup]="employeeForm" *ngIf="auth.user && auth.user?.role_id != 6">
+
+        <!-- Personal Details Section -->
+        <nz-divider nzText="Personal Details"></nz-divider>
+        <div nz-row [nzJustify]="'center'" [nzAlign]="'middle'" [nzGutter]="[24,24]">
+
+          <!-- Name Field -->
+          <div nz-col nzXs="22" nzSm="22" nzMd="12" nzLg="12" nzXL="12">
+            <nz-form-item>
+              <nz-form-label>Name</nz-form-label>
+              <nz-form-control nzErrorTip="Please input your Name">
+                <nz-input-group nzPrefixIcon="user">
+                  <input type="text" nz-input formControlName="name" placeholder="Name" />
+                </nz-input-group>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <!-- Surname Field -->
+          <div nz-col nzXs="22" nzSm="22" nzMd="12" nzLg="12" nzXL="12">
+            <nz-form-item>
+              <nz-form-label>Surname</nz-form-label>
+              <nz-form-control nzErrorTip="Please input your Surname">
+                <nz-input-group nzPrefixIcon="user">
+                  <input type="text" nz-input formControlName="surname" placeholder="Surname" />
+                </nz-input-group>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+
+        <div nz-row [nzJustify]="'center'" [nzAlign]="'middle'" [nzGutter]="[24,24]">
+          
+          <!-- Email Field (Read-only) -->
+          <div nz-col nzXs="22" nzSm="22" nzMd="12" nzLg="12" nzXL="12">
+            <nz-form-item>
+              <nz-form-label>Email</nz-form-label>
+              <nz-form-control nzErrorTip="Please input your Email">
+                <nz-input-group nzPrefixIcon="mail">
+                  <input type="text" readonly nz-input formControlName="email" placeholder="Email" />
+                </nz-input-group>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <!-- Phone Field (Read-only) -->
+          <div nz-col nzXs="22" nzSm="22" nzMd="12" nzLg="12" nzXL="12">
+            <nz-form-item>
+              <nz-form-label>Phone</nz-form-label>
+              <nz-form-control nzErrorTip="Please input your Phone">
+                <nz-input-group nzPrefixIcon="phone">
+                  <input type="text" readonly nz-input formControlName="phone" placeholder="Phone" />
+                </nz-input-group>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+
+        <!-- Employee Details Section -->
+        <nz-divider nzText="Employee Details"></nz-divider>
+        <div nz-row [nzJustify]="'center'" [nzAlign]="'middle'" [nzGutter]="[24,24]">
+
+          <!-- Company Name -->
+          <div nz-col nzXs="22" nzSm="22" nzMd="12" nzLg="12" nzXL="12">
+            <nz-form-item>
+              <nz-form-label>Emergency Contact</nz-form-label>
+              <nz-form-control nzErrorTip="Please input your Emergency Contact Number">
+                <nz-input-group nzPrefixIcon="apartment">
+                  <input type="text" nz-input formControlName="emergencyContact" placeholder="Emergency Contact" />
+                </nz-input-group>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <!-- Job Scope Telephone -->
+          <div nz-col nzXs="22" nzSm="22" nzMd="12" nzLg="12" nzXL="12">
+            <nz-form-item>
+              <nz-form-label>Job Scope</nz-form-label>
+              <nz-form-control nzErrorTip="Please input your Job Scope">
+                <nz-input-group nzPrefixIcon="phone">
+                  <input type="text" readonly nz-input formControlName="jobScope" placeholder="Job Scope" />
+                </nz-input-group>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+
+          <div nz-col nzSpan="24">
+            <nz-form-item>
+              <nz-form-label>Address</nz-form-label>
+              <nz-form-control nzErrorTip="Please input your Address">
+                <nz-input-group nzPrefixIcon="home">
+                  <textarea nz-input formControlName="address" placeholder="Address" rows="2"></textarea>
+                </nz-input-group>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          [disabled]="!employeeForm.valid"
+          [nzLoading]="btnLoading"
+          nz-button
+          class="login-form-button login-form-margin"
+          [nzType]="'primary'"
+          (click)="submitForm()">
+          Save
+        </button>
+      </form>
+
+
+    </nz-card>
+  </div>
+</div>

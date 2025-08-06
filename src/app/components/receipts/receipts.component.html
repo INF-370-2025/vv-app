@@ -1,0 +1,34 @@
+<div class="container">
+  <div class="header">
+    <h2>Receipts</h2>
+    <a routerLink="/receipts/create" nz-button nzType="primary">
+      <span nz-icon nzType="plus"></span>
+      Create New
+    </a>
+  </div>
+
+  <nz-spin [nzSpinning]="isLoading">
+    <nz-table #receiptsTable [nzData]="receipts" [nzPageSize]="10" [nzShowPagination]="false">
+      <thead>
+        <tr>
+          <th>Receipt ID</th>
+          <th>Quotation ID</th>
+          <th nzAlign="right">Amount Paid</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let receipt of receiptsTable.data">
+          <td>{{ receipt.receipt_id }}</td>
+          <td>{{ receipt.quotation_id }}</td>
+          <td nzAlign="right">{{ receipt.amount_paid | currency }}</td>
+
+        </tr>
+      </tbody>
+    </nz-table>
+  </nz-spin>
+
+  <ng-template #noDataTemplate>
+    <div class="no-data">No receipts found</div>
+  </ng-template>
+</div>

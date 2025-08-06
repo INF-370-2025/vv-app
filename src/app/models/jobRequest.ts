@@ -1,0 +1,38 @@
+import { customer } from "./user";
+
+export class jobRequest{
+    job_request_id!: number;
+    created_at!: Date;
+    customer_id?:number;
+    customer?:customer;
+    title?:string;
+    description?:string;
+    finish_date!:Date;
+    quantity!:number;
+    job_request_status?:jobRequestStatus;
+    job_request_items?:jobRequestItem[];
+    job_request_status_id?: number;
+
+}
+
+
+export class jobRequestItem{
+    job_request_item_id!: number;
+    created_at!: Date;
+    job_request_id!: number;
+    item_url!:string;
+}
+
+
+export class jobRequestStatus{
+    job_request_status_id!: number;
+    status!:string;
+}
+
+export class insertJobRequest{
+    customer_id?:number;
+    title?:string;
+    description?:string;
+    finish_date!:Date;
+    quantity!:number;
+}

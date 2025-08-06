@@ -1,0 +1,108 @@
+@import (multiple) '../../../node_modules/ng-zorro-antd/src/style/themes/default';
+
+// Main
+@primary-color: #17726d;
+@border-radius-base: 20px;
+@background-color:#ffffff;
+@text-color: fade(@black, 85%);
+@secondary-color: #222428;
+
+
+// Layout
+@layout-header-background: @secondary-color;
+@layout-body-background: #ffffff;
+@layout-sider-background:  @secondary-color;
+@layout-trigger-background:  @secondary-color;
+
+
+// Menu
+@menu-bg: @secondary-color;
+@menu-highlight-color: #f8f8f8;
+@menu-item-color: #ffffff;
+@border-radius-base: 10px;
+@menu-dark-inline-submenu-bg: #151515;
+@menu-item-active-bg:  @primary-color;
+
+// Table
+@table-header-bg: @primary-color;
+@table-header-color: #fff;
+
+
+
+.anticon {
+  font-size:1rem !important;
+  border: none;
+}
+
+.ant-btn {
+  transition: all .2s ease-in-out;
+}
+
+.ant-btn:hover {
+  transform: scale(1.01);
+}
+
+.btn-menu{
+  border: none;
+  color: white;
+}
+
+.btn-menu:hover{
+  background: white;
+  color: var(--secondary-color) !important;
+}
+
+
+.anticon {
+  vertical-align: sub;
+}
+
+.ant-menu-vertical ,.ant-menu-inline{
+    border-right: none !important;
+}
+
+.ant-menu-item::after{
+  border-right: none !important;
+}
+
+
+.ant-card {
+ border-radius: 20px;
+}
+
+.ant-table-thead .ant-table-cell .ant-input-affix-wrapper {
+  background-color: #fff0 !important;
+  border: 1px solid #d9d9d91c;
+}
+
+.ant-table-thead .ant-table-cell .ant-input-affix-wrapper .ant-input{
+  background-color: #fff0 !important;
+  color: white;
+}
+
+.ant-table-thead .ant-table-cell .ant-input-affix-wrapper .anticon-search {
+  color: white !important;
+}
+
+
+.modal-designs
+.ant-modal-header{
+  border-bottom: none !important;
+  background-color: rgba(0, 0, 0, 0) !important;
+}
+
+.modal-designs
+.ant-modal-content
+{
+  background-color: rgba(0, 0, 0, 0) !important;
+  box-shadow: none;
+  text-align: center;
+}
+
+.modal-designs
+.ant-modal-close-x {
+  color: white;
+}
+
+
+

@@ -1,0 +1,102 @@
+<div class="form-container">
+  <h2>Create New Stock Item</h2>
+
+  <form nz-form [formGroup]="stockForm" nzLayout="vertical">
+
+
+    <!-- Name Field -->
+    <nz-form-item>
+      <nz-form-label nzRequired>Item Name</nz-form-label>
+      <nz-form-control>
+        <input nz-input formControlName="name" placeholder="Enter item name">
+        <div *ngIf="stockForm.get('name')?.dirty && stockForm.get('name')?.errors" class="error-message">
+          <span *ngIf="stockForm.get('name')?.hasError('required')">Item name is required</span>
+          <span *ngIf="stockForm.get('name')?.hasError('maxlength')">Max 100 characters</span>
+        </div>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- Description Field -->
+    <nz-form-item>
+      <nz-form-label>Description</nz-form-label>
+      <nz-form-control>
+        <textarea nz-input
+                  formControlName="description"
+                  placeholder="Enter description"
+                  rows="3"></textarea>
+        <div *ngIf="stockForm.get('description')?.dirty && stockForm.get('description')?.errors" class="error-message">
+          <span *ngIf="stockForm.get('description')?.hasError('maxlength')">Max 255 characters</span>
+        </div>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- Material Dropdown -->
+    <nz-form-item>
+      <nz-form-label nzRequired>Material</nz-form-label>
+      <nz-form-control>
+        <nz-select formControlName="material_id"
+                   nzPlaceHolder="Select material"
+                   nzShowSearch
+                   nzAllowClear>
+          <nz-option *ngFor="let material of materials"
+                    [nzValue]="material.material_id"
+                    [nzLabel]="material.material_name">
+          </nz-option>
+        </nz-select>
+        <div *ngIf="stockForm.get('material_id')?.dirty && stockForm.get('material_id')?.errors" class="error-message">
+          <span *ngIf="stockForm.get('material_id')?.hasError('required')">Please select a material</span>
+        </div>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- Stock Type Dropdown -->
+    <nz-form-item>
+      <nz-form-label nzRequired>Stock Type</nz-form-label>
+      <nz-form-control>
+        <nz-select formControlName="stock_type_id"
+                   nzPlaceHolder="Select stock type"
+                   nzShowSearch
+                   nzAllowClear>
+          <nz-option *ngFor="let type of stockTypes"
+                    [nzValue]="type.stock_type_id"
+                    [nzLabel]="type.type_name">
+          </nz-option>
+        </nz-select>
+        <div *ngIf="stockForm.get('stock_type_id')?.dirty && stockForm.get('stock_type_id')?.errors" class="error-message">
+          <span *ngIf="stockForm.get('stock_type_id')?.hasError('required')">Please select a stock type</span>
+        </div>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- Stock Level Field -->
+    <nz-form-item>
+      <nz-form-label nzRequired>Stock Level</nz-form-label>
+      <nz-form-control>
+        <nz-input-number
+          formControlName="stock_level"
+          [nzMin]="0"
+          [nzStep]="1"
+          style="width: 100%"
+          placeholder="Enter stock level">
+        </nz-input-number>
+        <div *ngIf="stockForm.get('stock_level')?.dirty && stockForm.get('stock_level')?.errors" class="error-message">
+          <span *ngIf="stockForm.get('stock_level')?.hasError('required')">Stock level is required</span>
+          <span *ngIf="stockForm.get('stock_level')?.hasError('min')">Stock level must be at least 0</span>
+        </div>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <button nz-button nzType="default" (click)="cancel()">Cancel</button>
+      <button
+        nz-button
+        nzType="primary"
+        (click)="submitForm()"
+        [nzLoading]="isSubmitting"
+        [disabled]="stockForm.invalid">
+        Create
+      </button>
+    </div>
+  </form>
+</div>

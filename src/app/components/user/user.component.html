@@ -1,0 +1,589 @@
+<div nz-row [nzJustify]="'center'">
+    <div nz-col [nzSpan]="20" style="text-align: start;">
+        <h1><b>Users</b></h1>
+    </div>
+</div>
+
+<!--Row-->
+<div nz-row [nzJustify]="'center'">
+    <div nz-col nzSpan="20">
+        <!--Tabs-->
+        <nz-tabset nzType="card" [nzTabBarExtraContent]="extraTemplate" (nzSelectedIndexChange)="selectedTabChange($event)" [(nzSelectedIndex)]="selectedTabIndex">
+            <!--Tab 1-->
+            <nz-tab [nzTitle]="'Customers'">
+                <!--Spinner-->
+                <nz-spin [nzSpinning]="isloading">
+                    <nz-table #table1 [nzData]="customers" [nzPageSize]="20">
+                        <thead>
+                            <tr>
+                                <th colSpan="3">
+                                    <nz-input-group [nzSuffix]="suffixIconSearch">
+                                        <input type="text" nz-input placeholder="Search Here" (keyup)="searchCustomers($event)" />
+                                    </nz-input-group>
+                                    <ng-template #suffixIconSearch>
+                                        <i nz-icon nzType="search"></i>
+                                    </ng-template>
+                                </th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Company Name</th>
+                                <th>Telephone</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body">
+                            <tr *ngFor="let customer of table1.data">
+                                <td></td>
+                                <td>
+                                    <nz-avatar nzIcon="user" [nzSrc]="customer.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ customer.name"></nz-avatar>
+                                </td>
+                                <td>{{customer.created_at | date:"short"}}</td>
+                                <td>{{customer.title?.title_name || '-'}}. {{customer.name || '-'}} {{customer.surname || '-'}}</td>
+                                <td>{{customer.email_address || '-'}}</td>
+                                <td>{{customer.phone_number || '-'}}</td>
+                                <td>{{customer.customer?.company_name}}</td>
+                                <td>{{customer.customer?.telephone || '-'}}</td>
+                                <td>
+                                    <button nz-button nzType="primary" (click)="viewCustomer(customer)">
+                          <i nz-icon nzType="eye" nzTheme="outline"></i>
+                          View
+                        </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </nz-table>
+                </nz-spin>
+            </nz-tab>
+            <!--Tab 2-->
+            <nz-tab [nzTitle]="'Employees'">
+                <!--Spinner-->
+                <nz-spin [nzSpinning]="isloading">
+                    <nz-table #table2 [nzData]="employees" [nzPageSize]="20">
+                        <thead>
+                            <tr>
+                                <th colSpan="3">
+                                    <nz-input-group [nzSuffix]="suffixIconSearch">
+                                        <input type="text" nz-input placeholder="Search Here" (keyup)="searchEmployees($event)" />
+                                    </nz-input-group>
+                                    <ng-template #suffixIconSearch>
+                                        <i nz-icon nzType="search"></i>
+                                    </ng-template>
+                                </th>
+                                <th>Id</th>
+                                <th>Name</th>
+                                <th>Role</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body">
+                            <tr *ngFor="let employee of table2.data">
+                                <td></td>
+                                    <td>
+                                    <nz-avatar nzIcon="user" [nzSrc]="employee.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ employee.name"></nz-avatar>
+                                </td>
+                                <td></td>
+                                <td>{{employee.employee?.employee_id}}</td>
+                                <td>{{employee.title?.title_name}}. {{employee.name || '-'}} {{employee.surname || '-'}}</td>
+                                <td>{{employee.role?.role_name || '-'}}</td>
+                                <td>{{employee.email_address || '-'}}</td>
+                                <td>{{employee.phone_number || '-'}}</td>
+                                <td>
+                                    <button nz-button nzType="primary" (click)="viewEmployee(employee)">
+                          <i nz-icon nzType="eye" nzTheme="outline"></i>
+                          View
+                        </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </nz-table>
+                </nz-spin>
+            </nz-tab>
+        </nz-tabset>
+        <!--Button-->
+        <ng-template #extraTemplate>
+            <button nz-button nzType="primary" (click)="viewCreate(selectedTabIndex)">
+              Create New
+            <span nzType="plus" nzTheme="outline"></span>
+          </button>
+        </ng-template>
+    </div>
+</div>
+
+<!--Modal-->
+<!--EmployeeModal-->
+<nz-modal [nzWidth]="800" [(nzVisible)]="showEmployeeModal" nzClosable="true" [nzTitle]="title" (nzOnCancel)="showEmployeeModal=false;" [nzFooter]="null">
+    <ng-template #title>
+        <b>{{viewingEmployee?.title?.title_name}}. {{viewingEmployee.name}} {{viewingEmployee.surname}}</b>
+    </ng-template>
+    <ng-container *nzModalContent>
+        <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+            <!--
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="10" [nzLg]="10" [nzXl]="10">
+                <gallery gallerize class="gallery-images-jobs" [orientation]="'vertical'" [thumbs]="true"  [bullets]="true" [bulletPosition]="'bottom'" [imageSize]="'cover'" [autoHeight]="true"></gallery>
+            </div>
+            -->
+            <br>
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="14" [nzLg]="14" [nzXl]="14">
+                <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+                    <!--Employee Id-->
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <span style="font-size: 15px;"><b>Employee Position</b></span>
+                        <br style="margin-top: 5px;">
+                        <hr class="hr">
+                        <span nz-icon nzType="vv:employees" nzTheme="outline" class="color"></span>{{viewingEmployee.employee?.employee_id}} | {{viewingEmployee.role?.role_name}}
+                    </div>
+                    <!--Company Position-->
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <span style="font-size: 15px;"><b>Job Scope & Rate</b></span>
+                        <br style="margin-top: 5px;">
+                        <hr class="hr">
+                        <span nz-icon nzType="calendar" nzTheme="outline" class="color"></span>{{viewingEmployee.employee?.job_scope}} | R{{viewingEmployee.employee?.hourly_rate}}
+                    </div>
+                    <!--Personal Details-->
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <span style="font-size: 15px;"><b>Personal Details</b></span> <br>
+                        <hr class="hr">
+                        <nz-avatar nzIcon="user" [nzSrc]="viewingEmployee.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ viewingEmployee.name"></nz-avatar>
+                        {{viewingEmployee.title?.title_name}}. {{viewingEmployee.name}} {{viewingEmployee.surname}} | {{viewingEmployee.employee?.address}}
+                    </div>
+                        <!--Contact Details-->
+                        <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                            <span style="font-size: 15px;"><b>Contact Details</b></span> <br>
+                            <hr class="hr">
+                            <span nz-icon nzType="phone" nzTheme="outline" class="color"></span> {{viewingEmployee.phone_number}} |
+                            <span nz-icon nzType="mail" nzTheme="outline" class="color"></span> {{viewingEmployee.email_address }} |
+                            <span nz-icon nzType="phone" nzTheme="outline" class="color"></span> {{viewingEmployee.employee?.emergency_contact}}
+                        </div>
+                        <!--Warnings-->
+                        <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                            <span style="font-size: 15px;"><b>Warnings</b></span> <br>
+                            <hr class="hr">
+                            <span nz-icon nzType="exclamation" nzTheme="outline" class="color"></span> {{warningCount}} |
+                            <button nz-button nzType="default" nzJustify="center">
+                              <span nz-icon nzType="vv:warning" nzTheme="outline"></span>
+                              View Warnings
+                            </button>
+                            <br><br>
+                        </div>
+                    </div>
+                    <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+                        <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                            <nz-button-group>
+                                <button nz-button nzType="default" (click)="viewUploadPayslip(viewingEmployee.employee?.employee_id)">
+                              <span nz-icon nzType="printer" nzTheme="outline"></span>
+                              Upload Payslip
+                            </button>
+                                <button nz-button nzType="default" (click)="viewUpdateEmployee()" style="background-color: lightseagreen;color: white;border: none;">
+                              <span nz-icon nzType="check" nzTheme="outline"></span>
+                              Update Details
+                            </button>
+                                <button nz-button nzType="default" (click)="viewWarnEmployee()" style="background-color: yellow;color: white;border: none;">
+                              <span nz-icon nzType="close" nzTheme="outline"></span>
+                              Warn Employee
+                            </button>
+                            <button nz-button nzType="default" (click)="viewDisableEmployee()" style="background-color: rgb(252, 61, 61);color: white;border: none;">
+                              <span nz-icon nzType="close" nzTheme="outline"></span>
+                              Disable Employee
+                            </button>
+                            </nz-button-group>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </ng-container>
+</nz-modal>
+
+<!--Modal-->
+<!--CustomerModal-->
+<nz-modal [nzWidth]="800" [(nzVisible)]="showCustomerModal" nzClosable="true" [nzTitle]="title2" (nzOnCancel)="showCustomerModal=false;" [nzFooter]="null">
+    <ng-template #title2>
+        <b>{{viewingCustomer.title?.title_name}}. {{viewingCustomer.name}} {{viewingCustomer.surname}}</b>
+    </ng-template>
+    <ng-container *nzModalContent>
+        <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+            <!--
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="10" [nzLg]="10" [nzXl]="10">
+                <gallery gallerize class="gallery-images-jobs" [orientation]="'vertical'" [thumbs]="true"  [bullets]="true" [bulletPosition]="'bottom'" [imageSize]="'cover'" [autoHeight]="true"></gallery>
+            </div>
+            -->
+            <br>
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="14" [nzLg]="14" [nzXl]="14">
+                <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+                    <!--Personal Details-->
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <span style="font-size: 15px;"><b>Personal Details</b></span> <br>
+                        <hr class="hr">
+                        <nz-avatar nzIcon="user" [nzSrc]="viewingCustomer.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ viewingCustomer.name"></nz-avatar>
+                        {{viewingCustomer.title?.title_name}}. {{viewingCustomer.name}} {{viewingCustomer.surname}} | {{viewingCustomer.customer?.customer_type?.type_name}}
+                    </div>
+                    <!--Contact Details-->
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <span style="font-size: 15px;"><b>Contact Details</b></span> <br>
+                        <hr class="hr">
+                        <span nz-icon nzType="phone" nzTheme="outline" class="color"></span> {{viewingCustomer.phone_number}} |
+                        <span nz-icon nzType="mail" nzTheme="outline" class="color"></span> {{viewingCustomer.email_address }}
+                    </div>
+                    <!--Company Details-->
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <span style="font-size: 15px;"><b>Company Details</b></span> <br>
+                        <hr class="hr">
+                        <span nz-icon nzType="phone" nzTheme="outline" class="color"></span> {{viewingCustomer.customer?.company_name}} |
+                        <span nz-icon nzType="mail" nzTheme="outline" class="color"></span> {{viewingCustomer.customer?.registration_number}} | {{viewingCustomer.customer?.vat_number}} | {{viewingCustomer.customer?.address}}
+                    </div>
+                </div>
+                <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <nz-button-group>
+                            <button nz-button nzType="default">
+                              <span nz-icon nzType="printer" nzTheme="outline"></span>
+                              Edit Customer Type
+                            </button>
+                            <button nz-button nzType="default" style="background-color: lightseagreen;color: white;border: none;">
+                              <span nz-icon nzType="check" nzTheme="outline"></span>
+                              Update Details
+                            </button>
+                            <button nz-button nzType="default" style="background-color: rgb(252, 61, 61);color: white;border: none;">
+                              <span nz-icon nzType="close" nzTheme="outline"></span>
+                              Disable Customer
+                            </button>
+                        </nz-button-group>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+</nz-modal>
+
+<!--Modal-->
+<!--CreateEmployeeModal-->
+<nz-modal [nzWidth]="800" [(nzVisible)]="showCreateEmployeeModal" nzClosable="true" [nzTitle]="title3" (nzOnCancel)="showCreateEmployeeModal=false;" [nzFooter]="null">
+    <form [formGroup]="employeeForm">
+            <ng-template #title3>
+        <b>Create Employee</b>
+    </ng-template>
+    <ng-container *nzModalContent>
+        <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+            <br>
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="14" [nzLg]="14" [nzXl]="14">
+                <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+                    <!--Full Name-->
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <span style="font-size: 15px;"><b>Full Name</b></span>
+                        <br style="margin-top: 5px;">
+                        <hr class="hr">
+                        <nz-input-group nzCompact>
+                            <nz-select [(ngModel)]="selectedTitle"  nzShowSearch nzPlaceHolder="Mr" style="width:20%;" formControlName="title">
+                                <nz-option *ngFor="let title of titles" [nzLabel]='title.title_name' [nzValue]='title.title_id'></nz-option>
+                            </nz-select>
+                            <input type="text" nz-input placeholder="Enter first name" formControlName="name" style="width:40%;" />
+                            <input type="text" nz-input placeholder="Enter surname" formControlName="surname" style="width:40%;" />
+                        </nz-input-group>
+                    </div>
+                    <!--Contact Information-->
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <span style="font-size: 15px;"><b>Contact Information</b></span>
+                        <br style="margin-top: 5px;">
+                        <hr class="hr">
+                        <nz-input-group nzCompact>
+                            <input type="email" nz-input placeholder="Enter email" formControlName="email_address" style="width:50%;" />
+                            <input type="text" nz-input placeholder="Enter phone number" formControlName="phone_number" style="width:50%;" />
+                        </nz-input-group>
+                    </div>
+                    <!--Role, Scope and Rate-->
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <span style="font-size: 15px;"><b>Employee Role, Scope & Rate</b></span> <br>
+                        <hr class="hr">
+                        <nz-input-group nzCompact>
+                            <nz-select [(ngModel)]="selectedRole" nzShowSearch nzPlaceHolder="Employee" style="width:25%;" formControlName="role">
+                                <nz-option *ngFor="let role of roles" [nzLabel]='role.role_name' [nzValue]='role.role_id'></nz-option>
+                            </nz-select>
+                            <input type="text" nz-input placeholder="Enter scope" formControlName="job_scope" style="width:50%;" />
+                            <input type="number" step="0.01" min="0" nz-input placeholder="0.00" formControlName="hourly_rate" style="width:25%;" />
+                        </nz-input-group>
+                    </div>
+                    <!--Address & Emergency Contact-->
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <span style="font-size: 15px;"><b>Address & Emergency Contact</b></span> <br>
+                        <hr class="hr">
+                        <nz-input-group nzCompact>
+                            <input type="text" nz-input placeholder="Enter Address" formControlName="address" style="width:50%;" />
+                            <input type="number" nz-input placeholder="Enter Emergency Contact" formControlName="emergency_contact" style="width:50%;" />
+                        </nz-input-group>
+                    </div>
+                </div>
+                <br />
+                <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <nz-button-group>
+                            <button nz-button nzType="default" style="background-color: seagreen;color: white;border: none;" (click)="createEmployee()"> <!--(click)="createEmployee()"-->
+                              <span nz-icon nzType="check" nzTheme="outline"></span>
+                              Create Employee
+                            </button>
+                        </nz-button-group>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+    </form>
+</nz-modal>
+
+<!--Modal-->
+<!--CreateCustomerModal-->
+<nz-modal [nzWidth]="800" [(nzVisible)]="showCreateCustomerModal" nzClosable="true" [nzTitle]="title4" (nzOnCancel)="showCreateCustomerModal=false;" [nzFooter]="null">
+    <ng-template #title4>
+        <b>Create Customer</b>
+    </ng-template>
+    <ng-container *nzModalContent>
+        <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+            <!--
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="10" [nzLg]="10" [nzXl]="10">
+                <gallery gallerize class="gallery-images-jobs" [orientation]="'vertical'" [thumbs]="true"  [bullets]="true" [bulletPosition]="'bottom'" [imageSize]="'cover'" [autoHeight]="true"></gallery>
+            </div>
+            -->
+            <br>
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="14" [nzLg]="14" [nzXl]="14">
+                <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+                    <!--Personal Details-->
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <span style="font-size: 15px;"><b>Personal Details</b></span> <br>
+                        <hr class="hr">
+                        <!--<nz-avatar nzIcon="user" [nzSrc]="viewingCustomer.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ viewingCustomer.user?.name"></nz-avatar>
+                        {{viewingCustomer.user?.title?.title_name}}. {{viewingCustomer.user?.name}} {{viewingCustomer.user?.surname}} | {{viewingCustomer.customer_type?.type_name}}-->
+                    </div>
+                    <!--Contact Details-->
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <span style="font-size: 15px;"><b>Contact Details</b></span> <br>
+                        <hr class="hr">
+                        <!--<span nz-icon nzType="phone" nzTheme="outline" class="color"></span> {{viewingCustomer.user?.phone_number}} |
+                        <span nz-icon nzType="mail" nzTheme="outline" class="color"></span> {{viewingCustomer.user?.email_address }}-->
+                    </div>
+                    <!--Company Details-->
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <span style="font-size: 15px;"><b>Company Details</b></span> <br>
+                        <hr class="hr">
+                        <!--<span nz-icon nzType="phone" nzTheme="outline" class="color"></span> {{viewingCustomer.company_name}} |
+                        <span nz-icon nzType="mail" nzTheme="outline" class="color"></span> {{viewingCustomer.registration_number}} | {{viewingCustomer.vat_number}} | {{viewingCustomer.address}}-->
+                    </div>
+                </div>
+                <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <nz-button-group>
+                            <button nz-button nzType="default">
+                              <span nz-icon nzType="printer" nzTheme="outline"></span>
+                              Edit Customer Type
+                            </button>
+                            <button nz-button nzType="default" style="background-color: lightseagreen;color: white;border: none;">
+                              <span nz-icon nzType="check" nzTheme="outline"></span>
+                              Update Details
+                            </button>
+                            <button nz-button nzType="default" style="background-color: rgb(252, 61, 61);color: white;border: none;">
+                              <span nz-icon nzType="close" nzTheme="outline"></span>
+                              Disable Customer
+                            </button>
+                        </nz-button-group>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+</nz-modal>
+
+<!--Modal-->
+<!--UploadPayslipModal-->
+<nz-modal [nzWidth]="800" [(nzVisible)]="showUploadPayslipModal" nzClosable="true" [nzTitle]="title5" (nzOnCancel)="showUploadPayslipModal=false;" [nzFooter]="null">
+    <ng-template #title5>
+        <b>Upload Payslip</b>
+    </ng-template>
+    <ng-container *nzModalContent>
+        <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="14" [nzLg]="14" [nzXl]="14">
+                <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+                    <div nz-row [nzJustify]="'center'" [nzGutter]="5">
+            <div nz-col nzSpan="24">
+                <nz-upload nzType="drag" [nzMultiple]="false" [nzBeforeUpload]="beforeUpload" [(nzFileList)]="fileList" nzAccept=".pdf">
+                    <p class="ant-upload-drag-icon">
+                        <span nz-icon nzType="inbox"></span>
+                    </p>
+                    <p class="ant-upload-text">Click or drag payslip to this area to upload</p>
+                </nz-upload>
+                <br>
+            </div>
+        </div>
+        <br><br>
+                </div>
+                <br />
+                <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <nz-button-group>
+                            <button nz-button nzJustify="center" nzType="default" style="background-color: lightseagreen;color: white;border: none;" (click)="createPayslip()">
+                              <span nz-icon nzType="check" nzTheme="outline"></span>
+                              Upload
+                            </button>
+                        </nz-button-group>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+</nz-modal>
+
+<!--Modal-->
+<!--WarnEmployeeModal-->
+<nz-modal [nzWidth]="800" [(nzVisible)]="showWarnEmployeeModal" nzClosable="true" [nzTitle]="title6" (nzOnCancel)="showWarnEmployeeModal=false;" [nzFooter]="null">
+    <ng-template #title6>
+        <b>Warn Employee</b>
+    </ng-template>
+    <ng-container *nzModalContent>
+        <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="14" [nzLg]="14" [nzXl]="14">
+                <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+                    <div nz-row [nzJustify]="'center'" [nzGutter]="5" [formGroup]="warningForm">
+            <!--Full Name-->
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <span style="font-size: 15px; width: 80%;"><b>Reason</b></span>
+                        <br style="margin-top: 5px;">
+                        <hr class="hr">
+                        <nz-input-group nzCompact>
+                            <input type="text" nz-input placeholder="Enter reason" formControlName="reason" style="width:90%;" />
+                        </nz-input-group>
+                    </div>
+
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <span style="font-size: 15px; width: 80%;"><b>Warning Type</b></span>
+                        <br style="margin-top: 5px;">
+                        <hr class="hr">
+                        <nz-input-group nzCompact>
+                            <nz-select  nzShowSearch nzPlaceHolder="Verbal" style="width:90%;" formControlName="warning_type">
+                                <nz-option nzValue="verbal" nzLabel="Verbal"></nz-option>
+                                <nz-option nzValue="written" nzLabel="Written"></nz-option>
+                            </nz-select>
+                        </nz-input-group>
+                    </div>
+        </div>
+        <br><br>
+                </div>
+                <br />
+                <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <nz-button-group>
+                            <button nz-button nzJustify="center" nzType="default" style="background-color: lightseagreen;color: white;border: none;" (click)="createWarn()">
+                              <span nz-icon nzType="check" nzTheme="outline"></span>
+                              Warn
+                            </button>
+                        </nz-button-group>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+</nz-modal>
+
+<!--Modal-->
+<!--DisableEmployeeModal-->
+<nz-modal [nzWidth]="800" [(nzVisible)]="showDisableEmployeeModal" nzClosable="true" (nzOnCancel)="showDisableEmployeeModal=false;" [nzFooter]="null">
+    <ng-container *nzModalContent>
+        <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="14" [nzLg]="14" [nzXl]="14">
+                <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+                    <div nz-row [nzJustify]="'center'" [nzGutter]="5" [formGroup]="warningForm">
+                        <p>Are you certain you want to disable this employee's account?</p>
+        </div>
+        <br><br>
+                </div>
+                <br />
+                <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <nz-button-group>
+                            <button nz-button nzJustify="center" (click)="closeDisableEmployee()" nzType="default" style="background-color: rgb(252, 61, 61);color: white;border: none;" (click)="createWarn()">
+                              <span nz-icon nzType="close" nzTheme="outline"></span>
+                              No
+                            </button>
+                            <button nz-button nzJustify="center" (click)="disableEmployee()" nzType="default" style="background-color: lightseagreen;color: white;border: none;" (click)="createWarn()">
+                              <span nz-icon nzType="check" nzTheme="outline"></span>
+                              Yes
+                            </button>
+                        </nz-button-group>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+</nz-modal>
+
+<!--Modal-->
+<!--UpdateEmployeeModal-->
+<nz-modal [nzWidth]="800" [(nzVisible)]="showUpdateEmployeeModal" nzClosable="true" [nzTitle]="title8" (nzOnCancel)="showUpdateEmployeeModal=false;" [nzFooter]="null">
+    <form [formGroup]="updateEmployeeForm">
+            <ng-template #title8>
+        <b>Update Employee</b>
+    </ng-template>
+    <ng-container *nzModalContent>
+        <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+            <br>
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="14" [nzLg]="14" [nzXl]="14">
+                <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+                    <!--Full Name-->
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <span style="font-size: 15px;"><b>Full Name</b></span>
+                        <br style="margin-top: 5px;">
+                        <hr class="hr">
+                        <nz-input-group nzCompact>
+                            <nz-select [(ngModel)]="selectedTitle"  nzShowSearch nzPlaceHolder="Mr" style="width:20%;" formControlName="title">
+                                <nz-option *ngFor="let title of titles" [nzLabel]='title.title_name' [nzValue]='title.title_id'></nz-option>
+                            </nz-select>
+                            <input type="text" nz-input placeholder="Enter first name" formControlName="name" style="width:40%;" />
+                            <input type="text" nz-input placeholder="Enter surname" formControlName="surname" style="width:40%;" />
+                        </nz-input-group>
+                    </div>
+                    <!--Contact Information-->
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <span style="font-size: 15px;"><b>Contact Information</b></span>
+                        <br style="margin-top: 5px;">
+                        <hr class="hr">
+                        <nz-input-group nzCompact>
+                            <input type="email" nz-input placeholder="Enter email" formControlName="email_address" style="width:50%;" />
+                            <input type="text" nz-input placeholder="Enter phone number" formControlName="phone_number" style="width:50%;" />
+                        </nz-input-group>
+                    </div>
+                    <!--Role, Scope and Rate-->
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <span style="font-size: 15px;"><b>Employee Role, Scope & Rate</b></span> <br>
+                        <hr class="hr">
+                        <nz-input-group nzCompact>
+                            <nz-select [(ngModel)]="selectedRole" nzShowSearch nzPlaceHolder="Employee" style="width:25%;" formControlName="role">
+                                <nz-option *ngFor="let role of roles" [nzLabel]='role.role_name' [nzValue]='role.role_id'></nz-option>
+                            </nz-select>
+                            <input type="text" nz-input placeholder="Enter scope" formControlName="job_scope" style="width:50%;" />
+                            <input type="number" step="0.01" min="0" nz-input placeholder="0.00" formControlName="hourly_rate" style="width:25%;" />
+                        </nz-input-group>
+                    </div>
+                    <!--Address & Emergency Contact-->
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <span style="font-size: 15px;"><b>Address & Emergency Contact</b></span> <br>
+                        <hr class="hr">
+                        <nz-input-group nzCompact>
+                            <input type="text" nz-input placeholder="Enter Address" formControlName="address" style="width:50%;" />
+                            <input type="number" nz-input placeholder="Enter Emergency Contact" formControlName="emergency_contact" style="width:50%;" />
+                        </nz-input-group>
+                    </div>
+                </div>
+                <br />
+                <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]" style="width: 100%;">
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <nz-button-group>
+                            <button nz-button nzType="default" style="background-color: seagreen;color: white;border: none;" (click)="updateEmployee()">
+                              <span nz-icon nzType="check" nzTheme="outline"></span>
+                              Update Employee
+                            </button>
+                        </nz-button-group>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+    </form>
+</nz-modal>

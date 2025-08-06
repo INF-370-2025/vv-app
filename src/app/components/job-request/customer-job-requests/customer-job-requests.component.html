@@ -1,0 +1,396 @@
+<!--Row-->
+<div nz-row [nzJustify]="'center'">
+    <div nz-col nzSpan="22">
+        <button nz-button nzType="default" routerLink="/home" style="float: start !important;">
+            Back to Dashboard
+        </button>
+        <br>
+        <nz-tabset nzType="card" (nzSelectedIndexChange)="selectedTabChange($event)" [(nzSelectedIndex)]="selectedTabIndex" [nzTabBarExtraContent]="extraTemplate">
+
+            <!-- Pending Tab -->
+            <nz-tab [nzTitle]="'Pending'">
+                <nz-spin [nzSpinning]="isloading">
+                    <nz-table #pendingTable [nzData]="pending" [nzPageSize]="20">
+                        <thead>
+                            <tr>
+                                <th colSpan="3">
+                                    <nz-input-group [nzSuffix]="suffixIconSearch">
+                                        <input type="text" nz-input placeholder="Search Here" (keyup)="searchPending($event)" />
+                                    </nz-input-group>
+                                    <ng-template #suffixIconSearch>
+                                        <i nz-icon nzType="search"></i>
+                                    </ng-template>
+                                </th>
+                                <th>Company Name</th>
+                                <th>Contact Person</th>
+                                <th>
+                                    <p style="text-align: center;font-weight: 600;">
+                                        {{pending.length}} Requests
+                                    </p>
+                                </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body">
+                            <tr *ngFor="let job of pendingTable.data">
+                                <td>
+                                    <b>#{{job.job_request_id}}</b>
+                                </td>
+                                <td>
+                                    <b>Requested on  : </b> {{job.created_at | date:"medium"}}
+                                </td>
+                                <td>
+                                    <b>Status: </b>
+                                    <nz-tag [nzColor]="'yellow'">Pending</nz-tag>
+                                </td>
+                                <td>
+                                    {{job.customer?.company_name || '-' }}
+                                </td>
+                                <td>
+                                    <nz-avatar nzIcon="user" [nzSrc]="job.customer?.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ job.customer?.user?.name"></nz-avatar>
+                                    {{job.customer?.user?.name + ' | ' + job.customer?.user?.phone_number || '-'}}
+                                </td>
+                                <!-- <td style="text-align: center;"> -->
+                                    <!-- <button nz-button nzType="primary" (click)="viewJob(job)">
+                                      <i nz-icon nzType="eye" nzTheme="outline"></i>
+                                      View
+                                    </button> -->
+                                    <!-- <button style="margin-left: 5px;" nz-button nzType="primary" (click)="editRequest()">
+                                    <i nz-icon nzType="edit" nzTheme="outline"></i>
+                                    Edit
+                                  </button> -->
+                                  <td style="text-align: center;">
+                                  <button nz-button nzType="primary" (click)="viewJob(job)">
+                                    <i nz-icon nzType="eye" nzTheme="outline"></i> View
+                                  </button>
+                                  <!-- <button style="margin-left: 5px;" nz-button nzType="primary" (click)="editRequest()">
+                                    <i nz-icon nzType="edit" nzTheme="outline"></i> Edit
+                                  </button> -->
+                                  </td>
+                                  <td  style="text-align: center;">
+                                    <!--  Cancel Button -->
+                                    <button
+                                      style="margin-left: 5px;"
+                                      nz-button
+                                      nzType="default"
+                                      nzDanger
+                                      (click)="initiateCancel(job)"
+                                    >
+                                      <i nz-icon nzType="close-circle" nzTheme="outline"></i> Cancel
+                                    </button>
+
+                                </td>
+
+
+                            </tr>
+                        </tbody>
+                    </nz-table>
+                </nz-spin>
+            </nz-tab>
+
+            <!-- Accepted -->
+            <nz-tab [nzTitle]="'Accepted'">
+                <nz-spin [nzSpinning]="isloading">
+                    <nz-table #acceptedTable [nzData]="accepted" [nzPageSize]="20">
+                        <thead>
+                            <tr>
+                                <th colSpan="3">
+                                    <nz-input-group [nzSuffix]="suffixIconSearch">
+                                        <input type="text" nz-input placeholder="Search Here" (keyup)="searchPending($event)" />
+                                    </nz-input-group>
+                                    <ng-template #suffixIconSearch>
+                                        <i nz-icon nzType="search"></i>
+                                    </ng-template>
+                                </th>
+                                <th>Company Name</th>
+                                <th>Contact Person</th>
+                                <th>
+                                    <p style="text-align: center;font-weight: 600;">
+                                        {{accepted.length}} Requests
+                                    </p>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body">
+                            <tr *ngFor="let job of acceptedTable.data">
+                                <td>
+                                    <b>#{{job.job_request_id}}</b>
+                                </td>
+                                <td>
+                                    <b>Requested on  : </b> {{job.created_at | date:"medium"}}
+                                </td>
+                                <td>
+                                    <b>Status: </b>
+                                    <nz-tag [nzColor]="'green'">Accepted</nz-tag>
+                                </td>
+                                <td>
+                                    {{job.customer?.company_name || '-' }}
+                                </td>
+                                <td>
+                                    <nz-avatar nzIcon="user" [nzSrc]="job.customer?.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ job.customer?.user?.name"></nz-avatar>
+                                    {{job.customer?.user?.name + ' | ' + job.customer?.user?.phone_number || '-'}}
+                                </td>
+                                <td style="text-align: center;">
+                                    <button nz-button nzType="primary" (click)="viewJob(job)">
+                                      <i nz-icon nzType="eye" nzTheme="outline"></i>
+                                      View
+                                  </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </nz-table>
+                </nz-spin>
+            </nz-tab>
+
+            <!--Rejected-->
+            <nz-tab [nzTitle]="'Rejected'">
+                <nz-spin [nzSpinning]="isloading">
+                    <nz-table #rejectedTable [nzData]="rejected" [nzPageSize]="20">
+                        <thead>
+                            <tr>
+                                <th colSpan="3">
+                                    <nz-input-group [nzSuffix]="suffixIconSearch">
+                                        <input type="text" nz-input placeholder="Search Here" (keyup)="searchRejected($event)" />
+                                    </nz-input-group>
+                                    <ng-template #suffixIconSearch>
+                                        <i nz-icon nzType="search"></i>
+                                    </ng-template>
+                                </th>
+                                <th>Company Name</th>
+                                <th>Contact Person</th>
+                                <th>
+                                    <p style="text-align: center;font-weight: 600;">
+                                        {{rejected.length}} Requests
+                                    </p>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body">
+                            <tr *ngFor="let job of rejectedTable.data">
+                                <td>
+                                    <b>#{{job.job_request_id}}</b>
+                                </td>
+                                <td>
+                                    <b>Requested on  : </b> {{job.created_at | date:"medium"}}
+                                </td>
+                                <td>
+                                    <b>Status: </b>
+                                    <nz-tag [nzColor]="'red'">Rejected</nz-tag>
+                                </td>
+                                <td>
+                                    {{job.customer?.company_name || '-' }}
+                                </td>
+                                <td>
+                                    <nz-avatar nzIcon="user" [nzSrc]="job.customer?.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ job.customer?.user?.name"></nz-avatar>
+                                    {{job.customer?.user?.name + ' | ' + job.customer?.user?.phone_number || '-'}}
+                                </td>
+                                <td style="text-align: center;">
+                                    <button nz-button nzType="primary" (click)="viewJob(job)">
+                                      <i nz-icon nzType="eye" nzTheme="outline"></i>
+                                      View
+                                  </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </nz-table>
+                </nz-spin>
+            </nz-tab>
+
+            <!--Cancelled-->
+            <nz-tab [nzTitle]="'Cancelled'">
+                <nz-spin [nzSpinning]="isloading">
+                    <nz-table #cancelledTable [nzData]="cancelled" [nzPageSize]="20">
+                        <thead>
+                            <tr>
+                                <th colSpan="3">
+                                    <nz-input-group [nzSuffix]="suffixIconSearch">
+                                        <input type="text" nz-input placeholder="Search Here" (keyup)="searchCancelled($event)" />
+                                    </nz-input-group>
+                                    <ng-template #suffixIconSearch>
+                                        <i nz-icon nzType="search"></i>
+                                    </ng-template>
+                                </th>
+                                <th>Company Name</th>
+                                <th>Contact Person</th>
+                                <th>
+                                    <p style="text-align: center;font-weight: 600;">
+                                        {{cancelled.length}} Requests
+                                    </p>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body">
+                            <tr *ngFor="let job of cancelledTable.data">
+                                <td>
+                                    <b>#{{job.job_request_id}}</b>
+                                </td>
+                                <td>
+                                    <b>Requested on  : </b> {{job.created_at | date:"medium"}}
+                                </td>
+                                <td>
+                                    <b>Status: </b>
+                                    <nz-tag [nzColor]="'black'">Cancelled</nz-tag>
+                                </td>
+                                <td>
+                                    {{job.customer?.company_name || '-' }}
+                                </td>
+                                <td>
+                                    <nz-avatar nzIcon="user" [nzSrc]="job.customer?.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ job.customer?.user?.name"></nz-avatar>
+                                    {{job.customer?.user?.name + ' | ' + job.customer?.user?.phone_number || '-'}}
+                                </td>
+                                <td style="text-align: center;">
+                                    <button nz-button nzType="primary" (click)="viewJob(job)">
+                                      <i nz-icon nzType="eye" nzTheme="outline"></i>
+                                      View
+                                  </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </nz-table>
+                </nz-spin>
+            </nz-tab>
+
+        </nz-tabset>
+        <ng-template #extraTemplate>
+            <button nz-button nzType="primary" (click)="openCreateModal()">
+                Create New
+                <span nz-icon nzType="plus" nzTheme="outline"></span>
+            </button>
+        </ng-template>
+    </div>
+</div>
+
+<!--Modal-->
+
+<nz-modal [nzWidth]="800" [(nzVisible)]="showJobRequestModal" nzClosable="true" [nzTitle]="title" (nzOnCancel)="showJobRequestModal=false;" [nzFooter]="null">
+    
+    <ng-template #title>
+        <b>Job Request #{{viewingJob.job_request_id}}</b>
+    </ng-template>
+    <ng-container *nzModalContent>
+        <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="10" [nzLg]="10" [nzXl]="10">
+                <gallery gallerize class="gallery-images-jobs" [orientation]="'vertical'" [thumbs]="true" [items]="viewingImages" [bullets]="true" [bulletPosition]="'bottom'" [imageSize]="'cover'" [autoHeight]="true"></gallery>
+            </div>
+            <br>
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="14" [nzLg]="14" [nzXl]="14">
+                <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <span style="font-size: 15px;"><b>Date Requested</b></span>
+                        <br style="margin-top: 5px;">
+                        <hr class="hr">
+                        <span nz-icon nzType="calendar" nzTheme="outline" class="color"></span> {{viewingJob.created_at | date:"medium"}}
+                    </div>
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <span style="font-size: 15px;"><b>Customer</b></span> <br>
+                        <hr class="hr">
+                        <nz-avatar nzIcon="user" [nzSrc]="viewingJob.customer?.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ viewingJob.customer?.user?.name"></nz-avatar>
+                        {{viewingJob.customer?.user?.name}} |
+                        <span nz-icon nzType="phone" nzTheme="outline" class="color"></span> {{viewingJob.customer?.user?.phone_number}} |
+                        <span nz-icon nzType="mail" nzTheme="outline" class="color"></span> {{viewingJob.customer?.user?.email_address }}
+                    </div>
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <span style="font-size: 15px;"><b>Company Details</b></span> <br>
+                        <hr class="hr">
+                        <span nz-icon nzType="vv:company" nzTheme="outline" class="color"></span> {{viewingJob.customer?.company_name || 'N/A'}} |
+                        <span nz-icon nzType="vv:phone-talk" nzTheme="outline" class="color"></span> {{viewingJob.customer?.telephone }}
+                    </div>
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <h3><b>{{viewingJob.title}}</b></h3>
+                        <p>{{viewingJob.description}}</p>
+                        <span style="font-size: 15px;"><b>Expected Completion Date</b></span> : {{viewingJob.finish_date | date:"dd MMM YYYY"}}
+                    </div>
+                </div>
+                <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <nz-tag style="float: inline-end;" *ngIf="selectedTabIndex == 1" [nzColor]="'green'">Accepted</nz-tag>
+                        <nz-tag *ngIf="selectedTabIndex == 2" [nzColor]="'red'">Rejected</nz-tag>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+</nz-modal>
+
+
+<nz-modal [nzWidth]="800" [(nzVisible)]="showRequestModal" nzClosable="true" [nzTitle]="title" (nzOnCancel)="showRequestModal=false;" [nzFooter]="null">
+
+        <form [formGroup]="jobRequestForm">
+           <nz-spin [nzSpinning]="btnloading">
+            <ng-template #title3>
+                <b>Create Employee</b>
+            </ng-template>
+            <ng-container *nzModalContent>
+                    <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+                        <br>
+                        <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="14" [nzLg]="14" [nzXl]="14">
+                            <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+                                <!--Title & Quantity-->
+                                <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                                    <span style="font-size: 15px;"><b>Title & Quantity</b></span>
+                                    <br style="margin-top: 5px;">
+                                    <hr class="hr">
+                                    <nz-input-group nzCompact>
+                                        <input type="text" nz-input placeholder="Enter title" formControlName="title" style="width:50%;" />
+                                        <input type="number" nz-input placeholder="Enter quantity" formControlName="quantity" style="width:50%;" />
+                                    </nz-input-group>
+                                </div>
+                                <!--Description-->
+                                <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                                    <span style="font-size: 15px;"><b>Description</b></span>
+                                    <br style="margin-top: 5px;">
+                                    <hr class="hr">
+                                    <nz-input-group nzCompact>
+                                        <input type="text" nz-input placeholder="Enter description" formControlName="description" style="width:100%;" />
+                                    </nz-input-group>
+                                </div>
+                                <!--Finish Date-->
+                                <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                                    <span style="font-size: 15px;"><b>Expected Finish Date</b></span> <br>
+                                    <hr class="hr">
+                                    <nz-input-group nzCompact>
+                                        <input type="date" nz-input placeholder="Enter finish date" formControlName="finish_date" style="width:100%;" />
+                                    </nz-input-group>
+                                </div>
+                                <!--Supporting Documents-->
+                                <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                                    <span style="font-size: 15px;"><b>Supporting Documents</b></span> <br>
+                                    <hr class="hr">
+                                    <div nz-col nzSpan="24">
+                                        <nz-upload nzType="drag" [nzMultiple]="false" [nzBeforeUpload]="beforeUpload" [(nzFileList)]="fileList" [nzAccept]="'image/*'" [nzMultiple]="true">
+                                            <p class="ant-upload-drag-icon">
+                                                <span nz-icon nzType="inbox"></span>
+                                            </p>
+                                            <p class="ant-upload-text">Click or drag documents to this area to upload</p>
+                                        </nz-upload>
+                                        <br>
+                                    </div>
+                                </div>
+                            </div>
+                            <br />
+                            <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+                                <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                                    <nz-button-group>
+                                        <button [nzLoading]="btnloading" nz-button nzType="default" style="background-color: seagreen;color: white;border: none;width: 100%;" (click)="createJobRequest()">
+                                    Create Job Request
+                                    </button>
+                                    </nz-button-group>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </ng-container>
+            </nz-spin>
+        </form>
+
+</nz-modal>
+
+<!-- Add Cancel Confirmation Modal at the bottom of your template -->
+<nz-modal
+  [(nzVisible)]="showCancelConfirmation"
+  nzTitle="Confirm Cancellation"
+  (nzOnCancel)="showCancelConfirmation = false"
+  (nzOnOk)="confirmCancel()"
+>
+  <p>Are you sure you want to cancel this job request?</p>
+</nz-modal>

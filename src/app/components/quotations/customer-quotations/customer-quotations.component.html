@@ -1,0 +1,194 @@
+<div nz-row [nzJustify]="'center'">
+    <div nz-col nzSpan="22">
+        <button nz-button nzType="default" routerLink="/home" style="float: start !important;">
+          Back to Dashboard
+        </button>
+        <br>
+        <nz-tabset nzType="card" (nzSelectedIndexChange)="selectedTabChange($event)" [(nzSelectedIndex)]="selectedTabIndex">
+            <!-- Pending Tab -->
+            <nz-tab [nzTitle]="'Pending'">
+                <nz-spin [nzSpinning]="isloading">
+                    <nz-table #pendingTable [nzData]="pending" [nzPageSize]="20">
+                        <thead>
+                            <tr>
+                                <th colSpan="3">
+                                    <nz-input-group [nzSuffix]="suffixIconSearch">
+                                        <input type="text" nz-input placeholder="Search Here" (keyup)="searchPending($event)" />
+                                    </nz-input-group>
+                                    <ng-template #suffixIconSearch>
+                                        <i nz-icon nzType="search"></i>
+                                    </ng-template>
+                                </th>
+                                <th>Job Title</th>
+                                <th>Quote Total</th>
+                                <th>Contact Person</th>
+                                <th>
+                                    <p style="text-align: center;font-weight: 600;">
+                                        {{pending.length}} Requests
+                                    </p>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body">
+                            <tr *ngFor="let quote of pendingTable.data">
+                                <td>
+                                    <b>#{{quote.quotation_number | titlecase}}</b>
+                                </td>
+                                <td>
+                                    <b>Job Requested on  : </b> {{quote.job_request?.created_at| date:"medium"}}
+                                </td>
+                                <td>
+                                    <b>Status: </b>
+                                    <nz-tag [nzColor]="'yellow'">Pending</nz-tag>
+                                </td>
+                                <td>
+                                    <b>{{quote.job_request?.title | titlecase}}</b>
+                                </td>
+                                <td>
+                                    {{quote.total_cost | currency:'R':'symbol' }}
+                                </td>
+                                <td>
+                                    <nz-avatar nzIcon="user" [nzSrc]="quote.job_request?.customer?.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ quote.job_request?.customer?.user?.name"></nz-avatar>
+                                    {{quote.job_request?.customer?.user?.name + ' | ' + quote.job_request?.customer?.user?.phone_number || '-'}}
+                                </td>
+                                <td style="text-align: center;">
+                                    <button nz-button nzType="primary" (click)="viewQuote(quote)">
+                                      <i nz-icon nzType="eye" nzTheme="outline"></i>
+                                      View
+                                   </button>
+                                    <button [nzLoading]="btnloading" (click)="acceptQuotation(quote.quotation_id)" *ngIf="selectedTabIndex == 0" nz-button nzType="default" style="margin-left: 5px;background-color: seagreen;color: white;border: none;">
+                                    <span nz-icon nzType="check" nzTheme="outline"></span>
+                                    Accept 
+                                  </button>
+                                    <button [nzLoading]="btnloading" (click)="rejectQuotation(quote.quotation_id)" *ngIf="selectedTabIndex == 0" nz-button nzType="default" style="margin-left: 5px;background-color: rgb(252, 61, 61);color: white;border: none;">
+                                    <span nz-icon nzType="close" nzTheme="outline"></span>
+                                    Reject 
+                                  </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </nz-table>
+                </nz-spin>
+            </nz-tab>
+
+
+            <!-- Accepted Tab -->
+            <nz-tab [nzTitle]="'Accepted'">
+                <nz-spin [nzSpinning]="isloading">
+                    <nz-table #acceptedTable [nzData]="accepted" [nzPageSize]="20">
+                        <thead>
+                            <tr>
+                                <th colSpan="3">
+                                    <nz-input-group [nzSuffix]="suffixIconSearch">
+                                        <input type="text" nz-input placeholder="Search Here" (keyup)="searchAccepted($event)" />
+                                    </nz-input-group>
+                                    <ng-template #suffixIconSearch>
+                                        <i nz-icon nzType="search"></i>
+                                    </ng-template>
+                                </th>
+                                <th>Job Title</th>
+                                <th>Quote Total</th>
+                                <th>Contact Person</th>
+                                <th>
+                                    <p style="text-align: center;font-weight: 600;">
+                                        {{pending.length}} Requests
+                                    </p>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body">
+                            <tr *ngFor="let quote of acceptedTable.data">
+                                <td>
+                                    <b>#{{quote.quotation_number | titlecase}}</b>
+                                </td>
+                                <td>
+                                    <b>Job Requested on  : </b> {{quote.job_request?.created_at| date:"medium"}}
+                                </td>
+                                <td>
+                                    <b>Status: </b>
+                                    <nz-tag [nzColor]="'green'">Accepted</nz-tag>
+                                </td>
+                                <td>
+                                    <b>{{quote.job_request?.title | titlecase}}</b>
+                                </td>
+                                <td>
+                                    {{quote.total_cost | currency:'R':'symbol' }}
+                                </td>
+                                <td>
+                                    <nz-avatar nzIcon="user" [nzSrc]="quote.job_request?.customer?.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ quote.job_request?.customer?.user?.name"></nz-avatar>
+                                    {{quote.job_request?.customer?.user?.name + ' | ' + quote.job_request?.customer?.user?.phone_number || '-'}}
+                                </td>
+                                <td style="text-align: center;">
+                                    <button nz-button nzType="primary" (click)="viewQuote(quote)">
+                                  <i nz-icon nzType="eye" nzTheme="outline"></i>
+                                  View
+                                </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </nz-table>
+                </nz-spin>
+            </nz-tab>
+
+            <!-- Rejected Tab -->
+            <nz-tab [nzTitle]="'Rejected'">
+                <nz-spin [nzSpinning]="isloading">
+                    <nz-table #rejectedTable [nzData]="rejected" [nzPageSize]="20">
+                        <thead>
+                            <tr>
+                                <th colSpan="3">
+                                    <nz-input-group [nzSuffix]="suffixIconSearch">
+                                        <input type="text" nz-input placeholder="Search Here" (keyup)="searchAccepted($event)" />
+                                    </nz-input-group>
+                                    <ng-template #suffixIconSearch>
+                                        <i nz-icon nzType="search"></i>
+                                    </ng-template>
+                                </th>
+                                <th>Job Title</th>
+                                <th>Quote Total</th>
+                                <th>Contact Person</th>
+                                <th>
+                                    <p style="text-align: center;font-weight: 600;">
+                                        {{pending.length}} Requests
+                                    </p>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body">
+                            <tr *ngFor="let quote of rejectedTable.data">
+                                <td>
+                                    <b>#{{quote.quotation_number | titlecase}}</b>
+                                </td>
+                                <td>
+                                    <b>Job Requested on  : </b> {{quote.job_request?.created_at| date:"medium"}}
+                                </td>
+                                <td>
+                                    <b>Status: </b>
+                                    <nz-tag [nzColor]="'red'">Rejected</nz-tag>
+                                </td>
+                                <td>
+                                    <b>{{quote.job_request?.title | titlecase}}</b>
+                                </td>
+                                <td>
+                                    {{quote.total_cost | currency:'R':'symbol' }}
+                                </td>
+                                <td>
+                                    <nz-avatar nzIcon="user" [nzSrc]="quote.job_request?.customer?.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ quote.job_request?.customer?.user?.name"></nz-avatar>
+                                    {{quote.job_request?.customer?.user?.name + ' | ' + quote.job_request?.customer?.user?.phone_number || '-'}}
+                                </td>
+                                <td style="text-align: center;">
+                                    <button nz-button nzType="primary" (click)="viewQuote(quote)">
+                                  <i nz-icon nzType="eye" nzTheme="outline"></i>
+                                  View
+                                </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </nz-table>
+                </nz-spin>
+            </nz-tab>
+
+        </nz-tabset>
+
+    </div>
+</div>

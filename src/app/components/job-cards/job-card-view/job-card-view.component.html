@@ -1,0 +1,171 @@
+<nz-card class="box">
+
+    <div nz-row [nzGutter]="[24,24]" [nzAlign]="'middle'">
+        <div nz-col nzSpan="8" style="text-align: start;">
+            <h1>
+                <b>Job No : </b><br>
+                <span class="color">#{{job_card.job_card_id}}</span>
+            </h1>
+        </div>
+        <div nz-col nzSpan="8" style="text-align: center;">
+            <h1>
+                <b>JOB Card</b>
+            </h1>
+            <h3 style="color:gray;">
+                Expected Completion Date :
+                <nz-date-picker style="display: inline-block;" [(ngModel)]="completionDate" nzFormat="yyyy-MM-dd" placeholder="Select Date"></nz-date-picker>
+            </h3>
+        </div>
+        <div nz-col nzSpan="8" style="text-align: end;">
+            <h1><b>Status </b><br>
+                <nz-tag style="margin-left: 5px;vertical-align: middle;" [nzColor]="'cyan'" *ngIf="job_card.job_card_status_id == 5">Pending</nz-tag>
+                <nz-tag style="margin-left: 5px;vertical-align: middle;" [nzColor]="'orange'" *ngIf="job_card.job_card_status_id == 1">Processing</nz-tag>
+                <nz-tag style="margin-left: 5px;vertical-align: middle;" [nzColor]="'green'" *ngIf="job_card.job_card_status_id == 2">Completed</nz-tag>
+                <nz-tag style="margin-left: 5px;vertical-align: middle;" [nzColor]="'red'" *ngIf="job_card.job_card_status_id == 3">Cancelled</nz-tag>
+            </h1>
+        </div>
+    </div>
+
+    <hr class="hr">
+    <br>
+
+    <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]" [nzAlign]="'middle'">
+        <div nz-col nzSpan="12" style="text-align: start;border-right:  1px solid var(--primary-color);">
+            <h2>
+                <b>{{ job_card.quotation?.job_request?.title | titlecase }}</b>
+                <span style="float: inline-end;">
+                <b >Quantity : </b> <span class="color">{{ job_card.quotation?.job_request?.quantity }}</span>
+                </span>
+            </h2>
+            <p>
+                {{ job_card.quotation?.job_request?.description }}
+            </p>
+        </div>
+        <div nz-col nzSpan="12" style="text-align: start;">
+            <img nz-image *ngFor="let image of job_card.quotation?.job_request?.job_request_items" [nzSrc]="image.item_url" class="request_image" />
+        </div>
+    </div>
+
+    <br>
+    <!-- <hr class="hr"> -->
+    <br>
+
+    <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]" [nzAlign]="'top'">
+        <div nz-col nzSpan="8">
+            <nz-list nzBordered style="text-align: center;">
+                <nz-list-header class="list-header">
+                    <b>Materials</b>
+                    <button nz-button nzType="primary" nzShape="round" class="btn-add" (click)="openMaterialModal()" *ngIf="job_card.job_card_material_items != null">
+                      <span nz-icon nzType="plus" nzTheme="outline" ></span>
+                    </button>
+                </nz-list-header>
+                <nz-list-item *ngFor="let item of job_card.job_card_material_items">
+                    <span nz-typography>
+                      <b>{{item.stock.name}}</b><br>
+                        <small>
+                          {{ item.stock.material?.material_name! }}
+                        </small>
+                    </span>
+                    <button nz-button nzDanger nzShape="round" class="btn-minus" nzSize="small" [nz-tooltip]="'Remove ' + item.stock.name" nz-popconfirm nzPopconfirmTitle="Are you sure you want to remove this" (nzOnConfirm)="removeStockItem(item.stock_id)" [nzIcon]="iconTpl">
+                      <span nz-icon nzType="minus" nzTheme="outline" ></span>
+                    </button>
+                </nz-list-item>
+                <nz-list-item *ngIf="job_card.job_card_material_items == null" style="text-align: center;">
+                    <button nz-button nzType="primary" nzShape="round" class="btn-add" (click)="openMaterialModal()">
+                      Add Materials to Job
+                      <span nz-icon nzType="plus" nzTheme="outline" ></span>
+                    </button>
+                </nz-list-item>
+            </nz-list>
+        </div>
+        <div nz-col nzSpan="8">
+            <nz-list nzBordered>
+                <nz-list-header class="list-header">
+                    <b>Artisans</b>
+                    <button nz-button nzType="primary" nzShape="round" class="btn-add" (click)="openArtisianModal()" *ngIf="job_card.job_card_artisans != null">
+                      <span nz-icon nzType="plus" nzTheme="outline" ></span>
+                    </button>
+                </nz-list-header>
+                <nz-list-item *ngFor="let item of job_card.job_card_artisans">
+                    <span nz-typography>
+                      <nz-avatar nzIcon="user" [nzSrc]="item.employee.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ item.employee.user?.name"></nz-avatar>
+                      <b style="margin-left: 5px;">{{ item.employee.user?.name + ' ' + item.employee.user?.surname}}</b><br>
+                      <small>
+                        {{item.employee.job_scope}}
+                      </small>
+                    </span>
+                    <button nz-button nzDanger nzShape="round" class="btn-minus" nzSize="small" [nz-tooltip]="'Remove ' + item.employee.user?.name" nz-popconfirm nzPopconfirmTitle="Are you sure you want to remove this employee" (nzOnConfirm)="removeEmployee(item.employee_id)"
+                        [nzIcon]="iconTpl">
+                      <span nz-icon nzType="minus" nzTheme="outline" ></span>
+                    </button>
+                </nz-list-item>
+                <nz-list-item *ngIf="job_card.job_card_artisans == null" style="text-align: center;">
+                    <button nz-button nzType="primary" nzShape="round" class="btn-add" (click)="openArtisianModal()">
+                      Add Artisian to Job
+                      <span nz-icon nzType="plus" nzTheme="outline" ></span>
+                    </button>
+                </nz-list-item>
+            </nz-list>
+        </div>
+        <div nz-col nzSpan="8">
+            <nz-list nzBordered>
+                <nz-list-header class="list-header">
+                    <b>Progress Content</b>
+                </nz-list-header>
+                <nz-list-item>
+                    <nz-upload style="width: 100%;" nzType="drag" [nzMultiple]="false" [nzBeforeUpload]="beforeUpload" [(nzFileList)]="fileList" nzAccept=".pdf">
+                        <p class="ant-upload-drag-icon">
+                            <span nz-icon nzType="inbox"></span>
+                        </p>
+                        <p class="ant-upload-text">Upload Content Here</p>
+                    </nz-upload>
+                </nz-list-item>
+            </nz-list>
+        </div>
+    </div>
+
+    <ng-template #iconTpl>
+        <span nz-icon nzType="question-circle-o" style="color: red;"></span>
+    </ng-template>
+
+    <br>
+    <hr class="hr">
+    <br>
+
+    <div nz-row [nzJustify]="'start'" [nzGutter]="[24,24]" [nzAlign]="'middle'">
+        <div nz-col nzSpan="8" style="text-align: start;">
+            <p>
+                <b>Special Instructions : </b>
+                <textarea nz-input [value]="job_card.special_instructions || 'N/A'">
+                  
+                </textarea>
+            </p>
+        </div>
+        <div nz-col nzSpan="8" style="text-align: center;">
+            <p>
+                <b>Completed Date </b> <br> {{ (job_card.completed_at | date:'medium') || 'N/A'}}
+            </p>
+        </div>
+        <div nz-col nzSpan="8" style="text-align: end;">
+            <button nz-button nzType="primary" nzShape="round" (click)="openMarkCompleted()" *ngIf="job_card.job_card_status_id == 1 || job_card.job_card_status_id == 5">
+              <span nz-icon nzType="check" nzTheme="outline" ></span>
+                Mark Completed
+            </button>
+            <nz-button-group *ngIf="job_card.job_card_status_id == 2">
+                <button nz-button nzType="primary" (click)="viewQuote()">
+                  <i nz-icon nzType="file-text" nzTheme="outline"></i>
+                  View Quote
+              </button>
+                <button nz-button nzType="primary" (click)="viewInvoice()">
+                  <i nz-icon nzType="file-protect" nzTheme="outline"></i>
+                  View Invoice
+                </button>
+            </nz-button-group>
+        </div>
+    </div>
+
+
+</nz-card>
+
+
+<!--Modal-->

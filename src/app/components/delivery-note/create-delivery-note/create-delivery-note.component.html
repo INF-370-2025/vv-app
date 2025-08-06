@@ -1,0 +1,70 @@
+<!-- create-delivery-note.component.html -->
+<div class="form-container">
+  <h2>Create New Delivery Note</h2>
+
+  <form nz-form [formGroup]="deliveryNoteForm" nzLayout="vertical">
+    <!-- Job Card ID Field - CHANGED TO SELECT -->
+    <nz-form-item>
+      <nz-form-label nzRequired>Job Card</nz-form-label>
+      <nz-form-control>
+        <nz-select
+          formControlName="job_card_id"
+          nzShowSearch
+          nzPlaceHolder="Select a job card"
+          [nzLoading]="isLoadingJobCards"
+        >
+          <nz-option
+            *ngFor="let jobCard of completedJobCards"
+            [nzValue]="jobCard.job_card_id"
+            [nzLabel]="'Job Card #' + jobCard.job_card_id"
+          >
+            Job Card #{{ jobCard.job_card_id }}
+            <span *ngIf="jobCard.quotation?.job_request?.title">
+              - {{ jobCard.quotation.job_request.title }}
+            </span>
+          </nz-option>
+        </nz-select>
+        <div *ngIf="deliveryNoteForm.get('job_card_id')?.dirty && deliveryNoteForm.get('job_card_id')?.errors" class="error-message">
+          <span *ngIf="deliveryNoteForm.get('job_card_id')?.hasError('required')">Job card selection is required</span>
+        </div>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- PDF Upload Field -->
+    <nz-form-item>
+      <nz-form-label nzRequired>Delivery Note PDF</nz-form-label>
+      <nz-form-control>
+        <nz-upload
+          nzType="drag"
+          [nzMultiple]="false"
+          [nzBeforeUpload]="beforeUpload"
+          [(nzFileList)]="fileList"
+          nzAccept=".pdf"
+          nzMaxSize="5242880"
+          [nzShowUploadList]="true">
+          <p class="ant-upload-drag-icon">
+            <span nz-icon nzType="inbox"></span>
+          </p>
+          <p class="ant-upload-text">Click or drag PDF to this area to upload</p>
+          <p class="ant-upload-hint">Max file size: 5MB. Only PDF files accepted.</p>
+        </nz-upload>
+        <div *ngIf="!file && deliveryNoteForm.touched" class="error-message">
+          PDF file is required
+        </div>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <button nz-button nzType="default" (click)="cancel()" [disabled]="isSubmitting">Cancel</button>
+      <button
+        nz-button
+        nzType="primary"
+        (click)="submitForm()"
+        [nzLoading]="isSubmitting"
+        [disabled]="deliveryNoteForm.invalid || fileList.length === 0">
+        Create
+      </button>
+    </div>
+   </form>
+    </div>

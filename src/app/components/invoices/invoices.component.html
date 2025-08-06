@@ -1,0 +1,10 @@
+<div nz-row [nzJustify]="'center'">
+    <div nz-col [nzSpan]="22" style="text-align: start;">
+        <h1><b>Invoices</b></h1>
+    </div>
+</div>
+
+
+<app-admin-invoices *ngIf="auth.user?.role_id == 1"></app-admin-invoices>
+
+<app-customer-invoices *ngIf="auth.user?.role_id == 6"></app-customer-invoices>

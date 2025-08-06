@@ -1,0 +1,23 @@
+<div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+    <div nz-col nzSpan="24">
+        <nz-button-group>
+            <button nz-button (click)="clockIn()" >
+                <span nz-icon nzType="clock-circle" nzTheme="outline"></span>
+                Clock In
+            </button>
+            <button nz-button (click)="clockOut()" >
+                <span nz-icon nzType="field-time" nzTheme="outline"></span>
+                Clock Out
+            </button>
+        </nz-button-group>
+    </div>
+    <div nz-col nzSpan="24">
+       <nz-qrcode *ngIf="showCode" [nzValue]="clockCode" nzLevel="H" [nzStatus]="isQrloading ? 'loading':'active'"></nz-qrcode>
+        <nz-qrcode *ngIf="showExpired" [nzValue]="clockCode" nzLevel="H" [nzStatus]="'expired'"></nz-qrcode>
+    </div>
+</div>
+<br>
+<nz-spin [nzSpinning]="isloading">
+    <full-calendar #calendar [options]="calendarOptions" [deepChangeDetection]="true"></full-calendar>
+</nz-spin>
+

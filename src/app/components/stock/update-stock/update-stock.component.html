@@ -1,0 +1,100 @@
+<div class="form-container">
+  <h2>Update Stock Item</h2>
+
+  <nz-spin [nzSpinning]="isLoading">
+    <form nz-form [formGroup]="stockForm" nzLayout="vertical" *ngIf="!isLoading">
+
+      <!-- Name Field -->
+      <nz-form-item>
+        <nz-form-label nzRequired>Item Name</nz-form-label>
+        <nz-form-control>
+          <input nz-input formControlName="name" placeholder="Enter item name">
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- Description Field -->
+      <nz-form-item>
+        <nz-form-label>Description</nz-form-label>
+        <nz-form-control>
+          <textarea nz-input
+                    formControlName="description"
+                    placeholder="Enter description"
+                    rows="3"></textarea>
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- Material Field -->
+      <nz-form-item>
+        <nz-form-label>Material</nz-form-label>
+        <nz-form-control>
+          <nz-select formControlName="material_id"
+                     nzPlaceHolder="Select material"
+                     nzShowSearch
+                     nzAllowClear>
+            <!-- Current Material (if exists) -->
+            <nz-option *ngIf="currentMaterial"
+                      [nzValue]="currentMaterial.material_id"
+                      [nzLabel]="currentMaterial.material_name">
+            </nz-option>
+
+            <!-- Other Materials -->
+            <nz-option *ngFor="let material of materials"
+                      [nzValue]="material.material_id"
+                      [nzLabel]="material.material_name">
+            </nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- Stock Type Field -->
+      <nz-form-item>
+        <nz-form-label>Stock Type</nz-form-label>
+        <nz-form-control>
+          <nz-select formControlName="stock_type_id"
+                     nzPlaceHolder="Select stock type"
+                     nzShowSearch
+                     nzAllowClear>
+            <!-- Current Stock Type (if exists) -->
+            <nz-option *ngIf="currentStockType"
+                      [nzValue]="currentStockType.stock_type_id"
+                      [nzLabel]="currentStockType.type_name">
+            </nz-option>
+
+            <!-- Other Stock Types -->
+            <nz-option *ngFor="let type of stockTypes"
+                      [nzValue]="type.stock_type_id"
+                      [nzLabel]="type.type_name">
+            </nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- Stock Level Field -->
+      <nz-form-item>
+        <nz-form-label nzRequired>Stock Level</nz-form-label>
+        <nz-form-control>
+          <nz-input-number
+            formControlName="stock_level"
+            [nzMin]="0"
+            [nzStep]="1"
+            style="width: 100%"
+            placeholder="Enter stock level">
+          </nz-input-number>
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button nz-button nzType="default" (click)="cancel()">Cancel</button>
+        <button
+          nz-button
+          nzType="primary"
+          (click)="submitForm()"
+          [nzLoading]="isSubmitting"
+          [disabled]="stockForm.invalid">
+          Update
+        </button>
+      </div>
+    </form>
+  </nz-spin>
+</div>

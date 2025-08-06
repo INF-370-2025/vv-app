@@ -1,0 +1,54 @@
+<nz-card class="box">
+  <div nz-row [nzGutter]="[24,24]" [nzAlign]="'middle'">
+    <div nz-col nzSpan="8" style="text-align: start;">
+      <h1>
+        <b>Stock ID : </b><br>
+        <span class="color">#{{stock_item.stock_id}}</span>
+      </h1>
+    </div>
+    <div nz-col nzSpan="8" style="text-align: center;">
+      <h1>
+        <b>STOCK DETAILS</b>
+      </h1>
+    </div>
+    <div nz-col nzSpan="8" style="text-align: end;">
+      <h1><b>Status </b><br>
+        <nz-tag style="margin-left: 5px;vertical-align: middle;"
+                [nzColor]="getStockLevelColor(stock_item.stock_level)">
+          {{getStockLevelStatus(stock_item.stock_level)}}
+        </nz-tag>
+      </h1>
+    </div>
+  </div>
+
+  <hr class="hr">
+  <br>
+
+  <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]" [nzAlign]="'middle'">
+    <div nz-col nzSpan="12" style="text-align: start;border-right:  1px solid var(--primary-color);">
+      <h2>
+        <b>{{ stock_item.name | titlecase }}</b>
+        <span style="float: inline-end;">
+          <b>Stock Level : </b>
+          <nz-tag [nzColor]="getStockLevelColor(stock_item.stock_level)">
+            {{ stock_item.stock_level }}
+          </nz-tag>
+        </span>
+      </h2>
+      <p>
+        {{ stock_item.description || 'No description available' }}
+      </p>
+    </div>
+    <div nz-col nzSpan="12" style="text-align: start; padding-left: 20px;">
+      <h3><b>Classification Details</b></h3>
+      <p>
+        <b>Material:</b> {{ stock_item.material?.material_name || 'N/A' }}<br>
+        <b>Type:</b> {{ stock_item.stock_type?.type_name || 'N/A' }}
+      </p>
+    </div>
+  </div>
+
+  <br>
+  <hr class="hr">
+  <br>
+</nz-card>

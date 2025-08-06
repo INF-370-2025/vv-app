@@ -1,0 +1,114 @@
+<div nz-row [nzJustify]="'center'" class="login-row" nzalign="middle">
+    <div nz-col nzXs="0" nzSm="0" nzMd="16" nzLg="16" class="image-side">
+        <!--image in class-->
+    </div>
+    <div nz-col nzXs="20" nzSm="18" nzMd="8" nzLg="8" class="login-side">
+
+        <div class="login-card">
+
+
+            <!--Logo-->
+            <img alt="example" src="../../../assets/images/logo.png" height="200" loading="eager" />
+
+
+            <!--Login SMS-->
+            <form nz-form [formGroup]="loginFormSms" *ngIf="!showOTPEnter && isSmsLogin">
+                <br>
+
+                <p class="text-gradient" [style.fontSize]="breakpoint.isScreenSmall ? '12px' : '15px'">Welcome Back</p>
+
+                <nz-form-item *ngIf="isSmsLogin">
+                    <!--Material OTP Input-->
+                    <ngx-material-intl-tel-input #telInput [fieldControl]="phoneNumberControl" [required]="true" [autoSelectedCountry]="'za'" [autoIpLookup]="false"></ngx-material-intl-tel-input>
+                </nz-form-item>
+
+                <button [nzLoading]="isloadingBtn" nz-button (click)="sendOTP()" [nzType]="'primary'" class="btn-gradient btn-gradient-pill" [disabled]="!loginFormSms.valid">
+                  Send Access Code
+                </button>
+
+                <div class="separator">
+                    <hr class="line">
+                    <span class="text">or</span>
+                    <hr class="line">
+                </div>
+
+                <button *ngIf="isSmsLogin" nz-button (click)="isSmsLogin=false" [nzType]="'default'" class="btn-gradient-pill" style="background-color: white;color: black;">
+                  <span nz-icon nzType="mail" class="menuIcon"></span>
+                  Continue with Email
+                </button>
+
+                <br><br>
+
+                <a href="/register">Create Account</a>
+
+
+            </form>
+
+
+            <!--Login Email-->
+            <form nz-form [formGroup]="loginFormEmail" *ngIf="!showOTPEnter && !isSmsLogin">
+                <br>
+
+                <p class="text-gradient" [style.fontSize]="breakpoint.isScreenSmall ? '12px' : '15px'">Welcome Back</p>
+
+                <nz-form-item *ngIf="!isSmsLogin">
+                    <input type="email" class="emailInput" nz-input formControlName="emailAddress" placeholder="Email Address" />
+                </nz-form-item>
+
+                <button [nzLoading]="isloadingBtn" nz-button (click)="sendOTP()" [nzType]="'primary'" class="btn-gradient btn-gradient-pill" [disabled]="!loginFormEmail.valid">
+                  Send Access Code
+                </button>
+
+                <div class="separator">
+                    <hr class="line">
+                    <span class="text">or</span>
+                    <hr class="line">
+                </div>
+
+                <button nz-button (click)="isSmsLogin=true" [nzType]="'default'" class="btn-gradient-pill" style="background-color: white;color: black;">
+                  <span nz-icon nzType="phone" class="menuIcon"></span>
+                  Continue with Phone
+                </button>
+
+                <br><br>
+
+                <a href="/register">Create Account</a>
+
+            </form>
+
+
+            <!--Otp Form-->
+            <form nz-form *ngIf="showOTPEnter">
+
+                <h2>Verify it's you</h2>
+                <p class="text-gradient" [style.fontSize]="breakpoint.isScreenSmall ? '12px' : '15px'">
+                    Enter the verification code we've just sent you at <b>{{ phoneNumber || emailAddress }}</b>.
+                </p>
+                <a style="color: white !important;">
+                    <u class="color">
+                      Edit
+                      <span *ngIf="isSmsLogin"> phone number</span>
+                      <span *ngIf="!isSmsLogin">email address</span>
+
+                    </u>
+                </a>
+
+                <nz-form-item style="justify-content: center;" appAutocompleteOtp>
+                    <input autofocus #otpInput type="text" autocomplete="one-time-code" maxlength="6" class="otp-input" placeholder="Enter OTP" inputmode="numeric" pattern="[0-9]*" (input)="onOtpInputChange($event)" />
+                </nz-form-item>
+
+                <p style="font-size: 12px;color:rgb(194, 194, 194)">
+                    Didn't receive code ?
+                    <span style="color: white;" *ngIf="!showTimer" (click)="resendOtp()"><u style="cursor: pointer;" class="color">Resend</u></span>
+                    <span *ngIf="showTimer">Resend in {{ displayTime }}</span>
+                </p>
+
+                <button [nzLoading]="isloadingBtn" nz-button (click)="verifyOTP()" [nzType]="'default'" class="btn-gradient btn-gradient-pill">Submit</button>
+
+            </form>
+
+
+
+        </div>
+    </div>
+</div>

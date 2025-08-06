@@ -1,0 +1,56 @@
+<div class="form-container">
+  <h2>Create New Pattern</h2>
+
+  <form nz-form [formGroup]="patternForm" nzLayout="vertical">
+    <!-- Pattern Type Field -->
+    <nz-form-item>
+      <nz-form-label nzRequired>Pattern Type</nz-form-label>
+      <nz-form-control>
+        <nz-select
+          formControlName="pattern_type_id"
+          nzPlaceHolder="Select pattern type"
+          nzShowSearch
+          nzAllowClear
+          [nzLoading]="patternTypes.length === 0">
+          <nz-option
+            *ngFor="let type of patternTypes"
+            [nzLabel]="type.type_name"
+            [nzValue]="type.pattern_type_id">
+          </nz-option>
+        </nz-select>
+        <div *ngIf="patternForm.get('pattern_type_id')?.dirty && patternForm.get('pattern_type_id')?.errors" class="error-message">
+          <span *ngIf="patternForm.get('pattern_type_id')?.hasError('required')">Pattern type is required</span>
+        </div>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- Design Field -->
+    <nz-form-item>
+      <nz-form-label nzRequired>Design Description</nz-form-label>
+      <nz-form-control>
+        <textarea
+          nz-input
+          formControlName="design"
+          placeholder="Enter design description"
+          rows="4"></textarea>
+        <div *ngIf="patternForm.get('design')?.dirty && patternForm.get('design')?.errors" class="error-message">
+          <span *ngIf="patternForm.get('design')?.hasError('required')">Design description is required</span>
+          <span *ngIf="patternForm.get('design')?.hasError('maxlength')">Description must be less than 1000 characters</span>
+        </div>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <button nz-button nzType="default" (click)="cancel()" [disabled]="isSubmitting">Cancel</button>
+      <button
+        nz-button
+        nzType="primary"
+        (click)="submitForm()"
+        [nzLoading]="isSubmitting"
+        [disabled]="patternForm.invalid">
+        Create
+      </button>
+    </div>
+  </form>
+</div>

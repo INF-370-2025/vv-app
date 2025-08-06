@@ -1,0 +1,61 @@
+<!-- create-job-card.component.html -->
+<div class="form-container">
+  <h2>Create New Job Card</h2>
+
+  <form nz-form [formGroup]="jobCardForm" nzLayout="vertical">
+    <!-- Pattern Dropdown (Optional) -->
+    <nz-form-item>
+      <nz-form-label>Pattern</nz-form-label>
+      <nz-form-control>
+        <nz-select formControlName="pattern_id"
+                   nzPlaceHolder="Select pattern (optional)"
+                   nzShowSearch
+                   nzAllowClear>
+          <nz-option *ngFor="let pattern of patterns"
+                    [nzValue]="pattern.pattern_id"
+                    [nzLabel]="pattern.design">
+          </nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- Quotation Dropdown (Optional) -->
+    <nz-form-item>
+      <nz-form-label>Quotation</nz-form-label>
+      <nz-form-control>
+        <nz-select formControlName="quotation_id"
+                   nzPlaceHolder="Select quotation (optional)"
+                   nzShowSearch
+                   nzAllowClear>
+          <nz-option *ngFor="let quotation of quotations"
+                    [nzValue]="quotation.quotation_id"
+                    [nzLabel]="quotation.quotation_number">
+          </nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- Special Instructions -->
+    <nz-form-item>
+      <nz-form-label>Special Instructions</nz-form-label>
+      <nz-form-control>
+        <textarea nz-input
+                  formControlName="special_instructions"
+                  placeholder="Enter any special instructions"
+                  rows="3"></textarea>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <button nz-button nzType="default" (click)="cancel()">Cancel</button>
+      <button
+        nz-button
+        nzType="primary"
+        (click)="submitForm()"
+        [nzLoading]="isSubmitting">
+        Create
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,332 @@
+
+<div nz-row [nzJustify]="'center'">
+    <div nz-col [nzSpan]="24" style="text-align: start;">
+        <h1><b>Dashboard</b></h1>
+    </div>
+</div>
+
+<!--Admin-->
+<ng-container *ngIf="authService.user?.role_id == 1">
+    <nz-collapse [nzBordered]="false">
+        <nz-collapse-panel [nzHeader]="panel" #p [nzExpandedIcon]="'caret-right'" [nzActive]="true">
+            <ng-template #panel>
+                <h2 style="float: inline-start;">
+                    <b>Statistics</b>
+                </h2>
+            </ng-template>
+            <ng-template #expandedIcon let-active>
+                {{ active }}
+                <span nz-icon nzType="caret-right" class="ant-collapse-arrow" [nzRotate]="p.nzActive ? 90 : -90"></span>
+            </ng-template>
+
+            <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+                <!-- ... your 4 statistic cards ... -->
+            </div>
+
+            <!-- Charts Section - Corrected Structure -->
+            <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+                <!-- Job Status Chart -->
+                <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="14" [nzLg]="14" [nzXl]="14">
+                    <nz-spin [nzSpinning]="isloadingCard">
+                        <nz-card nzHoverable="true">
+                            <canvas id="canvas_jobs" class="chart-canvas"></canvas>
+                        </nz-card>
+                    </nz-spin>
+                </div>
+
+                <!-- Stock Levels Chart with Filter -->
+                <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="10" [nzLg]="10" [nzXl]="10">
+                    <nz-spin [nzSpinning]="isloadingCard1">
+                        <nz-card nzHoverable="true">
+<div class="chart-header">
+    <nz-select
+        class="stock-type-select"
+        nzShowSearch
+        nzAllowClear
+        nzPlaceHolder="Filter by stock type"
+        [(ngModel)]="selectedStockTypeId"
+        (ngModelChange)="onStockTypeChange($event)"
+        [nzLoading]="isStockTypesLoading"
+        style="width: 200px; margin-right: 10px;"
+    >
+        <nz-option
+            *ngFor="let type of stockTypes"
+            [nzLabel]="type.name"
+            [nzValue]="type.stock_type_id"
+        >
+            <span style="color: #000">{{ type.name }}</span>
+        </nz-option>
+    </nz-select>
+
+    <button
+        *ngIf="selectedStockTypeId"
+        nz-button
+        nzType="default"
+        nzSize="small"
+        (click)="clearStockTypeFilter()"
+    >
+        Clear Filter
+    </button>
+</div>
+                            <canvas id="canvas_levels"></canvas>
+                        </nz-card>
+                    </nz-spin>
+                </div>
+            </div>
+        </nz-collapse-panel>
+    </nz-collapse>
+</ng-container>
+
+    <br>
+
+<nz-collapse [nzBordered]="false">
+  <nz-collapse-panel [nzHeader]="panelr" #r [nzExpandedIcon]="'caret-right'" [nzActive]="true">
+    <ng-template #panelr>
+      <h2 style="float: inline-start;">
+        <b>Reports</b>
+      </h2>
+    </ng-template>
+    <ng-template #expandedIcon let-active>
+      {{ active }}
+      <span nz-icon nzType="caret-right" class="ant-collapse-arrow" [nzRotate]="r.nzActive ? 90 : -90"></span>
+    </ng-template>
+
+    <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+      <!-- 8.1 Monthly Hours Worked Report -->
+      <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8" [nzLg]="8" [nzXl]="8">
+        <nz-card nzHoverable="true" style="height: 100%;border:none;" (click)="openMonthlyHoursReport()">
+          <span nz-icon nzType="clock-circle" nzTheme="outline" style="font-size: 40px !important;" class="color"></span><br>
+          Monthly Hours Worked Report
+        </nz-card>
+      </div>
+
+      <!-- 8.2 Monthly Quotation Summary Report -->
+      <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8" [nzLg]="8" [nzXl]="8" (click)="openQuotationsReport()">
+        <nz-card nzHoverable="true" style="height: 100%;border:none;">
+          <span nz-icon nzType="file-text" nzTheme="outline" style="font-size: 40px !important;" class="color"></span><br>
+          Monthly Quotation Summary Report
+        </nz-card>
+      </div>
+
+      <!-- 8.3 Stock by Type and Price Report -->
+      <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8" [nzLg]="8" [nzXl]="8">
+        <nz-card nzHoverable="true" style="height: 100%;border:none;" (click)="openStockReport()">
+          <span nz-icon nzType="database" nzTheme="outline" style="font-size: 40px !important;" class="color"></span><br>
+          Stock by Type and Price Report
+        </nz-card>
+      </div>
+
+      <!-- 8.6 Pending Quotations List -->
+      <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8" [nzLg]="8" [nzXl]="8">
+        <nz-card nzHoverable="true" style="height: 100%;border:none;" (click)="viewPendingQuotationsReport()">
+          <span nz-icon nzType="hourglass" nzTheme="outline" style="font-size: 40px !important;" class="color"></span><br>
+          Pending Quotations List
+        </nz-card>
+      </div>
+
+      <!-- 8.7 List of Stock to Order -->
+      <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8" [nzLg]="8" [nzXl]="8">
+        <nz-card nzHoverable="true" style="height: 100%;border:none;" (click)="openLowStockReport()">
+          <span nz-icon nzType="shopping-cart" nzTheme="outline" style="font-size: 40px !important;" class="color"></span><br>
+          List of Stock to Order
+        </nz-card>
+      </div>
+
+      <!-- 8.8 List of Unpaid Invoices -->
+      <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8" [nzLg]="8" [nzXl]="8">
+        <nz-card nzHoverable="true" style="height: 100%;border:none;" (click)="openUnpaidInvoicesReport()">
+          <span nz-icon nzType="dollar" nzTheme="outline" style="font-size: 40px !important;" class="color"></span><br>
+          List of Unpaid Invoices
+        </nz-card>
+      </div>
+    </div>
+  </nz-collapse-panel>
+</nz-collapse>
+
+
+<!--Customer Dashboard-->
+<ng-container *ngIf="authService.user?.role_id == 6">
+    <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+
+        <div nz-col [nzXs]="12" [nzSm]="6" [nzMd]="6" [nzLg]="6" [nzXl]="6">
+            <nz-card nzHoverable="true" style="height: 100%;border:none;" class="box" routerLink="/job-requests">
+                <span nz-icon nzType="vv:job_requests" nzTheme="outline" style="font-size: 40px !important;" class="color"></span><br> Job Requests
+            </nz-card>
+        </div>
+
+
+        <div nz-col [nzXs]="12" [nzSm]="6" [nzMd]="6" [nzLg]="6" [nzXl]="6">
+            <nz-card nzHoverable="true" style="height: 100%;border:none;" class="box" routerLink="/quotations">
+                <span nz-icon nzType="file-pdf" nzTheme="outline" style="font-size: 40px !important;" class="color"></span><br> Quotations
+            </nz-card>
+        </div>
+
+
+        <div nz-col [nzXs]="12" [nzSm]="6" [nzMd]="6" [nzLg]="6" [nzXl]="6">
+            <nz-card nzHoverable="true" style="height: 100%;border:none;" class="box" routerLink="/invoices">
+                <span nz-icon nzType="file-protect" nzTheme="outline" style="font-size: 40px !important;" class="color"></span><br> Invoices
+            </nz-card>
+        </div>
+
+
+        <div nz-col [nzXs]="12" [nzSm]="6" [nzMd]="6" [nzLg]="6" [nzXl]="6">
+            <nz-card nzHoverable="true" style="height: 100%;border:none;" class="box" routerLink="/delivery-notes">
+                <span nz-icon nzType="file-done" nzTheme="outline" style="font-size: 40px !important;" class="color"></span><br> Delivery Notes
+            </nz-card>
+        </div>
+
+
+
+    </div>
+</ng-container>
+
+<!--Employee Dashboard-->
+<ng-container *ngIf="authService.user?.role_id == 5">
+
+<nz-collapse [nzBordered]="false" >
+    <nz-collapse-panel [nzHeader]="panel" #p [nzExpandedIcon]="'caret-right'" [nzActive]="true ">
+        <ng-template #panel>
+            <h2 style="float: inline-start;">
+                <b>Employee Dashboard</b>
+            </h2>
+        </ng-template>
+        <ng-template #expandedIcon let-active>
+            {{ active }}
+            <span nz-icon nzType="caret-right" class="ant-collapse-arrow" [nzRotate]="p.nzActive ? 90 : -90"></span>
+        </ng-template>
+
+        <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="6" [nzLg]="6" [nzXl]="6">
+                <nz-spin [nzSpinning]="isloading">
+                    <nz-card nzHoverable="true" style="text-align: center !important; position: relative;">
+                        <button routerLink="/job-cards" nz-button nzType="default" nzShape="circle" nzSize="large" style="position: absolute; top: 10px; right: 10px; z-index: 10;">
+                          <i nz-icon nzType="arrow-right" nzTheme="outline"></i>
+                        </button>
+                        <span nz-icon nzType="vv:engineering" nzTheme="outline" style="font-size: 40px !important;" class="color"></span>
+                        <h3><b>Jobs Completed</b><small class="color" >(month)</small></h3>
+                        <div nz-row [nzJustify]="'center'" [nzGutter]="5">
+                            <nz-col nzSpan="24" style="text-align: center !important;">
+                                <h1><b>{{ artisanStats?.jobs_completed }}</b></h1>
+                            </nz-col>
+                        </div>
+                    </nz-card>
+                </nz-spin>
+            </div>
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="6" [nzLg]="6" [nzXl]="6">
+                <nz-spin [nzSpinning]="isloading">
+                    <nz-card nzHoverable="true" style="text-align: center !important; position: relative;">
+                        <!-- <button routerLink="/job-cards" nz-button nzType="default" nzShape="circle" nzSize="large" style="position: absolute; top: 10px; right: 10px; z-index: 10;">
+                          <i nz-icon nzType="arrow-right" nzTheme="outline"></i>
+                        </button> -->
+                        <span nz-icon nzType="vv:orders" nzTheme="outline" style="font-size: 40px !important;" class="color"></span>
+                        <h3><b>Hours worked<small class="color">(month)</small></b></h3>
+                        <div nz-row [nzJustify]="'center'" [nzGutter]="5">
+                            <nz-col nzSpan="24" style="text-align: center !important;">
+                                <h1><b>{{ artisanStats?.hours_worked }}</b></h1>
+                            </nz-col>
+                        </div>
+                    </nz-card>
+                </nz-spin>
+            </div>
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="6" [nzLg]="6" [nzXl]="6">
+                <nz-spin [nzSpinning]="isloading">
+                    <nz-card nzHoverable="true" style="text-align: center !important; position: relative;">
+                        <!-- <button routerLink="/customers" nz-button nzType="default" nzShape="circle" nzSize="large" style="position: absolute; top: 10px; right: 10px; z-index: 10;">
+                        <i nz-icon nzType="arrow-right" nzTheme="outline"></i>
+                      </button> -->
+                        <span nz-icon nzType="vv:customers" nzTheme="outline" style="font-size: 40px !important;" class="color"></span>
+                        <h3><b>Accumulated Pay <small class="color">(month)</small></b></h3>
+                        <div nz-row [nzJustify]="'center'" [nzGutter]="5">
+                            <nz-col nzSpan="24" style="text-align: center !important;">
+                                <h1><b>{{ artisanStats?.accumulated_pay | currency:'R':'symbol'  }}</b></h1>
+                            </nz-col>
+                        </div>
+                    </nz-card>
+                </nz-spin>
+            </div>
+        </div>
+
+        <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                <app-timesheet-calander></app-timesheet-calander>
+            </div>
+        </div>
+    </nz-collapse-panel>
+</nz-collapse>
+</ng-container>
+
+<!--Modal-->
+<nz-modal nzClassName="pending-quotations-modal" [nzWidth]="800" [(nzVisible)]="showPendingQuotationsModal" nzClosable="true" [nzTitle]="title_pending" (nzOnCancel)="showPendingQuotationsModal=false;" [nzFooter]="null">
+    <ng-template #title_pending>
+        <div class="modal-header">
+            <b>Pending Quotations Report</b>
+            <button
+                nz-button
+                nzType="primary"
+                nzDanger
+                (click)="exportPendingQuotationsToPDF()"
+                [nzLoading]="isExportingPending"
+                [disabled]="pending.length === 0"
+            >
+                <span nz-icon nzType="file-pdf" nzTheme="outline"></span>
+                Export to PDF
+            </button>
+        </div>
+    </ng-template>
+    <ng-container *nzModalContent>
+        <div class="report-container" #pendingQuotationsReportContent>
+            <!-- Title -->
+            <div class="report-title">
+                <h2>Pending Quotations Report</h2>
+                <p>List of all pending quotations</p>
+            </div>
+
+            <!-- Meta Info -->
+            <div class="report-meta">
+                <p><strong>Date Generated:</strong> {{ currentDate | date:'medium' }}</p>
+                <p><strong>Generated By:</strong> {{ generatedBy }}</p>
+            </div>
+
+            <!-- Report Body -->
+            <nz-spin [nzSpinning]="isloading">
+                <nz-table #pendingTable [nzData]="pending" [nzPageSize]="pending.length" [nzShowPagination]="false">
+                    <thead>
+                        <tr>
+                            <th>Quotation #</th>
+                            <th>Request Date</th>
+                            <th>Job Title</th>
+                            <th>Quote Total</th>
+                            <th>Contact Person</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-body">
+                        <tr *ngFor="let quote of pending">
+                            <td><b>#{{quote.quotation_number | titlecase}}</b></td>
+                            <td>{{ quote.job_request?.created_at | date:'medium' }}</td>
+                            <td><b>{{quote.job_request?.title | titlecase}}</b></td>
+                            <td>{{quote.total_cost | currency:'R':'symbol' }}</td>
+                            <td>
+                                <nz-avatar
+                                    nzIcon="user"
+                                    [nzSrc]="quote.job_request?.customer?.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name=' + quote.job_request?.customer?.user?.name"
+                                >
+                                </nz-avatar>
+                                {{ quote.job_request?.customer?.user?.name || '-' }}
+                                | {{ quote.job_request?.customer?.user?.phone_number || '-' }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </nz-table>
+                <div class="request-count-footer">
+                    <strong>{{ pending.length }} Pending Requests</strong>
+                </div>
+            </nz-spin>
+
+            <!-- Footer -->
+            <div class="report-footer">
+                <p>Vault Vision</p>
+                <p>Generated on {{ currentDate | date:'longDate' }}</p>
+            </div>
+        </div>
+    </ng-container>
+</nz-modal>

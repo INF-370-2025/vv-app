@@ -1,0 +1,150 @@
+<div nz-row [nzJustify]="'center'">
+    <div nz-col [nzSpan]="20" style="text-align: start;">
+        <h1><b>Roles</b></h1>
+    </div>
+</div>
+
+<!--Row-->
+<div nz-row [nzJustify]="'center'">
+    <div nz-col nzSpan="18">
+                <!--Spinner-->
+                <nz-spin [nzSpinning]="isloading">
+                    <nz-table #table1 [nzData]="roles" [nzPageSize]="20">
+                        <thead>
+                            <tr>
+                                <th colSpan="3">
+                                    <nz-input-group [nzSuffix]="suffixIconSearch">
+                                        <input type="text" nz-input placeholder="Search Here" (keyup)="searchRoles($event)" />
+                                    </nz-input-group>
+                                    <ng-template #suffixIconSearch>
+                                        <i nz-icon nzType="search"></i>
+                                    </ng-template>
+                                </th>
+                                <th>Id</th>
+                                <th>Name</th>
+                                <th>
+                                    <div style="text-align: right">
+                                        <button nz-button nzType="primary" (click)="viewCreateRole()">
+                                        Create New Role
+                                        <span nzType="plus" nzTheme="outline"></span>
+                                        </button>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body">
+                            <tr *ngFor="let role of table1.data">
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>{{role.role_id}}</td>
+                                <td>{{role.role_name}}</td>
+                                <td>
+                                    <div style="text-align: right">
+                                        <button nz-button nzType="primary" (click)="viewUpdateRole(role)">
+                                            <i nzTheme="outline">Edit</i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </nz-table>
+                </nz-spin>
+        <!--Button-->
+        <ng-template #extraTemplate>
+            <button nz-button nzType="primary">
+              Create New
+            <span nzType="plus" nzTheme="outline"></span>
+          </button>
+        </ng-template>
+    </div>
+</div>
+
+<!--Modal-->
+<!--CreateRoleModal-->
+<nz-modal [nzWidth]="800" [(nzVisible)]="showCreateRoleModal" nzClosable="true" [nzTitle]="title3" (nzOnCancel)="showCreateRoleModal=false;" [nzFooter]="null">
+    <form [formGroup]="roleForm">
+            <ng-template #title3>
+        <b>Create Role</b>
+    </ng-template>
+    <ng-container *nzModalContent>
+        <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+            <br>
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="14" [nzLg]="14" [nzXl]="14">
+                <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+                    <!--Full Name-->
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <span style="font-size: 15px;"><b>Role Name</b></span>
+                        <br style="margin-top: 5px;">
+                        <hr class="hr">
+                        <nz-input-group nzCompact>
+                            <input type="text" nz-input placeholder="Enter role name" formControlName="role_name" style="width:40%;" />
+                        </nz-input-group>
+                    </div>
+                </div>
+                <br />
+                <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <nz-button-group>
+                            <button nz-button nzType="default" style="background-color: seagreen;color: white;border: none;" (click)="createRole()">
+                              <span nz-icon nzType="check" nzTheme="outline"></span>
+                              Create Role
+                            </button>
+                        </nz-button-group>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+    </form>
+</nz-modal>
+
+<!--Modal-->
+<!--UpdateRoleModal-->
+<nz-modal [nzWidth]="800" [(nzVisible)]="showUpdateRoleModal" nzClosable="true" [nzTitle]="title4" (nzOnCancel)="showUpdateRoleModal=false;" [nzFooter]="null">
+    <form [formGroup]="roleForm">
+            <ng-template #title4>
+        <b>Update Role Permissions</b>
+    </ng-template>
+    <ng-container *nzModalContent>
+        <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+            <br>
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="14" [nzLg]="14" [nzXl]="14">
+                <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+                    <nz-table #table2 [nzData]="role_claims" [nzPageSize]="20">
+                        <thead>
+                            <tr>
+                                <th>Permission</th>
+                                <th>View</th>
+                                <th>Create</th>
+                                <th>Update</th>
+                                <th>Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body">
+                            <tr *ngFor="let role_claim of table2.data">
+                                <td>{{role_claim.permission}}</td>
+                                <td>View<nz-switch></nz-switch></td>
+                                <td>Create<nz-switch></nz-switch></td>
+                                <td>Update<nz-switch></nz-switch></td>
+                                <td>Delete<nz-switch></nz-switch></td>
+                            </tr>
+                        </tbody>
+                    </nz-table>
+                </div>
+                <br />
+                <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                        <nz-button-group>
+                            <button nz-button nzType="default" style="background-color: seagreen;color: white;border: none;" (click)="updateRole()">
+                              <span nz-icon nzType="check" nzTheme="outline"></span>
+                              Update Role
+                            </button>
+                        </nz-button-group>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+    </form>
+</nz-modal>

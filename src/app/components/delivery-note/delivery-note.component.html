@@ -1,0 +1,95 @@
+<div nz-row [nzJustify]="'center'">
+  <div nz-col [nzSpan]="!showCreateForm ? 22 : 18" style="text-align: start;">
+    <h1 *ngIf="!showCreateForm"><b>Delivery Notes</b></h1>
+    <button *ngIf="showCreateForm" nz-button nzType="default" (click)="handleFormClose()">
+      <span nz-icon nzType="arrow-left" nzTheme="outline"></span>
+      Back to Delivery Notes
+    </button>
+  </div>
+</div>
+
+<!-- Delivery Notes List View -->
+<div nz-row [nzJustify]="'center'" *ngIf="!showCreateForm">
+  <div nz-col nzSpan="22">
+    <nz-tabset nzType="card" [nzTabBarExtraContent]="extraTemplateDeliveryNotes">
+      <nz-tab [nzTitle]="'Delivery Notes'">
+        <nz-spin [nzSpinning]="isLoading">
+          <!-- Error message -->
+          <div *ngIf="errorMessage" class="error-message">
+            <nz-alert nzType="error" [nzMessage]="errorMessage" nzShowIcon></nz-alert>
+            <button nz-button nzType="primary" (click)="loadDeliveryNotes()" style="margin-top: 16px;">
+              <i nz-icon nzType="reload"></i> Retry
+            </button>
+          </div>
+
+          <!-- Empty state -->
+          <div *ngIf="!isLoading && !errorMessage && deliveryNotes.length === 0" class="empty-state">
+            <nz-empty nzNotFoundContent="No delivery notes found"></nz-empty>
+          </div>
+
+          <!-- table -->
+          <nz-table *ngIf="!isLoading && deliveryNotes.length > 0"
+                    #deliveryNotesTable
+                    [nzData]="deliveryNotes"
+                    [nzPageSize]="20"
+                    nzSize="middle">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Job Card ID</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let note of deliveryNotesTable.data">
+                <td><b>#{{note.delivery_note_id}}</b></td>
+                <td>{{note.job_card_id}}</td>
+                <td>
+                  <div class="actions-container">
+                    <button
+                      nz-button
+                      nzType="primary"
+                      nzSize="small"
+                      (click)="viewDeliveryNote(note)"
+                      [disabled]="!note.delivery_note_url">
+                      <i nz-icon nzType="eye" nzTheme="outline"></i> View
+                    </button>
+
+                    <button
+                      nz-button
+                      nzType="default"
+                      nzDanger
+                      nzSize="small"
+                      (click)="deleteDeliveryNote(note)"
+                      [nzLoading]="isDeleting[note.delivery_note_id]">
+                      <i nz-icon nzType="delete" nzTheme="outline"></i> Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </nz-spin>
+      </nz-tab>
+    </nz-tabset>
+
+    <ng-template #extraTemplateDeliveryNotes>
+      <button nz-button nzType="primary" (click)="openCreateForm()">
+        Create Delivery Note
+        <span nz-icon nzType="plus" nzTheme="outline"></span>
+      </button>
+    </ng-template>
+  </div>
+</div>
+
+<!-- Create Form Section -->
+<div nz-row [nzJustify]="'center'" *ngIf="showCreateForm">
+  <div nz-col [nzSpan]="18">
+    <nz-card>
+      <app-create-delivery-note
+        (closeForm)="handleFormClose()"
+        (noteCreated)="loadDeliveryNotes()">
+      </app-create-delivery-note>
+    </nz-card>
+  </div>
+</div>

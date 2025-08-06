@@ -1,0 +1,134 @@
+@import "../node_modules/ng-zorro-antd/ng-zorro-antd.less";
+@import '@angular/cdk/overlay-prebuilt.css';
+
+
+:root {
+  --primary-color:#17726d;
+  --mat-select-panel-background-color:#ffffff;
+  --mat-select-panel-color:#000000;
+  --mat-form-field-container-height:2;
+  --mdc-filled-text-field-error-caret-color:var(--primary);
+   --primary:#ffffff;
+  --fc-button-active-bg-color:#1f9c96;
+  --fc-button-active-border-color:#1f9c96;
+  --fc-button-bg-color:#17726d;
+  --fc-button-border-color:#17726d;
+}
+
+
+
+
+/****************************HTML*******************************/
+
+.color{
+ color: var(--primary-color) !important;
+}
+
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.back::before {
+  content: "";
+   background-image: url("/assets/images/background.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  filter: blur(3px); /* Adjust the blur value as needed */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+}
+
+
+.tel-mat-select-pane .mat-mdc-select-panel {
+  color: black;
+}
+
+section .tel-form {
+  border-radius: 8px !important;
+  border: 1px solid #2b2b2b00 !important;
+  outline: none !important;
+  color: black;
+}
+
+section .tel-form mat-form-field.prefix-form-field .mat-mdc-form-field-infix {
+  padding-top: 15px !important;
+  padding-bottom: 15px !important;
+}
+
+.mat-mdc-form-field:not(.mat-form-field-disabled) .mat-mdc-floating-label.mdc-floating-label {
+  display: none;
+}
+
+
+.gallery-images-jobs {
+  width: 100%;
+  height: auto;
+  border-radius:20px;
+  z-index: 0;
+  background-color: rgba(0,0,0,0);
+  object-fit: cover;
+}
+
+@media (min-width: 768px) {
+  .gallery-images-jobs {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .gallery-images-jobs {
+    // width: 41%;
+    height: 141px;
+    border-radius:20px;
+  }
+}
+
+
+.hr {
+  position: relative;
+  border: none;
+  height: 1px;
+  background-color: transparent;
+}
+
+.hr::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  border-bottom: 1px solid #51515138;
+}
+
+.role-selector .ant-select-selector {
+  background-color: var(--primary-color) !important;
+  color: white;
+  border: 1px solid var(--primary-color) !important;
+}
+
+
+.role-selector .ant-select-arrow {
+  color: white !important;
+  margin-top: -4px;
+}
+
+
+.role-selector{
+  width:20%;
+  display: inline-block;
+  text-align: center;
+}
+
+.box{
+  box-shadow:  0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08),
+  0 9px 28px 8px rgba(0, 0, 0, 0.05);;
+}

@@ -1,0 +1,14 @@
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  background-color: #f0f0f0;
+  color: #333;
+
+
+  /* Optional: Different colors for different statuses */
+  &[data-status="1"] { background-color: #fff7e6; color: #fa8c16; } /* Not Started */
+  &[data-status="2"] { background-color: #e6f7ff; color: #1890ff; } /* In Progress */
+  &[data-status="3"] { background-color: #f6ffed; color: #52c41a; } /* Completed */
+  &[data-status="4"] { background-color: #fff1f0; color: #f5222d; } /* Cancelled */
+}

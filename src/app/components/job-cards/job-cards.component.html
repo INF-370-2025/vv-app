@@ -1,0 +1,320 @@
+<!-- job-cards.component.html -->
+<div nz-row [nzJustify]="'center'">
+    <div nz-col [nzSpan]="!(showjobCard || showUpdateForm) ? 22 : 18" style="text-align: start;">
+        <h1 *ngIf="!(showjobCard || showUpdateForm)"><b>Job Cards</b></h1>
+        <button nz-button nzType="default" *ngIf="showjobCard || showUpdateForm"
+                (click)="closeJobcard(); closeUpdateForm()">
+          <span nz-icon nzType="arrow-left" nzTheme="outline"></span>
+          Back to Jobs
+        </button>
+    </div>
+</div>
+
+<!-- Update Form -->
+<app-update-job-card
+  *ngIf="showUpdateForm && jobCardToUpdate"
+  [jobCardData]="jobCardToUpdate"
+  [jobCardStatuses]="jobCardStatuses"
+  [patterns]="patterns"
+  [quotations]="quotations"
+  (closeForm)="closeUpdateForm()"
+  (updateSuccess)="handleJobCardUpdate($event)"
+></app-update-job-card>
+
+<!-- Create Job Card View -->
+<!-- job-cards.component.html -->
+<div nz-row [nzJustify]="'center'" *ngIf="showCreateForm">
+  <div nz-col [nzSpan]="18">
+    <br>
+    <app-create-job-card
+      [patterns]="patterns"
+      [quotations]="quotations"
+      (closeForm)="showCreateForm = false"
+      (createSuccess)="handleJobCardCreated($event)">
+    </app-create-job-card>
+  </div>
+</div>
+
+<!-- Table View -->
+<div nz-row [nzJustify]="'center'" *ngIf="!(showjobCard || showUpdateForm)">
+    <div nz-col nzSpan="22">
+        <nz-tabset nzType="card" [nzTabBarExtraContent]="extraTemplate">
+
+            <!-- Pending Tab -->
+            <nz-tab [nzTitle]="'Pending'">
+                <nz-spin [nzSpinning]="isloading">
+                    <nz-table #pendingTable [nzData]="pending" [nzPageSize]="20">
+                        <thead>
+                            <tr>
+                                <th colSpan="3">
+                                    <nz-input-group [nzSuffix]="suffixIconSearch">
+                                        <input type="text" nz-input placeholder="Search Here"
+                                               (keyup)="pending = searchJobs($event, 5)" />
+                                    </nz-input-group>
+                                    <ng-template #suffixIconSearch>
+                                        <i nz-icon nzType="search"></i>
+                                    </ng-template>
+                                </th>
+                                <th>Company Details</th>
+                                <th>Files</th>
+                                <th>Quote</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body">
+                            <tr *ngFor="let job of pendingTable.data">
+                                <td><b>#{{job.job_card_id}}</b></td>
+                                <td>
+                                    <b>Started:</b> {{job.created_at | date:"medium"}}<br>
+                                    <b>Expected:</b> {{job.quotation?.job_request?.finish_date| date:"dd MMM YYYY"}}
+                                </td>
+                                <td>
+                                    <b>Title:</b> {{job.quotation?.job_request?.title}}<br>
+                                    <b>Description:</b> {{job.quotation?.job_request?.description | slice:0:50}}...
+                                </td>
+                                <td>
+                                    <b>Company:</b> {{job.quotation?.job_request?.customer?.company_name}}<br>
+                                    <b>Contact:</b>
+                                    <nz-avatar nzIcon="user"
+                                              [nzSrc]="job.quotation?.job_request?.customer?.user?.image ||
+                                                       'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+
+                                                       job.quotation?.job_request?.customer?.user?.name"></nz-avatar>
+                                    {{job.quotation?.job_request?.customer?.user?.name || ''}}
+                                    {{job.quotation?.job_request?.customer?.user?.surname || ''}} |
+                                    {{job.quotation?.job_request?.customer?.user?.phone_number || '-'}}
+                                </td>
+                                <td>
+                                    <button nz-button nzType="primary" (click)="viewDesigns(job)"
+                                            [disabled]="!job.quotation?.job_request?.job_request_items?.length">
+                                        <i nz-icon nzType="file-jpg" nzTheme="outline"></i> Designs
+                                    </button>
+                                </td>
+                                <td>
+                                    <button nz-button nzType="primary" (click)="viewQuotation(job)"
+                                            [disabled]="!job.quotation?.quotation_url">
+                                        <i nz-icon nzType="file-pdf" nzTheme="outline"></i> Quotation
+                                    </button>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button nz-button nzType="primary" (click)="viewJobCard(job)"
+                                                nzTooltipTitle="View Details">
+                                            <i nz-icon nzType="eye" nzTheme="outline"></i>
+                                        </button>
+                                        <button nz-button nzType="default" (click)="openUpdateForm(job)"
+                                                nzTooltipTitle="Edit Job Card" style="margin-left: 8px;">
+                                            <i nz-icon nzType="edit" nzTheme="outline"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </nz-table>
+                </nz-spin>
+            </nz-tab>
+
+            <!-- In Progress Tab -->
+            <nz-tab [nzTitle]="'In Progress'">
+                <nz-spin [nzSpinning]="isloading">
+                    <nz-table #progressTable [nzData]="inProgress" [nzPageSize]="20">
+                        <thead>
+                            <tr>
+                                <th colSpan="3">
+                                    <nz-input-group [nzSuffix]="suffixIconSearch">
+                                        <input type="text" nz-input placeholder="Search Here"
+                                               (keyup)="inProgress = searchJobs($event, 1)" />
+                                    </nz-input-group>
+                                    <ng-template #suffixIconSearch>
+                                        <i nz-icon nzType="search"></i>
+                                    </ng-template>
+                                </th>
+                                <th>Company Name</th>
+                                <th>Registration</th>
+                                <th>Contact</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body">
+                            <tr *ngFor="let job of progressTable.data">
+                                <td><b>#{{job.job_card_id}}</b></td>
+                                <td>
+                                    <b>Started:</b> {{job.created_at | date:"medium"}}
+                                </td>
+                                <td>
+                                    <b>Status:</b>
+                                    <nz-tag [nzColor]="'orange'">Processing</nz-tag>
+                                </td>
+                                <td>{{job.quotation?.job_request?.customer?.company_name || '-' }}</td>
+                                <td>{{job.quotation?.job_request?.customer?.registration_number || '-'}}</td>
+                                <td>
+                                    {{job.quotation?.job_request?.customer?.user?.name || ''}}
+                                    {{job.quotation?.job_request?.customer?.user?.surname || ''}} |
+                                    {{job.quotation?.job_request?.customer?.user?.phone_number || '-'}}
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button nz-button nzType="primary" (click)="viewJobCard(job)"
+                                                nzTooltipTitle="View Details">
+                                            <i nz-icon nzType="eye" nzTheme="outline"></i>
+                                        </button>
+                                        <button nz-button nzType="default" (click)="openUpdateForm(job)"
+                                                nzTooltipTitle="Edit Job Card" style="margin-left: 8px;">
+                                            <i nz-icon nzType="edit" nzTheme="outline"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </nz-table>
+                </nz-spin>
+            </nz-tab>
+
+            <!-- Completed Tab -->
+            <nz-tab [nzTitle]="'Completed'">
+                <nz-spin [nzSpinning]="isloading">
+                    <nz-table #completedTable [nzData]="completed" [nzPageSize]="20">
+                        <thead>
+                            <tr>
+                                <th colSpan="3">
+                                    <nz-input-group [nzSuffix]="suffixIconSearch">
+                                        <input type="text" nz-input placeholder="Search Here"
+                                               (keyup)="completed = searchJobs($event, 2)" />
+                                    </nz-input-group>
+                                    <ng-template #suffixIconSearch>
+                                        <i nz-icon nzType="search"></i>
+                                    </ng-template>
+                                </th>
+                                <th>Company Name</th>
+                                <th>Registration</th>
+                                <th>Contact</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body">
+                            <tr *ngFor="let job of completedTable.data">
+                                <td><b>#{{job.job_card_id}}</b></td>
+                                <td>
+                                    <b>Started:</b> {{job.created_at | date:"medium"}}
+                                </td>
+                                <td>
+                                    <b>Status:</b>
+                                    <nz-tag [nzColor]="'green'">Completed</nz-tag>
+                                </td>
+                                <td>{{job.quotation?.job_request?.customer?.company_name || '-' }}</td>
+                                <td>{{job.quotation?.job_request?.customer?.registration_number || '-'}}</td>
+                                <td>
+                                    {{job.quotation?.job_request?.customer?.user?.name || ''}}
+                                    {{job.quotation?.job_request?.customer?.user?.surname || ''}} |
+                                    {{job.quotation?.job_request?.customer?.user?.phone_number || '-'}}
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button nz-button nzType="primary" (click)="viewJobCard(job)"
+                                                nzTooltipTitle="View Details">
+                                            <i nz-icon nzType="eye" nzTheme="outline"></i>
+                                        </button>
+                                        <button nz-button nzType="default" (click)="openUpdateForm(job)"
+                                                nzTooltipTitle="Edit Job Card" style="margin-left: 8px;">
+                                            <i nz-icon nzType="edit" nzTheme="outline"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </nz-table>
+                </nz-spin>
+            </nz-tab>
+
+            <!-- Cancelled Tab -->
+            <nz-tab [nzTitle]="'Cancelled'">
+                <nz-spin [nzSpinning]="isloading">
+                    <nz-table #cancelledTable [nzData]="cancelled" [nzPageSize]="20">
+                        <thead>
+                            <tr>
+                                <th colSpan="3">
+                                    <nz-input-group [nzSuffix]="suffixIconSearch">
+                                        <input type="text" nz-input placeholder="Search Here"
+                                               (keyup)="cancelled = searchJobs($event, 3)" />
+                                    </nz-input-group>
+                                    <ng-template #suffixIconSearch>
+                                        <i nz-icon nzType="search"></i>
+                                    </ng-template>
+                                </th>
+                                <th>Company Name</th>
+                                <th>Registration</th>
+                                <th>Contact</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body">
+                            <tr *ngFor="let job of cancelledTable.data">
+                                <td><b>#{{job.job_card_id}}</b></td>
+                                <td>
+                                    <b>Started:</b> {{job.created_at | date:"medium"}}
+                                </td>
+                                <td>
+                                    <b>Status:</b>
+                                    <nz-tag [nzColor]="'red'">Cancelled</nz-tag>
+                                </td>
+                                <td>{{job.quotation?.job_request?.customer?.company_name || '-' }}</td>
+                                <td>{{job.quotation?.job_request?.customer?.registration_number || '-'}}</td>
+                                <td>
+                                    {{job.quotation?.job_request?.customer?.user?.name || ''}}
+                                    {{job.quotation?.job_request?.customer?.user?.surname || ''}} |
+                                    {{job.quotation?.job_request?.customer?.user?.phone_number || '-'}}
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button nz-button nzType="primary" (click)="viewJobCard(job)"
+                                                nzTooltipTitle="View Details">
+                                            <i nz-icon nzType="eye" nzTheme="outline"></i>
+                                        </button>
+                                        <button nz-button nzType="default" (click)="openUpdateForm(job)"
+                                                nzTooltipTitle="Edit Job Card" style="margin-left: 8px;">
+                                            <i nz-icon nzType="edit" nzTheme="outline"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </nz-table>
+                </nz-spin>
+            </nz-tab>
+
+        </nz-tabset>
+
+<ng-template #extraTemplate>
+    <button nz-button nzType="primary" (click)="openCreateForm()">
+        Create New
+        <span nz-icon nzType="plus" nzTheme="outline"></span>
+    </button>
+</ng-template>
+    </div>
+</div>
+
+<!-- Job Card View -->
+<div nz-row [nzJustify]="'center'" *ngIf="showjobCard">
+    <div nz-col [nzSpan]="18">
+        <app-job-card-view
+            [job_card]="viewJob!"
+            (closeView)="closeJobcard()"
+            (editRequested)="openUpdateForm(viewJob!)">
+        </app-job-card-view>
+    </div>
+</div>
+
+<!-- Design Preview Modal -->
+<nz-modal [nzWidth]="800" [(nzVisible)]="showDesigns" nzClosable="true"
+          (nzOnCancel)="showDesigns=false;" [nzFooter]="null" nzClassName="modal-designs">
+    <ng-container *nzModalContent>
+        <gallery *ngIf="viewingImages.length" gallerize class="gallery-images-jobs"
+                 [orientation]="'vertical'" [thumbs]="true" [items]="viewingImages"
+                 [bullets]="true" [bulletPosition]="'bottom'" [imageSize]="'cover'"
+                 [autoHeight]="true"></gallery>
+        <div *ngIf="!viewingImages.length" class="no-images-message">
+            <nz-empty nzNotFoundImage="simple"></nz-empty>
+            <h3>No design images available</h3>
+        </div>
+    </ng-container>
+</nz-modal>
+

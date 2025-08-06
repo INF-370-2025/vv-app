@@ -1,0 +1,26 @@
+<div>
+    <p>If you have any queries or suggestions, please feel free to complete the form below to leave us a message </p>
+    <form nz-form [formGroup]="Form" class="text-center">
+        <nz-form-item>
+            <nz-form-control nzErrorTip="Reason Required">
+                <nz-select formControlName="reason">
+                    <nz-option nzValue="Bug on System" nzLabel="Bug on System"></nz-option>
+                    <nz-option nzValue="Issue with Job" nzLabel="Issue with Job"></nz-option>
+                    <nz-option nzValue="Other" nzLabel="Other"></nz-option>
+                </nz-select>
+            </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+            <nz-form-control nzErrorTip="Subject Required">
+                <input required type="text" nz-input placeholder="Subject" formControlName="subject">
+            </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+            <nz-form-control nzErrorTip="Message Required">
+                <textarea required type="text" nz-input placeholder="Enter Message Here " formControlName="message"></textarea>
+            </nz-form-control>
+        </nz-form-item>
+        <button [disabled]="!Form.valid" [nzLoading]="isLoading" nz-button [nzType]="'primary'" (click)="onContact()">Send</button>
+    </form>
+    <br>
+</div>
