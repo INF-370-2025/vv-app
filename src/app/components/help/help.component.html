@@ -1,0 +1,51 @@
+<nz-collapse>
+  @for (panel of panels; track panel) {
+    <nz-collapse-panel
+      [nzHeader]="panel.name"
+      [nzActive]="panel.active"
+      [nzDisabled]="panel.disabled"
+    >
+      <!-- Conditional rendering for different content -->
+      <ng-container [ngSwitch]="panel.type">
+
+        <!-- Video Panel -->
+        <ng-container *ngSwitchCase="'video'">
+          <nz-card nzTitle="Tutorial Video" class="w-full max-w-xl mx-auto">
+            <iframe
+              class="w-full aspect-video"
+              [src]="'https://www.youtube.com/embed/' + panel.videoId"
+              title="YouTube video player"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            ></iframe>
+          </nz-card>
+        </ng-container>
+
+        <!-- Image Panel -->
+        <ng-container *ngSwitchCase="'image'">
+          <img [src]="panel.imageUrl" class="w-full rounded shadow" alt="Panel Image">
+        </ng-container>
+
+        <!-- Text Panel -->
+        <ng-container *ngSwitchCase="'text'">
+          <p class="p-4">{{ panel.text }}</p>
+        </ng-container>
+
+      </ng-container>
+    </nz-collapse-panel>
+  }
+</nz-collapse>
+
+
+<!-- Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)
+
+<a href="https://www.youtube.com/watch?v=VIDEO_ID" target="_blank" rel="noopener noreferrer">
+  <i nz-icon nzType="youtube" nzTheme="fill" class="text-red-500 text-2xl"></i>
+  Watch on YouTube
+</a> -->
+
+
+
+
+

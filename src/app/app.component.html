@@ -67,7 +67,7 @@
                     <i nz-icon nzType="sliders"></i>
                     <span>Roles</span>
                 </a>
-            </li> 
+            </li>
             <li nz-menu-item nzMatchRouter="stock">
               <a routerLink="stock" routerLinkActive="activebutton">
                 <i nz-icon nzType="appstore" nzTheme="outline"></i>
@@ -88,6 +88,14 @@
                 <span>Delivery Notes</span>
               </a>
             </li>
+
+            <li nz-menu-item nzMatchRouter="help">
+              <a routerLink="help" routerLinkActive="activebutton">
+                <i nz-icon nzType="question-circle"  nzTheme="outline"></i>
+                <span>Help</span>
+              </a>
+            </li>
+
 
             <li nz-menu-item nzMatchRouter>
                 <a nz-popconfirm nzPopconfirmTitle="Are you sure you want to logout?" (nzOnConfirm)="sign_out()" [nzIcon]="iconTpl">

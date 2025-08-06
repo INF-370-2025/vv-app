@@ -14,6 +14,7 @@ import { InvoicesComponent } from './components/invoices/invoices.component';
 import { StockComponent } from './components/stock/stock.component';
 import { PatternComponent } from './components/pattern/pattern.component';
 import { DeliveryNoteComponent } from './components/delivery-note/delivery-note.component';
+import { HelpComponent } from './components/help/help.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: '/login' },
@@ -31,7 +32,7 @@ export const routes: Routes = [
   { path: 'profile', component:ProfileComponent},
   { path: 'stock', component:StockComponent},
   { path: 'pattern', component:PatternComponent},
-  { path: 'delivery_note', component:DeliveryNoteComponent}
-
+  { path: 'delivery_note', component:DeliveryNoteComponent},
+  {path: 'help', component: HelpComponent},
 
 ];

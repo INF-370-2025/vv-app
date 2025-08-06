@@ -8,6 +8,9 @@ import { CreateStockComponent } from './create-stock/create-stock.component';
 import { UpdateStockComponent } from './update-stock/update-stock.component';
 import { material } from '../../models/stock';
 import { stock_type } from '../../models/stock';
+import { saveAs } from 'file-saver'; // For file download
+
+
 
 @Component({
   selector: 'app-stock',
@@ -34,7 +37,7 @@ export class StockComponent implements OnInit {
   constructor(
     private apiService: ApiService,
     private notification: NotificationService
-  ) {}
+    ) {}
 
   ngOnInit(): void {
     this.loadStock();
@@ -178,4 +181,26 @@ openUpdateView(item: stock): void {
       }
     });
   }
+
+  // New export function
+  exportStockToExcel(): void {
+    this.apiService.export_stock_to_excel().subscribe({
+      next: (excelBlob: Blob) => {
+        // Generate filename with current date
+        const date = new Date().toISOString().slice(0, 10);
+        const filename = `stock_export_${date}.xlsx`;
+
+        // Save the file
+        saveAs(excelBlob, filename);
+
+        // Show success notification
+        this.notification.showSuccess('Stock data has been exported to Excel', 'Export Successful');
+      },
+      error: (err) => {
+        console.error('Export failed:', err);
+        this.notification.showError('Failed to export stock data. Please try again.', 'Export Failed');
+      }
+    });
+  }
 }
+

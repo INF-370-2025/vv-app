@@ -9,9 +9,21 @@
 </div>
 
 <!-- Main Stock View -->
+ <div nz-row nzJustify="end" class="mb-3">
+  <div nz-col>
+    <button nz-button
+            nzType="default"
+            (click)="exportStockToExcel()"
+            style="margin-right: 8px;">
+      <span nz-icon nzType="file-excel" nzTheme="outline"></span>
+      Export All Stock to Excel
+    </button>
+  </div>
+</div>
 <div nz-row [nzJustify]="'center'" *ngIf="!showStockView && !showCreateView && !showUpdateView">
   <div nz-col nzSpan="22">
     <nz-tabset nzType="card">
+
       <!-- Low Stock Tab -->
       <nz-tab [nzTitle]="'Low Stock (<50)'">
         <nz-spin [nzSpinning]="isLoading">

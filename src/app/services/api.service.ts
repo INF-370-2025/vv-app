@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { contact } from '../models/general';
 import { insertJobRequest, jobRequest } from '../models/jobRequest';
+import { Observable } from 'rxjs';
 
 
 @Injectable({
@@ -399,6 +400,13 @@ export class ApiService {
         stock
       );
     }
+
+  export_stock_to_excel(): Observable<Blob> {
+    return this.http.get(
+      environment.api_url + this.stock_ep + `/export_stock_excel`,
+      { responseType: 'blob' }  // Crucial for handling Excel files
+    );
+  }
 
   //#endregion
 
