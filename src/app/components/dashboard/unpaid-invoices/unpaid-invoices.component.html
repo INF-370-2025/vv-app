@@ -36,46 +36,38 @@
       <nz-alert nzType="error" [nzMessage]="errorMessage"></nz-alert>
     </div>
 
-    <div *ngIf="!errorMessage && unpaidInvoices.length > 0" class="invoice-list">
-      <nz-table
-        #invoiceTable
-        [nzData]="unpaidInvoices"
-        nzSize="small"
-        [nzFrontPagination]="false"
-        [nzShowPagination]="false"
-        nzBordered
-      >
+    <div  *ngIf="!errorMessage && unpaidInvoices.length > 0" class="invoice-list">
+      <table class="pdf-style-table">
         <thead>
           <tr>
-            <th nzWidth="20%">Invoice #</th>
-            <th nzWidth="35%">Company</th>
-            <th nzWidth="20%">Telephone</th>
-            <th nzWidth="25%" nzAlign="right">Amount (R)</th>
+            <th>Invoice #</th>
+            <th>Company</th>
+            <th>Telephone</th>
+            <th class="text-right">Amount (R)</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let invoice of invoiceTable.data">
+          <tr *ngFor="let invoice of unpaidInvoices">
             <td>{{ invoice.invoice_number }}</td>
             <td>{{ invoice.company_name }}</td>
             <td>{{ invoice.telephone }}</td>
-            <td nzAlign="right">{{ invoice.total | number:'1.2-2' }}</td>
+            <td class="text-right">{{ formatCurrency(invoice.total) }}</td>
           </tr>
-          <!-- Grand Total Row -->
           <tr class="grand-total">
-            <td colspan="3" nzAlign="right"><strong>Total Outstanding:</strong></td>
-            <td nzAlign="right"><strong>{{ formatCurrency(totalAmount) }}</strong></td>
+            <td colspan="3" class="text-right"><strong>Total Outstanding:</strong></td>
+            <td class="text-right"><strong>{{ formatCurrency(totalAmount) }}</strong></td>
           </tr>
         </tbody>
-      </nz-table>
+      </table>
     </div>
 
-    <div *ngIf="!errorMessage && unpaidInvoices.length === 0" class="no-data">
-      <nz-empty nzNotFoundContent="No unpaid invoices found"></nz-empty>
-    </div>
-  </nz-spin>
+      <div *ngIf="!errorMessage && unpaidInvoices.length === 0" class="no-data">
+        <nz-empty nzNotFoundContent="No unpaid invoices found"></nz-empty>
+      </div>
+    </nz-spin>
 
-  <div class="report-footer">
-    <p>Vault Vision</p>
-    <p>Generated on {{ currentDate | date:'longDate' }}</p>
+    <div class="report-footer">
+      <p>Vault Vision</p>
+      <p>Generated on {{ currentDate | date:'longDate' }}</p>
+    </div>
   </div>
-</div>

@@ -276,6 +276,10 @@ export class ApiService {
     return this.http.get<any>(environment.api_url + this.quotations_ep + `/reject_quotation/${quotation_id}`);
   }
 
+  get_pending_quotes() {
+    return this.http.get<any>(
+      environment.api_url + this.quotations_ep + '/pending_quotes');
+  }
 
 
 

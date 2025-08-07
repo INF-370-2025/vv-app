@@ -33,6 +33,7 @@
         "html2canvas": "^1.4.1",
         "html2pdf.js": "^0.10.3",
         "jspdf": "^3.0.1",
+        "jspdf-autotable": "^5.0.2",
         "ng-gallery": "^12.0.0",
         "ng-zorro-antd": "^17.4.1",
         "ngx-material-intl-tel-input": "^17.3.0",

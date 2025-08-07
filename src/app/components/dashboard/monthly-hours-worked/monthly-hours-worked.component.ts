@@ -3,8 +3,8 @@ import { ApiService } from '../../../services/api.service';
 import { NotificationService } from '../../../services/notification.service';
 import { AuthService } from '../../../services/auth.service';
 import Chart from 'chart.js/auto';
-import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { AppModule } from '../../../app.module';
 
 @Component({
@@ -16,14 +16,13 @@ import { AppModule } from '../../../app.module';
 })
 export class MonthlyHoursWorkedComponent implements AfterViewInit {
   @ViewChild('chartCanvas') chartCanvas!: ElementRef;
-  @ViewChild('reportContent') reportContent!: ElementRef;
+  chart: any;
 
   selectedYear: number = new Date().getFullYear();
   yearOptions: number[] = this.generateYearOptions();
   isLoading: boolean = false;
   isExporting: boolean = false;
   errorMessage: string | null = null;
-  chart: any;
   months = [
     'January', 'February', 'March', 'April',
     'May', 'June', 'July', 'August',
@@ -32,6 +31,8 @@ export class MonthlyHoursWorkedComponent implements AfterViewInit {
   currentDate: Date = new Date();
   generatedBy: string = '';
   totalHours: number = 0;
+  monthlyData: any[] = [];
+  chartImage: string | null = null;
 
   constructor(
     private apiService: ApiService,
@@ -61,6 +62,7 @@ export class MonthlyHoursWorkedComponent implements AfterViewInit {
         if (data.error) {
           this.errorMessage = data.error;
         } else {
+          this.monthlyData = data;
           this.createChart(data);
 
           // Calculate total hours
@@ -157,123 +159,191 @@ export class MonthlyHoursWorkedComponent implements AfterViewInit {
   }
 
 async exportToPDF() {
-    this.isExporting = true;
+  this.isExporting = true;
 
-    try {
-        const content = this.reportContent.nativeElement;
-        const clone = content.cloneNode(true);
+  try {
+    const doc = new jsPDF('p', 'mm', 'a4');
+    const margin = 15;
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const contentWidth = pageWidth - 2 * margin;
+    let yPos = margin;
 
-        // Create temporary container
-        const tempContainer = document.createElement('div');
-        tempContainer.style.position = 'fixed';
-        tempContainer.style.left = '-9999px';
-        tempContainer.appendChild(clone);
-        document.body.appendChild(tempContainer);
+    // Add logo
+    const logoData = await this.getLogoData('assets/images/logo.png');
+    if (logoData) {
+      const logoWidth = 30;
+      const logoHeight = (logoData.height * logoWidth) / logoData.width;
+      const logoX = (pageWidth - logoWidth) / 2;
 
-        // Remove export button from clone
-        const buttonContainer = clone.querySelector('.report-actions');
-        if (buttonContainer) {
-            buttonContainer.remove();
-        }
-
-        // Add logo to the clone
-        const logo = document.createElement('img');
-        logo.src = 'assets/images/logo.png';
-        logo.style.width = '150px';
-        logo.style.marginBottom = '20px';
-        clone.insertBefore(logo, clone.firstChild);
-
-        // Wait for all content to render
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        // Force the chart to redraw before capturing
-        const chartCanvas = clone.querySelector('canvas');
-        if (chartCanvas) {
-            const chartId = chartCanvas.id;
-            const chart = Chart.getChart(chartId);
-            if (chart) {
-                chart.update(); // Update the chart to ensure it's rendered
-                await new Promise(resolve => setTimeout(resolve, 500));
-            }
-        }
-
-        // Use html2canvas with improved settings
-        const canvas = await html2canvas(clone, {
-            scale: 2,
-            useCORS: true,
-            logging: true,
-            allowTaint: true,
-            backgroundColor: '#ffffff',
-            onclone: (clonedDoc) => {
-                // Make sure all elements are visible
-                const elements = clonedDoc.querySelectorAll('*');
-                elements.forEach(el => {
-                    // Cast to HTMLElement to access style property
-                    const htmlEl = el as HTMLElement;
-                    const computedStyle = window.getComputedStyle(htmlEl);
-
-                    if (computedStyle.opacity === '0') {
-                        htmlEl.style.opacity = '1';
-                    }
-                    if (computedStyle.visibility === 'hidden') {
-                        htmlEl.style.visibility = 'visible';
-                    }
-                });
-            }
-        });
-
-        document.body.removeChild(tempContainer);
-
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
-        const margin = 10;
-        const contentWidth = pageWidth - 2 * margin;
-
-        // Calculate aspect ratio friendly dimensions
-        const imgData = canvas.toDataURL('image/png');
-        const imgRatio = canvas.width / canvas.height;
-        const imgWidth = contentWidth;
-        const imgHeight = imgWidth / imgRatio;
-
-        let heightLeft = imgHeight;
-        let position = 0;
-
-        // First page
-        pdf.addImage(
-            imgData,
-            'PNG',
-            margin,
-            margin + position,
-            imgWidth,
-            imgHeight
-        );
-
-        // Adjust height left to account for margins
-        heightLeft -= (pageHeight - 2 * margin);
-
-        // Additional pages
-        while (heightLeft > 0) {
-            position = heightLeft - imgHeight;
-            pdf.addPage();
-            pdf.addImage(
-                imgData,
-                'PNG',
-                margin,
-                margin + position,
-                imgWidth,
-                imgHeight
-            );
-            heightLeft -= (pageHeight - 2 * margin);
-        }
-
-        pdf.save(`monthly-hours-report-${this.selectedYear}.pdf`);
-
-    } catch (error) {
-        console.error('Error exporting PDF:', error);
-        this.notification.showError('Export Error', 'Failed to generate PDF');
-    } finally {
-        this.isExporting = false;
+      doc.addImage(
+        logoData.dataUrl,
+        'PNG',
+        logoX,
+        yPos,
+        logoWidth,
+        logoHeight
+      );
+      yPos += logoHeight + 5;
     }
+
+    // Add report title
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(23, 114, 109); // #17726d
+    doc.text(`Monthly Hours Worked Report - ${this.selectedYear}`, pageWidth / 2, yPos, { align: 'center' });
+    yPos += 15;
+
+    // Add metadata
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0); // Black
+    doc.text(`Date Generated: ${this.currentDate.toLocaleDateString()}`, margin, yPos);
+    doc.text(`Generated By: ${this.generatedBy}`, pageWidth - margin, yPos, { align: 'right' });
+    yPos += 8;
+
+    doc.text(`Total Hours: ${this.totalHours.toLocaleString('en-ZA', { maximumFractionDigits: 0 })}`, margin, yPos);
+    doc.text(`Reporting Year: ${this.selectedYear}`, pageWidth - margin, yPos, { align: 'right' });
+    yPos += 15;
+
+    // Create chart area
+    const chartHeight = 120;
+    const chartArea = {
+      x: margin,
+      y: yPos,
+      width: contentWidth,
+      height: chartHeight
+    };
+
+    // Draw chart background
+    doc.setFillColor(240, 240, 240); // Light gray background
+    doc.rect(chartArea.x, chartArea.y, chartArea.width, chartArea.height, 'F');
+
+    // Draw chart border
+    doc.setDrawColor(200, 200, 200);
+    doc.rect(chartArea.x, chartArea.y, chartArea.width, chartArea.height);
+
+    // Calculate bar dimensions
+    const barSpacing = 5;
+    const barCount = this.monthlyData.length;
+    const barWidth = (contentWidth - (barSpacing * (barCount + 1))) / barCount;
+
+    // Find max value for scaling
+    const maxValue = Math.max(...this.monthlyData.map(m => m.total_hours), 1);
+
+    // Draw bars
+    this.monthlyData.forEach((monthData, index) => {
+      const monthName = this.months[monthData.month_number - 1].substring(0, 3);
+      const barHeight = (monthData.total_hours / maxValue) * chartHeight * 0.8;
+      const barX = margin + (index * (barWidth + barSpacing)) + barSpacing;
+      const barY = chartArea.y + chartHeight - barHeight;
+
+      // Draw bar
+      doc.setFillColor(23, 114, 109); // #17726d
+      doc.rect(barX, barY, barWidth, barHeight, 'F');
+
+      // Draw bar border
+      doc.setDrawColor(13, 89, 85); // #0d5955
+      doc.rect(barX, barY, barWidth, barHeight);
+
+      // Add value label
+      doc.setFontSize(8);
+      doc.setTextColor(0, 0, 0);
+      doc.text(
+        monthData.total_hours.toString(),
+        barX + (barWidth / 2),
+        barY - 5,
+        { align: 'center' }
+      );
+
+      // Add month label
+      doc.text(
+        monthName,
+        barX + (barWidth / 2),
+        chartArea.y + chartHeight + 5,
+        { align: 'center' }
+      );
+    });
+
+    // Draw Y-axis labels
+    const yAxisSteps = 5;
+    for (let i = 0; i <= yAxisSteps; i++) {
+      const value = Math.round((i / yAxisSteps) * maxValue);
+      const y = chartArea.y + chartHeight - (i / yAxisSteps) * chartHeight * 0.8;
+
+      doc.setFontSize(8);
+      doc.text(
+        value.toString(),
+        margin - 5,
+        y,
+        { align: 'right' }
+      );
+
+      // Draw grid line
+      doc.setDrawColor(220, 220, 220);
+      doc.setLineWidth(0.2);
+      doc.line(margin, y, margin + contentWidth, y);
+    }
+
+    // Draw Y-axis title
+    doc.setFontSize(10);
+    doc.text(
+      'Hours Worked',
+      margin - 15,
+      chartArea.y + (chartHeight / 2),
+      { align: 'right', angle: 90 }
+    );
+
+    // Draw X-axis title
+    doc.text(
+      'Months',
+      margin + (contentWidth / 2),
+      chartArea.y + chartHeight + 15,
+      { align: 'center' }
+    );
+
+    yPos += chartHeight + 25;
+
+    // Add footer
+    const footerY = doc.internal.pageSize.getHeight() - 15;
+    doc.setFontSize(9);
+    doc.text('Vault Vision - Workforce Management System', pageWidth / 2, footerY, { align: 'center' });
+
+    // Save PDF
+    doc.save(`monthly-hours-report-${this.selectedYear}.pdf`);
+
+  } catch (error) {
+    console.error('Error exporting PDF:', error);
+    this.notification.showError('Export Error', 'Failed to generate PDF');
+  } finally {
+    this.isExporting = false;
+  }
 }
+
+  private getLogoData(url: string): Promise<{ dataUrl: string; width: number; height: number } | null> {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.crossOrigin = 'Anonymous';
+      img.src = url;
+
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return resolve(null);
+
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+
+        resolve({
+          dataUrl: canvas.toDataURL('image/png'),
+          width: img.width,
+          height: img.height
+        });
+      };
+
+      img.onerror = () => {
+        console.warn('Could not load logo');
+        resolve(null);
+      };
+    });
+  }
 }

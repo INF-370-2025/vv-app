@@ -13,6 +13,7 @@ export class stock {
   description!: string;
   stock_level!: number;
   price!: number;
+  created_at!: Date;
 }
 
 export class material {

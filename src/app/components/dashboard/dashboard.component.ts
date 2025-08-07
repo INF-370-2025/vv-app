@@ -19,12 +19,13 @@ import { UnpaidInvoicesComponent } from './unpaid-invoices/unpaid-invoices.compo
 import html2canvas from 'html2canvas';
 import { quotation } from '../../models/quotation';
 import { QuotationsReportComponent } from './quotations-report/quotations-report.component';
+import { PendingQuotesComponent } from './pending-quotes/pending-quotes.component';
 Chart.register(...registerables);
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [AppModule, RouterLink, TimesheetCalanderComponent, MonthlyHoursWorkedComponent, LowStockComponent, StockReportComponent, UnpaidInvoicesComponent, QuotationsReportComponent],
+  imports: [AppModule, RouterLink, TimesheetCalanderComponent, MonthlyHoursWorkedComponent, LowStockComponent, StockReportComponent, UnpaidInvoicesComponent, QuotationsReportComponent, PendingQuotesComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.less'
 })
@@ -504,6 +505,28 @@ getStockTypeName(): string {
     this.modal.create({
       nzTitle: 'Stock Inventory Report',
       nzContent: StockReportComponent,
+      nzFooter: null,
+      nzClosable: true,
+      nzMaskClosable: true,
+      nzStyle: {
+        top: '5vh',
+        width: '90vw',
+        height: '90vh',
+        maxWidth: '90vw'
+      },
+      nzBodyStyle: {
+        height: 'calc(90vh - 55px)',
+        overflow: 'auto',
+        padding: '0'
+      },
+      nzWidth: '90vw'
+    });
+  }
+
+  openPendingQuotesReport(): void {
+    this.modal.create({
+      nzTitle: 'Pending Quotations Report',
+      nzContent: PendingQuotesComponent,
       nzFooter: null,
       nzClosable: true,
       nzMaskClosable: true,

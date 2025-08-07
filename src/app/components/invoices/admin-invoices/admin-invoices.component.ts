@@ -59,8 +59,8 @@ export class AdminInvoicesComponent {
       next: (response) => {
         console.log(response);
         this.invoices = ([...response] as invoice[]).sort((a,b) => b.invoice_id - a.invoice_id);
-        this.paid = this.invoices.filter(x => x.invoice_status?.invoice_status_id === 2);
-        this.unpaid = this.invoices.filter(x => x.invoice_status?.invoice_status_id === 1);
+        this.paid = this.invoices.filter(x => x.invoice_status?.invoice_status_id === 1);
+        this.unpaid = this.invoices.filter(x => x.invoice_status?.invoice_status_id === 2);
         this.isloading = false;
       },
       error: (err) => {
@@ -76,7 +76,7 @@ export class AdminInvoicesComponent {
 
   searchPaid($event: any) {
     if ($event.target.value == "") {
-      this.paid = this.invoices.filter(x => x.invoice_status?.invoice_status_id === 2);
+      this.paid = this.invoices.filter(x => x.invoice_status?.invoice_status_id === 1);
     } else {
       this.paid = this.paid.filter(x =>
         (x.job_card?.job_card_id && x.job_card?.job_card_id == $event.target.value) ||
@@ -92,7 +92,7 @@ export class AdminInvoicesComponent {
 
   searchUnpaid($event: any) {
     if ($event.target.value == "") {
-     this.unpaid = this.invoices.filter(x => x.invoice_status?.invoice_status_id === 1);
+     this.unpaid = this.invoices.filter(x => x.invoice_status?.invoice_status_id === 2);
     } else {
       this.unpaid = this.unpaid.filter(x =>
         (x.job_card?.job_card_id && x.job_card?.job_card_id == $event.target.value) ||

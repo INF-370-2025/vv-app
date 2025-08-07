@@ -1,10 +1,10 @@
 // low-stock.component.ts
-import { Component, ViewChild, ElementRef } from '@angular/core';
+import { Component } from '@angular/core';
 import { ApiService } from '../../../services/api.service';
 import { NotificationService } from '../../../services/notification.service';
 import { AuthService } from '../../../services/auth.service';
-import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { AppModule } from '../../../app.module';
 
 @Component({
@@ -15,8 +15,6 @@ import { AppModule } from '../../../app.module';
   styleUrls: ['./low-stock.component.less']
 })
 export class LowStockComponent {
-  @ViewChild('reportContent') reportContent!: ElementRef;
-
   isLoading: boolean = false;
   isExporting: boolean = false;
   errorMessage: string | null = null;
@@ -76,97 +74,181 @@ export class LowStockComponent {
   }
 
 async exportToPDF() {
-    this.isExporting = true;
+  this.isExporting = true;
 
-    try {
-        const content = this.reportContent.nativeElement;
-        const clone = content.cloneNode(true);
+  try {
+    const doc = new jsPDF('p', 'mm', 'a4');
+    const margin = 15;
+    const pageWidth = doc.internal.pageSize.getWidth();
+    let yPos = margin;
 
-        // Create temporary container
-        const tempContainer = document.createElement('div');
-        tempContainer.style.position = 'fixed';
-        tempContainer.style.left = '-9999px';
-        tempContainer.appendChild(clone);
-        document.body.appendChild(tempContainer);
+    // Add logo
+    const logoData = await this.getLogoData('assets/images/logo.png');
+    if (logoData) {
+      const logoWidth = 30;
+      const logoHeight = (logoData.height * logoWidth) / logoData.width;
+      const logoX = (pageWidth - logoWidth) / 2;
 
-        // Remove export button from clone
-        const buttonContainer = clone.querySelector('.report-actions');
-        if (buttonContainer) {
-            buttonContainer.remove();
-        }
-
-        // Add logo to the clone
-        const logo = document.createElement('img');
-        logo.src = 'assets/images/logo.png';
-        logo.style.width = '150px';
-        logo.style.marginBottom = '20px';
-        clone.insertBefore(logo, clone.firstChild);
-
-        // Wait for elements to render
-        await new Promise(resolve => setTimeout(resolve, 500));
-
-        // PDF generation settings
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
-        const margin = 10;
-        const scale = 2; // Higher scale for better quality
-        const contentWidth = pageWidth - 2 * margin;
-
-        // Capture the entire content as one image
-        const canvas = await html2canvas(clone, {
-            scale: scale,
-            useCORS: true,
-            logging: false
-        });
-
-        document.body.removeChild(tempContainer);
-
-        // Calculate image dimensions
-        const imgData = canvas.toDataURL('image/png');
-        const imgWidth = canvas.width;
-        const imgHeight = canvas.height;
-
-        // Calculate aspect ratios
-        const imgAspectRatio = imgWidth / imgHeight;
-        const pageAspectRatio = pageWidth / pageHeight;
-
-        // Determine how to fit the content on the page
-        let renderWidth, renderHeight;
-
-        if (imgAspectRatio > pageAspectRatio) {
-            // Image is wider than page
-            renderWidth = pageWidth;
-            renderHeight = pageWidth / imgAspectRatio;
-        } else {
-            // Image is taller than page
-            renderHeight = pageHeight;
-            renderWidth = pageHeight * imgAspectRatio;
-        }
-
-        // Add image to PDF
-        pdf.addImage(
-            imgData,
-            'PNG',
-            margin,
-            margin,
-            renderWidth,
-            renderHeight
-        );
-
-        pdf.save(`low-stock-report-${new Date().toISOString().slice(0, 10)}.pdf`);
-
-    } catch (error) {
-        console.error('Export error:', error);
-        this.notification.showError('Export Failed', 'Could not generate PDF');
-    } finally {
-        this.isExporting = false;
+      doc.addImage(
+        logoData.dataUrl,
+        'PNG',
+        logoX,
+        yPos,
+        logoWidth,
+        logoHeight
+      );
+      yPos += logoHeight + 5;
     }
+
+    // Add report title
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(23, 114, 109);
+    doc.text('Low Stock Report', pageWidth / 2, yPos, { align: 'center' });
+    yPos += 8;
+
+    // Add subtitle
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(89, 89, 89);
+    doc.text('Items with stock levels below 50 units', pageWidth / 2, yPos, { align: 'center' });
+    yPos += 15;
+
+    // Add metadata
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Date Generated: ${this.currentDate.toLocaleDateString()}`, margin, yPos);
+    doc.text(`Generated By: ${this.generatedBy}`, pageWidth - margin, yPos, { align: 'right' });
+    yPos += 8;
+
+    doc.text(`Critical Items (<10): ${this.criticalItems}`, margin, yPos);
+    doc.text(`Warning Items (10-49): ${this.warningItems}`, pageWidth - margin, yPos, { align: 'right' });
+    yPos += 15;
+
+    // Prepare table data
+    const tableData = this.lowStockItems.map(item => [
+      item.name,
+      item.stock_level  // Keep as number
+    ]);
+
+    // Generate table
+    autoTable(doc, {
+      head: [['Item Name', 'Stock Level']],
+      body: tableData,
+      startY: yPos,
+      margin: { left: margin, right: margin },
+      styles: {
+        fontSize: 10,
+        cellPadding: 6,
+        valign: 'middle'
+      },
+      headStyles: {
+        fillColor: [41, 128, 185],
+        textColor: 255,
+        fontStyle: 'bold',
+        halign: 'center'
+      },
+      columnStyles: {
+        0: { cellWidth: 120, halign: 'left' },
+        1: { cellWidth: 30, halign: 'center' }
+      },
+      theme: 'grid',
+      didDrawCell: (data) => {
+        // Add colored blocks for stock level indicators
+        if (data.column.index === 1 && data.cell.raw !== null && data.cell.raw !== undefined) {
+          try {
+            // Handle both string and number types
+            const stockLevel = typeof data.cell.raw === 'number'
+              ? data.cell.raw
+              : parseInt(data.cell.raw.toString());
+
+            if (!isNaN(stockLevel)) {
+              let r = 0, g = 0, b = 0;
+
+              if (stockLevel < 10) {
+                r = 245; g = 34; b = 45;    // Red
+              } else {
+                r = 250; g = 173; b = 20;   // Orange
+              }
+
+              // Draw colored block filling the cell
+              doc.setFillColor(r, g, b);
+              doc.rect(
+                data.cell.x,
+                data.cell.y,
+                data.cell.width,
+                data.cell.height,
+                'F'
+              );
+
+              // Add text centered in the cell
+              doc.setFontSize(10);
+              doc.setTextColor(0, 0, 0);
+              doc.text(
+                stockLevel.toString(),
+                data.cell.x + data.cell.width / 2,
+                data.cell.y + data.cell.height / 2 + 2,
+                { align: 'center', baseline: 'middle' }
+              );
+
+              return true; // Skip default rendering
+            }
+          } catch (e) {
+            console.warn('Error drawing stock level cell', e);
+          }
+        }
+        return false;
+      }
+    });
+
+    // Add footer
+    const footerY = doc.internal.pageSize.getHeight() - 15;
+    doc.setFontSize(9);
+    doc.text('Vault Vision - Inventory Management System', pageWidth / 2, footerY, { align: 'center' });
+
+    // Save PDF
+    doc.save(`low-stock-report-${new Date().toISOString().slice(0, 10)}.pdf`);
+
+  } catch (error) {
+    console.error('Export error:', error);
+    this.notification.showError('Export Failed', 'Could not generate PDF');
+  } finally {
+    this.isExporting = false;
+  }
 }
 
+  private getLogoData(url: string): Promise<{ dataUrl: string; width: number; height: number } | null> {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.crossOrigin = 'Anonymous';
+      img.src = url;
+
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return resolve(null);
+
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+
+        resolve({
+          dataUrl: canvas.toDataURL('image/png'),
+          width: img.width,
+          height: img.height
+        });
+      };
+
+      img.onerror = () => {
+        console.warn('Could not load logo');
+        resolve(null);
+      };
+    });
+  }
+
   getStockLevelColor(stockLevel: number): string {
-    if (stockLevel < 10) return '#f5222d';   // Red for critical
-    if (stockLevel < 50) return '#faad14';   // Orange for low
-    return '#52c41a';                       // Green for normal
+    if (stockLevel < 10) return '#f5222d';
+    if (stockLevel < 50) return '#faad14';
+    return '#52c41a';
   }
 }
