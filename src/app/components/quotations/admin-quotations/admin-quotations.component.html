@@ -45,8 +45,11 @@
                                     {{quote.total_cost | currency:'R':'symbol' }}
                                 </td>
                                 <td>
-                                    <nz-avatar nzIcon="user" [nzSrc]="quote.job_request?.customer?.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ quote.job_request?.customer?.user?.name"></nz-avatar>
-                                    {{quote.job_request?.customer?.user?.name + ' | ' + quote.job_request?.customer?.user?.phone_number || '-'}}
+                                    <nz-avatar nzIcon="user"
+                                              [nzSrc]="quote.job_request?.customer?.user?.image ||
+                                                      'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+
+                                                      (quote.job_request?.customer?.user?.name || '')"></nz-avatar>
+                                    {{ quote.job_request?.customer?.user?.name || '' }} | {{ quote.job_request?.customer?.user?.phone_number || '-' }}
                                 </td>
                                 <td style="text-align: center;">
                                     <button nz-button nzType="primary" (click)="viewQuote(quote)">
@@ -108,8 +111,11 @@
                                     {{quote.total_cost | currency:'R':'symbol' }}
                                 </td>
                                 <td>
-                                    <nz-avatar nzIcon="user" [nzSrc]="quote.job_request?.customer?.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ quote.job_request?.customer?.user?.name"></nz-avatar>
-                                    {{quote.job_request?.customer?.user?.name + ' | ' + quote.job_request?.customer?.user?.phone_number || '-'}}
+                                    <nz-avatar nzIcon="user"
+                                              [nzSrc]="quote.job_request?.customer?.user?.image ||
+                                                      'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+
+                                                      (quote.job_request?.customer?.user?.name || '')"></nz-avatar>
+                                    {{ quote.job_request?.customer?.user?.name || '' }} | {{ quote.job_request?.customer?.user?.phone_number || '-' }}
                                 </td>
                                 <td style="text-align: center;">
                                     <button nz-button nzType="primary" (click)="viewQuote(quote)">
@@ -167,8 +173,11 @@
                                     {{quote.total_cost | currency:'R':'symbol' }}
                                 </td>
                                 <td>
-                                    <nz-avatar nzIcon="user" [nzSrc]="quote.job_request?.customer?.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ quote.job_request?.customer?.user?.name"></nz-avatar>
-                                    {{quote.job_request?.customer?.user?.name + ' | ' + quote.job_request?.customer?.user?.phone_number || '-'}}
+                                    <nz-avatar nzIcon="user"
+                                              [nzSrc]="quote.job_request?.customer?.user?.image ||
+                                                      'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+
+                                                      (quote.job_request?.customer?.user?.name || '')"></nz-avatar>
+                                    {{ quote.job_request?.customer?.user?.name || '' }} | {{ quote.job_request?.customer?.user?.phone_number || '-' }}
                                 </td>
                                 <td style="text-align: center;">
                                     <button nz-button nzType="primary" (click)="viewQuote(quote)">
@@ -212,11 +221,27 @@
 
                 <hr class="hr">
                 <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+                                  <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+                    <div nz-col nzSpan="24">
+                        <nz-form-item>
+                            <nz-form-control nzErrorTip="Status Required">
+                                <nz-form-label>Status</nz-form-label>
+                                <nz-select formControlName="quotation_status_id" nzPlaceHolder="Select status">
+                                    <nz-option
+                                        *ngFor="let status of quotationStatuses"
+                                        [nzValue]="status.quotation_status_id"
+                                        [nzLabel]="status.status">
+                                    </nz-option>
+                                </nz-select>
+                            </nz-form-control>
+                        </nz-form-item>
+                    </div>
+                </div>
                     <div nz-col nzSpan="12">
                         <nz-form-item>
                             <nz-form-control nzErrorTip="Deposit Required">
                                 <nz-form-label>Deposit Value</nz-form-label>
-                                <input nz-input formControlName="deposit" placeholder="50000.00">
+                                  <input nz-input formControlName="deposit" placeholder="50000.00" type="number">
                             </nz-form-control>
                         </nz-form-item>
                     </div>
@@ -224,7 +249,7 @@
                         <nz-form-item>
                             <nz-form-control nzErrorTip="Required">
                                 <nz-form-label>Total</nz-form-label>
-                                <input nz-input formControlName="total_cost" placeholder="50000.00">
+                                <input nz-input formControlName="total_cost" placeholder="50000.00" type="number">
                             </nz-form-control>
                         </nz-form-item>
                     </div>

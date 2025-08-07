@@ -307,6 +307,14 @@ export class ApiService {
     );
   }
 
+  create_invoice(payload: any) {
+    return this.http.post<any>(
+      environment.api_url +  this.invoices_ep + '/create_invoice',
+      payload
+    );
+  }
+
+
   get_unpaid_invoices() {
     return this.http.get<any>(
       environment.api_url + this.invoices_ep + '/unpaid_invoices');

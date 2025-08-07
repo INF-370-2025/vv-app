@@ -7,11 +7,12 @@ import { quotation } from '../../../models/quotation';
 import { ApiService } from '../../../services/api.service';
 import { NotificationService } from '../../../services/notification.service';
 import { SupabaseService } from '../../../services/supabase.service';
+import { CreateInvoiceComponent } from '../create-invoice/create-invoice.component';
 
 @Component({
   selector: 'app-admin-invoices',
   standalone: true,
-  imports: [AppModule],
+  imports: [AppModule, CreateInvoiceComponent],
   templateUrl: './admin-invoices.component.html',
   styleUrl: './admin-invoices.component.less'
 })
@@ -25,6 +26,8 @@ export class AdminInvoicesComponent {
   invoices: invoice[] = [];
   paid: invoice[] = [];
   unpaid: invoice[] = [];
+  showCreateForm = false;
+
 
   viewingInvoice:invoice = new invoice();
   showEditModal:boolean = false;
@@ -39,6 +42,15 @@ export class AdminInvoicesComponent {
 
   ngOnInit() {
     this.loadInvoices();
+  }
+
+
+  openCreateForm(): void {
+    this.showCreateForm = true;
+  }
+
+  handleFormClose(): void {
+    this.showCreateForm = false;
   }
 
   loadInvoices(): void {

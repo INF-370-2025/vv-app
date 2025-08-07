@@ -1,1 +1,103 @@
-<p>create-invoice works!</p>
+<!-- create-invoice.component.html -->
+<div class="form-container">
+  <h2>Create New Invoice</h2>
+
+  <form nz-form [formGroup]="invoiceForm" nzLayout="vertical">
+    <!-- Job Card Selection -->
+    <nz-form-item>
+      <nz-form-label nzRequired>Job Card</nz-form-label>
+      <nz-form-control>
+        <nz-select
+          formControlName="job_card_id"
+          nzShowSearch
+          nzPlaceHolder="Select a job card"
+          [nzLoading]="isLoadingJobCards"
+        >
+          <nz-option
+            *ngFor="let jobCard of jobCards"
+            [nzValue]="jobCard.job_card_id"
+            [nzLabel]="'Job Card #' + jobCard.job_card_id"
+          >
+            Job Card #{{ jobCard.job_card_id }}
+            <span *ngIf="jobCard.quotation?.job_request?.title">
+              - {{ jobCard.quotation.job_request.title }}
+            </span>
+          </nz-option>
+        </nz-select>
+        <div *ngIf="invoiceForm.get('job_card_id')?.dirty && invoiceForm.get('job_card_id')?.errors" class="error-message">
+          <span *ngIf="invoiceForm.get('job_card_id')?.hasError('required')">Job card selection is required</span>
+        </div>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- Invoice Details -->
+    <div nz-row [nzGutter]="16">
+      <div nz-col nzSpan="12">
+        <nz-form-item>
+          <nz-form-label nzRequired>Invoice Number</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="invoice_number" placeholder="INV-001">
+            <div *ngIf="invoiceForm.get('invoice_number')?.dirty && invoiceForm.get('invoice_number')?.errors" class="error-message">
+              <span *ngIf="invoiceForm.get('invoice_number')?.hasError('required')">Invoice number is required</span>
+            </div>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzSpan="12">
+        <nz-form-item>
+          <nz-form-label nzRequired>Total Amount (ZAR)</nz-form-label>
+          <nz-form-control>
+            <input
+              nz-input
+              type="number"
+              formControlName="total"
+              placeholder="0.00"
+              step="0.01"
+              min="0.01">
+            <div *ngIf="invoiceForm.get('total')?.dirty && invoiceForm.get('total')?.errors" class="error-message">
+              <span *ngIf="invoiceForm.get('total')?.hasError('required')">Total amount is required</span>
+              <span *ngIf="invoiceForm.get('total')?.hasError('min')">Must be at least R0.01</span>
+            </div>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <!-- PDF Upload -->
+    <nz-form-item>
+      <nz-form-label nzRequired>Invoice PDF</nz-form-label>
+      <nz-form-control>
+        <nz-upload
+          nzType="drag"
+          [nzMultiple]="false"
+          [nzBeforeUpload]="beforeUpload"
+          [(nzFileList)]="fileList"
+          nzAccept=".pdf"
+          nzMaxSize="5242880"
+          [nzShowUploadList]="true">
+          <p class="ant-upload-drag-icon">
+            <span nz-icon nzType="file-pdf"></span>
+          </p>
+          <p class="ant-upload-text">Click or drag PDF to this area to upload</p>
+          <p class="ant-upload-hint">Max file size: 5MB. Only PDF files accepted.</p>
+        </nz-upload>
+        <div *ngIf="!file && invoiceForm.touched" class="error-message">
+          PDF file is required
+        </div>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <button nz-button nzType="default" (click)="cancel()" [disabled]="isSubmitting">Cancel</button>
+      <button
+        nz-button
+        nzType="primary"
+        (click)="submitForm()"
+        [nzLoading]="isSubmitting"
+        [disabled]="invoiceForm.invalid || fileList.length === 0">
+        Create Invoice
+      </button>
+    </div>
+  </form>
+</div>

@@ -6,6 +6,8 @@ import { NotificationService } from '../../../services/notification.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { SupabaseService } from '../../../services/supabase.service';
 import { NzUploadFile, UploadFileStatus } from 'ng-zorro-antd/upload';
+import { customer } from '../../../models/user';
+import { user } from '../../../models/user';
 
 @Component({
   selector: 'app-admin-quotations',
@@ -25,6 +27,8 @@ export class AdminQuotationsComponent {
   accepted: quotation[] = [];
   pending: quotation[] = [];
   rejected: quotation[] = [];
+  quotationStatuses: any[] = [];
+
 
   viewingQuotation:quotation = new quotation();
   showEditModal:boolean = false;
@@ -32,6 +36,7 @@ export class AdminQuotationsComponent {
       quotation_number: new FormControl(null, [Validators.required]),
       deposit: new FormControl(null, [Validators.required]),
       total_cost: new FormControl(null, [Validators.required]),
+      quotation_status_id: new FormControl(null, [Validators.required])
   });
   file!: NzUploadFile | undefined;
   fileList :any[] = [];
@@ -40,6 +45,19 @@ export class AdminQuotationsComponent {
 
   ngOnInit(): void {
     this.loadQuotations();
+    this.loadQuotationStatuses();
+  }
+
+  loadQuotationStatuses(): void {
+    this.apiService.get_quotation_statuses().subscribe({
+        next: (response) => {
+            this.quotationStatuses = response;
+        },
+        error: (err) => {
+            console.error('Error loading quotation statuses:', err);
+            this.notification.showError('Error', 'Failed to load quotation statuses');
+        }
+    });
   }
 
   loadQuotations(): void {
@@ -127,6 +145,7 @@ export class AdminQuotationsComponent {
     this.editQuoteform.controls['quotation_number'].setValue(this.viewingQuotation.quotation_number);
     this.editQuoteform.controls['deposit'].setValue(this.viewingQuotation.deposit);
     this.editQuoteform.controls['total_cost'].setValue(this.viewingQuotation.total_cost);
+    this.editQuoteform.controls['quotation_status_id'].setValue(this.viewingQuotation.quotation_status?.quotation_status_id);
 
     this.fileList = [];
     if(this.viewingQuotation.quotation_url){
@@ -157,39 +176,60 @@ export class AdminQuotationsComponent {
     }
   }
 
-  async submitEditQuote() {
 
+  async submitEditQuote() {
     this.btnloading = true;
-    const file_url = null;
-    if(this.file) {
-      const file_url = await this.supabase.uploadFileToStorage(this.file!,"quotations");
+    let newFileUrl: string | null = null;
+
+    if (this.file) {
+        try {
+            newFileUrl = await this.supabase.uploadFileToStorage(this.file, "quotations");
+        } catch (error) {
+            this.notification.showError("File upload failed");
+            this.btnloading = false;
+            return;
+        }
     }
 
-    if(!this.editQuoteform.valid) {
+    if (!this.editQuoteform.valid) {
         Object.values(this.editQuoteform.controls).forEach(control => {
             if (control.invalid) {
-              control.markAsDirty();
-              control.updateValueAndValidity({ onlySelf: true });
+                control.markAsDirty();
+                control.updateValueAndValidity({ onlySelf: true });
             }
-      });
-    } else {
-        let quoteToInsert = new upsertQuotation();
-        quoteToInsert.deposit = this.editQuoteform.value.deposit;
-        quoteToInsert.total_cost = this.editQuoteform.value.total_cost;
-        quoteToInsert.quotation_url = file_url || this.viewingQuotation.quotation_url;
-        quoteToInsert.quotation_number = this.editQuoteform.value.quotation_number;
-        this.apiService.update_quotation(this.viewingQuotation.quotation_id,quoteToInsert).subscribe({
+        });
+        this.btnloading = false;
+        return;
+    }
+
+    let quoteToInsert = new upsertQuotation();
+    // Add these required fields
+    quoteToInsert.quotation_id = this.viewingQuotation.quotation_id;
+    quoteToInsert.job_request_id = this.viewingQuotation.job_request_id;
+
+    // Add form values
+    quoteToInsert.deposit = parseFloat(this.editQuoteform.value.deposit);
+    quoteToInsert.total_cost = parseFloat(this.editQuoteform.value.total_cost);
+    quoteToInsert.quotation_url = newFileUrl || this.viewingQuotation.quotation_url;
+    quoteToInsert.quotation_number = this.editQuoteform.value.quotation_number;
+    quoteToInsert.quotation_status_id = this.editQuoteform.value.quotation_status_id;
+
+    console.log('Updating with:', {
+        id: this.viewingQuotation.quotation_id,
+        data: quoteToInsert
+    });
+
+    this.apiService.update_quotation(this.viewingQuotation.quotation_id, quoteToInsert).subscribe({
         next: res => {
-          this.showEditModal = false;
-          this.loadQuotations();
-          this.btnloading = false;
+            this.showEditModal = false;
+            this.loadQuotations();
+            this.btnloading = false;
         },
         error: (error) => {
-          this.notification.showError("An Error Occoured while processing your request");
-          this.btnloading = false;
+            console.error('Update error:', error);
+            this.notification.showError("An Error Occurred while processing your request");
+            this.btnloading = false;
         }
-      });
-    }
-  }
-
+    });
+}
 }

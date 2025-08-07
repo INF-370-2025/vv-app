@@ -1,7 +1,19 @@
 <div nz-row [nzJustify]="'center'">
-    <div nz-col nzSpan="22">
-        <nz-tabset nzType="card" (nzSelectedIndexChange)="selectedTabChange($event)" [(nzSelectedIndex)]="selectedTabIndex">
+  <div nz-col [nzSpan]="!showCreateForm ? 22 : 18" style="text-align: start;">
+    <h1 *ngIf="!showCreateForm"><b>Invoices</b></h1>
+    <button *ngIf="showCreateForm" nz-button nzType="default" (click)="handleFormClose()">
+      <span nz-icon nzType="arrow-left" nzTheme="outline"></span>
+      Back to Invoices
+    </button>
+  </div>
+</div>
 
+<!-- Invoices List View -->
+<div nz-row [nzJustify]="'center'" *ngIf="!showCreateForm">
+  <div nz-col nzSpan="22">
+    <nz-tabset nzType="card" [nzTabBarExtraContent]="extraTemplateInvoices"
+               (nzSelectedIndexChange)="selectedTabChange($event)"
+               [(nzSelectedIndex)]="selectedTabIndex">
             <!-- Unpaid-->
             <nz-tab [nzTitle]="'Unpaid'">
                 <nz-spin [nzSpinning]="isloading">
@@ -133,8 +145,15 @@
             </nz-tab>
 
         </nz-tabset>
-    </div>
+            <ng-template #extraTemplateInvoices>
+      <button nz-button nzType="primary" (click)="openCreateForm()">
+        Create Invoice
+        <span nz-icon nzType="plus" nzTheme="outline"></span>
+      </button>
+    </ng-template>
+  </div>
 </div>
+
 
 
 <!--Modal-->
@@ -197,3 +216,17 @@
         </nz-spin>
     </ng-container>
 </nz-modal>
+
+<!-- Create Form Section - Should replace the list view when active -->
+<div nz-row [nzJustify]="'center'" *ngIf="showCreateForm">
+  <div nz-col [nzSpan]="18">
+    <nz-card>
+      <app-create-invoice
+        (closeForm)="handleFormClose()"
+        (invoiceCreated)="loadInvoices()">
+      </app-create-invoice>
+    </nz-card>
+  </div>
+</div>
+
+

@@ -1,3 +1,4 @@
+<!-- update-stock.component.html -->
 <div class="form-container">
   <h2>Update Stock Item</h2>
 
@@ -23,6 +24,20 @@
         </nz-form-control>
       </nz-form-item>
 
+      <!-- Price Field -->
+      <nz-form-item>
+        <nz-form-label nzRequired>Price (R)</nz-form-label>
+        <nz-form-control>
+          <nz-input-number
+            formControlName="price"
+            [nzMin]="0"
+            [nzStep]="0.01"
+            style="width: 100%"
+            placeholder="Enter price">
+          </nz-input-number>
+        </nz-form-control>
+      </nz-form-item>
+
       <!-- Material Field -->
       <nz-form-item>
         <nz-form-label>Material</nz-form-label>
@@ -31,13 +46,6 @@
                      nzPlaceHolder="Select material"
                      nzShowSearch
                      nzAllowClear>
-            <!-- Current Material (if exists) -->
-            <nz-option *ngIf="currentMaterial"
-                      [nzValue]="currentMaterial.material_id"
-                      [nzLabel]="currentMaterial.material_name">
-            </nz-option>
-
-            <!-- Other Materials -->
             <nz-option *ngFor="let material of materials"
                       [nzValue]="material.material_id"
                       [nzLabel]="material.material_name">
@@ -54,13 +62,6 @@
                      nzPlaceHolder="Select stock type"
                      nzShowSearch
                      nzAllowClear>
-            <!-- Current Stock Type (if exists) -->
-            <nz-option *ngIf="currentStockType"
-                      [nzValue]="currentStockType.stock_type_id"
-                      [nzLabel]="currentStockType.type_name">
-            </nz-option>
-
-            <!-- Other Stock Types -->
             <nz-option *ngFor="let type of stockTypes"
                       [nzValue]="type.stock_type_id"
                       [nzLabel]="type.type_name">

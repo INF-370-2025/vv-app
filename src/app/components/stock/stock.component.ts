@@ -1,3 +1,4 @@
+import { StockDetails } from './../../models/stock';
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { AppModule } from '../../app.module';
@@ -8,7 +9,7 @@ import { CreateStockComponent } from './create-stock/create-stock.component';
 import { UpdateStockComponent } from './update-stock/update-stock.component';
 import { material } from '../../models/stock';
 import { stock_type } from '../../models/stock';
-import { saveAs } from 'file-saver'; // For file download
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-stock',
@@ -31,6 +32,7 @@ export class StockComponent implements OnInit {
   materials: material [] = [];
   stockTypes: stock_type [] = [];
   importResult: any = null;
+  importing = false;
 
   constructor(
     private apiService: ApiService,
@@ -123,25 +125,32 @@ export class StockComponent implements OnInit {
     this.showUpdateView = false;
   }
 
-  handleStockUpdate(updatedStock: stock): void {
+  handleStockUpdate(updatedStock: any): void {
     // Update the local stock array
     const index = this.allStock.findIndex(s => s.stock_id === updatedStock.stock_id);
     if (index !== -1) {
-      this.allStock[index] = updatedStock;
+      // Update both root properties and nested details
+      this.allStock[index] = {
+        ...this.allStock[index],
+        ...updatedStock,
+        material: this.allStock[index].material,
+        stock_type: this.allStock[index].stock_type
+      };
     }
 
-    this.lowStock = this.allStock.filter(item => item.stock_level < 50);
-    this.mediumStock = this.allStock.filter(item => item.stock_level >= 50 && item.stock_level < 250);
-    this.highStock = this.allStock.filter(item => item.stock_level >= 250);
-
+    // Re-categorize stock
+    this.categorizeStock();
     this.showUpdateView = false;
   }
 
   private categorizeStock(): void {
     this.lowStock = this.allStock.filter(item => item.stock_level < 50);
-    this.mediumStock = this.allStock.filter(item => item.stock_level >= 50 && item.stock_level < 250);
+    this.mediumStock = this.allStock.filter(item =>
+      item.stock_level >= 50 && item.stock_level < 250
+    );
     this.highStock = this.allStock.filter(item => item.stock_level >= 250);
   }
+
 
   openUpdateView(item: stock): void {
     this.stockToUpdate = item;
@@ -212,8 +221,14 @@ export class StockComponent implements OnInit {
       return;
     }
 
+    // Reset previous result and start loading
+    this.importResult = null;
+    this.importing = true;
+
     this.apiService.import_material_excel(file).subscribe({
       next: (response) => {
+        this.importing = false;
+
         if (response.error) {
           this.importResult = {
             success: false,
@@ -238,6 +253,7 @@ export class StockComponent implements OnInit {
         }
       },
       error: (err) => {
+        this.importing = false;
         console.error('Import failed:', err);
         this.importResult = {
           success: false,
@@ -247,5 +263,10 @@ export class StockComponent implements OnInit {
         this.notification.showError('Failed to import materials. Please try again.', 'Import Failed');
       }
     });
+  }
+
+  // Close import alert
+  closeImportAlert(): void {
+    this.importResult = null;
   }
 }

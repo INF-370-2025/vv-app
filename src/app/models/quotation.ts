@@ -27,6 +27,7 @@ export class upsertQuotation{
     total_cost!: number;
     quotation_url!:string;
     quotation_number!:string;
+  quotation_status_id!: number;
 }
 
 

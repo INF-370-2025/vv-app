@@ -20,6 +20,8 @@
       Export Materials to Excel
     </button>
 
+
+
     <!-- Material Import Button -->
     <button nz-button
             nzType="default"
@@ -37,17 +39,21 @@
            hidden>
   </div>
 </div>
+    <div nz-row *ngIf="importResult">
+      <div nz-col nzSpan="24">
+        <nz-alert [nzType]="importResult.success ? 'success' : 'error'"
+                  [nzMessage]="importResult.message"
+                  [nzDescription]="importResult.description"
+                  nzShowIcon
+                  [nzCloseable]="true"
+                  (nzOnClose)="closeImportAlert()">
+        </nz-alert>
+      </div>
+    </div>
 
-<!-- Import status display -->
-<div nz-row *ngIf="importResult">
-  <div nz-col nzSpan="24">
-    <nz-alert [nzType]="importResult.success ? 'success' : 'error'"
-              [nzMessage]="importResult.message"
-              [nzDescription]="importResult.description"
-              nzShowIcon>
-    </nz-alert>
-  </div>
-</div>
+
+
+
 <div nz-row [nzJustify]="'center'" *ngIf="!showStockView && !showCreateView && !showUpdateView">
   <div nz-col nzSpan="22">
     <nz-tabset nzType="card">
@@ -100,7 +106,7 @@
                   </div>
                 </td>
                 <td>
-                  <div style="display: flex; gap: 8px;">
+                  <div style="display; flex; gap: 8px;">
                     <button nz-button nzType="primary" (click)="viewStock(item)">
                       <i nz-icon nzType="eye" nzTheme="outline"></i>
                     </button>
@@ -156,7 +162,7 @@
                   <nz-tag [nzColor]="'orange'">{{item.stock_level}}</nz-tag>
                 </td>
                 <td>
-                  <div style="display: flex; gap: 8px;">
+                  <div style="display; flex; gap: 8px;">
                     <button nz-button nzType="primary" (click)="viewStock(item)">
                       <i nz-icon nzType="eye" nzTheme="outline"></i>
                     </button>
@@ -212,7 +218,7 @@
                   <nz-tag [nzColor]="'green'">{{item.stock_level}}</nz-tag>
                 </td>
                 <td>
-                  <div style="display: flex; gap: 8px;">
+                  <div style="display; flex; gap: 8px;">
                     <button nz-button nzType="primary" (click)="viewStock(item)">
                       <i nz-icon nzType="eye" nzTheme="outline"></i>
                     </button>

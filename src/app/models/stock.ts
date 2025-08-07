@@ -12,6 +12,7 @@ export class stock {
   name!: string;
   description!: string;
   stock_level!: number;
+  price!: number;
 }
 
 export class material {
@@ -31,4 +32,5 @@ export interface CreateStock {
   material_id: number;
   stock_type_id: number;
   stock_level: number;
+  price: number;
 }
