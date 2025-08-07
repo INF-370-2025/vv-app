@@ -463,6 +463,25 @@ export class ApiService {
       );
     }
 
+    export_material_to_excel(): Observable<Blob> {
+      return this.http.get(
+        environment.api_url + this.material_ep + `/export_material_excel`,
+        { responseType: 'blob' }
+      );
+    }
+
+  // Material Import
+    import_material_excel(file: File): Observable<any> {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      return this.http.post(
+        environment.api_url + this.material_ep + `/import_material_excel`,
+        formData,
+        { reportProgress: true }
+      );
+    }
+
   //#endregion
 
   //#region Delivery Notes

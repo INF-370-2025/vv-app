@@ -10,8 +10,6 @@ import { material } from '../../models/stock';
 import { stock_type } from '../../models/stock';
 import { saveAs } from 'file-saver'; // For file download
 
-
-
 @Component({
   selector: 'app-stock',
   standalone: true,
@@ -32,7 +30,7 @@ export class StockComponent implements OnInit {
   stockToUpdate?: stock;
   materials: material [] = [];
   stockTypes: stock_type [] = [];
-
+  importResult: any = null;
 
   constructor(
     private apiService: ApiService,
@@ -125,7 +123,6 @@ export class StockComponent implements OnInit {
     this.showUpdateView = false;
   }
 
-
   handleStockUpdate(updatedStock: stock): void {
     // Update the local stock array
     const index = this.allStock.findIndex(s => s.stock_id === updatedStock.stock_id);
@@ -141,17 +138,17 @@ export class StockComponent implements OnInit {
   }
 
   private categorizeStock(): void {
-  this.lowStock = this.allStock.filter(item => item.stock_level < 50);
-  this.mediumStock = this.allStock.filter(item => item.stock_level >= 50 && item.stock_level < 250);
-  this.highStock = this.allStock.filter(item => item.stock_level >= 250);
-}
+    this.lowStock = this.allStock.filter(item => item.stock_level < 50);
+    this.mediumStock = this.allStock.filter(item => item.stock_level >= 50 && item.stock_level < 250);
+    this.highStock = this.allStock.filter(item => item.stock_level >= 250);
+  }
 
-openUpdateView(item: stock): void {
-  this.stockToUpdate = item;
-  this.showUpdateView = true;
-  this.showStockView = false;
-  this.showCreateView = false;
-}
+  openUpdateView(item: stock): void {
+    this.stockToUpdate = item;
+    this.showUpdateView = true;
+    this.showStockView = false;
+    this.showCreateView = false;
+  }
 
   handleFormClose(): void {
     this.showCreateView = false;
@@ -182,25 +179,73 @@ openUpdateView(item: stock): void {
     });
   }
 
-  // New export function
-  exportStockToExcel(): void {
-    this.apiService.export_stock_to_excel().subscribe({
+  // Material Export Function
+  exportMaterialToExcel(): void {
+    this.apiService.export_material_to_excel().subscribe({
       next: (excelBlob: Blob) => {
-        // Generate filename with current date
         const date = new Date().toISOString().slice(0, 10);
-        const filename = `stock_export_${date}.xlsx`;
-
-        // Save the file
+        const filename = `materials_export_${date}.xlsx`;
         saveAs(excelBlob, filename);
-
-        // Show success notification
-        this.notification.showSuccess('Stock data has been exported to Excel', 'Export Successful');
+        this.notification.showSuccess('Materials exported to Excel', 'Export Successful');
       },
       error: (err) => {
-        console.error('Export failed:', err);
-        this.notification.showError('Failed to export stock data. Please try again.', 'Export Failed');
+        console.error('Material export failed:', err);
+        this.notification.showError('Failed to export materials. Please try again.', 'Export Failed');
+      }
+    });
+  }
+
+  // Material Import Function
+  importMaterialExcel(event: any): void {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Reset file input
+    event.target.value = '';
+
+    // Validate file type
+    const validTypes = ['.xlsx', '.xls'];
+    const fileExt = file.name.toLowerCase().slice(file.name.lastIndexOf('.'));
+
+    if (!validTypes.includes(fileExt)) {
+      this.notification.showError('Invalid file type. Only Excel files are accepted.', 'Import Failed');
+      return;
+    }
+
+    this.apiService.import_material_excel(file).subscribe({
+      next: (response) => {
+        if (response.error) {
+          this.importResult = {
+            success: false,
+            message: 'Import Failed',
+            description: response.error
+          };
+          this.notification.showError(response.error, 'Import Failed');
+        } else {
+          this.importResult = {
+            success: true,
+            message: 'Import Successful',
+            description: `Added ${response.new_materials} new materials, skipped ${response.duplicates} duplicates`
+          };
+
+          this.notification.showSuccess(
+            `Added ${response.new_materials} new materials, skipped ${response.duplicates} duplicates`,
+            'Import Successful'
+          );
+
+          // Refresh materials list if needed
+          this.loadMaterials();
+        }
+      },
+      error: (err) => {
+        console.error('Import failed:', err);
+        this.importResult = {
+          success: false,
+          message: 'Import Failed',
+          description: err.error?.error || 'Server error occurred'
+        };
+        this.notification.showError('Failed to import materials. Please try again.', 'Import Failed');
       }
     });
   }
 }
-

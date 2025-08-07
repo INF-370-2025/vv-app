@@ -9,15 +9,43 @@
 </div>
 
 <!-- Main Stock View -->
- <div nz-row nzJustify="end" class="mb-3">
+<div nz-row nzJustify="end" class="mb-3">
   <div nz-col>
+    <!-- Material Export Button -->
+    <button nz-button
+            nzType="primary"
+            (click)="exportMaterialToExcel()"
+            style="margin-right: 8px;">
+      <span nz-icon nzType="export" nzTheme="outline"></span>
+      Export Materials to Excel
+    </button>
+
+    <!-- Material Import Button -->
     <button nz-button
             nzType="default"
-            (click)="exportStockToExcel()"
+            (click)="fileInput.click()"
             style="margin-right: 8px;">
-      <span nz-icon nzType="file-excel" nzTheme="outline"></span>
-      Export All Stock to Excel
+      <span nz-icon nzType="import" nzTheme="outline"></span>
+      Import Materials from Excel
     </button>
+
+    <!-- Hidden file input -->
+    <input #fileInput
+           type="file"
+           accept=".xlsx, .xls"
+           (change)="importMaterialExcel($event)"
+           hidden>
+  </div>
+</div>
+
+<!-- Import status display -->
+<div nz-row *ngIf="importResult">
+  <div nz-col nzSpan="24">
+    <nz-alert [nzType]="importResult.success ? 'success' : 'error'"
+              [nzMessage]="importResult.message"
+              [nzDescription]="importResult.description"
+              nzShowIcon>
+    </nz-alert>
   </div>
 </div>
 <div nz-row [nzJustify]="'center'" *ngIf="!showStockView && !showCreateView && !showUpdateView">
