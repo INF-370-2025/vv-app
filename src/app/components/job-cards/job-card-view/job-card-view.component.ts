@@ -24,6 +24,7 @@ export class JobCardViewComponent implements OnInit {
   showMaterialModal: boolean = false;
   artisans: employee[] = [];
   showArtisanModal: boolean = false;
+  completedAt: Date | null = null;
 
   file!: NzUploadFile | undefined;
   fileList: any[] = [];
@@ -39,8 +40,23 @@ export class JobCardViewComponent implements OnInit {
   ngOnInit(): void {
     this.completionDate = this.job_card.quotation?.job_request?.finish_date!;
     this.loadMaterials();
+    this.loadJobCardDetails();
   }
 
+  loadJobCardDetails(): void {
+  if (this.job_card.job_card_id) {
+    this.apiService.get_job_update_card(this.job_card.job_card_id).subscribe({
+      next: (res) => {
+        if (res.completed_at) {
+          this.completedAt = new Date(res.completed_at);
+        }
+      },
+      error: (err) => {
+        this.notification.showError('Error', 'Failed to load job card details');
+      }
+    });
+  }
+}
   loadMaterials() {
     if (this.job_card.job_card_id) {
       this.apiService.get_job_card_with_materials(this.job_card.job_card_id)

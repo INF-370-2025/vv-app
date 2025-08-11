@@ -6,7 +6,6 @@ import { NotificationService } from '../../../services/notification.service';
 import { AppModule } from '../../../app.module';
 import { NzSelectOptionInterface } from 'ng-zorro-antd/select';
 
-
 @Component({
   selector: 'app-update-job-card',
   standalone: true,
@@ -48,52 +47,62 @@ export class UpdateJobCardComponent implements OnInit {
     });
   }
 
-ngOnInit(): void {
-  console.log('Job card data received:', this.jobCardData);
-  this.populateForm();
-
-  // Debug: Log form values after population
-  setTimeout(() => {
-    console.log('Form values after populate:', this.jobCardForm.value);
-    console.log('Completed_at control value:', this.jobCardForm.get('completed_at')?.value);
-  }, 100);
-
-  this.loadMaterials();
-  this.loadArtisans();
-  this.loadAllMaterials();
-  this.loadAllArtisans();
-}
-
-futureDateValidator(control: AbstractControl): { [key: string]: any } | null {
-  if (!control.value) return null;
-
-  // Handle both Date objects and string inputs
-  const dateValue = control.value instanceof Date ?
-                    control.value :
-                    new Date(control.value);
-
-  // If it's an invalid date, return error
-  if (isNaN(dateValue.getTime())) {
-    return { invalidDate: true };
+  ngOnInit(): void {
+    this.populateForm();
+    this.loadJobCardDetails();
+    this.loadMaterials();
+    this.loadArtisans();
+    this.loadAllMaterials();
+    this.loadAllArtisans();
   }
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  // Compare just the date portion
-  const selectedDate = new Date(
-    dateValue.getFullYear(),
-    dateValue.getMonth(),
-    dateValue.getDate()
-  );
-
-  if (selectedDate < today) {
-    return { pastDate: true };
+  loadJobCardDetails(): void {
+    if (this.jobCardData?.job_card_id) {
+      this.apiService.get_job_update_card(this.jobCardData.job_card_id).subscribe({
+        next: (res) => {
+          if (res.completed_at) {
+            const completedAt = new Date(res.completed_at);
+            if (!isNaN(completedAt.getTime())) {
+              this.jobCardForm.patchValue({
+                completed_at: completedAt
+              });
+            }
+          }
+        },
+        error: (err) => {
+          this.notification.showError('Error', 'Failed to load job card details');
+        }
+      });
+    }
   }
 
-  return null;
-}
-  // Add these methods to your component class
+  futureDateValidator(control: AbstractControl): { [key: string]: any } | null {
+    if (!control.value) return null;
+
+    const dateValue = control.value instanceof Date ?
+                      control.value :
+                      new Date(control.value);
+
+    if (isNaN(dateValue.getTime())) {
+      return { invalidDate: true };
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const selectedDate = new Date(
+      dateValue.getFullYear(),
+      dateValue.getMonth(),
+      dateValue.getDate()
+    );
+
+    if (selectedDate < today) {
+      return { pastDate: true };
+    }
+
+    return null;
+  }
+
   compareMaterials(m1: any, m2: any): boolean {
     return m1 && m2 ? m1.material_id === m2.material_id : m1 === m2;
   }
@@ -102,7 +111,7 @@ futureDateValidator(control: AbstractControl): { [key: string]: any } | null {
     return a1 && a2 ? a1.employee_id === a2.employee_id : a1 === a2;
   }
 
-    addSelectedMaterial(): void {
+  addSelectedMaterial(): void {
     if (this.selectedMaterial && !this.materials.some(m => m.material_id === this.selectedMaterial.material_id)) {
       this.materials.push(this.selectedMaterial);
       this.selectedMaterial = null;
@@ -116,33 +125,26 @@ futureDateValidator(control: AbstractControl): { [key: string]: any } | null {
     }
   }
 
-populateForm(): void {
-  if (this.jobCardData) {
-    // Handle completion date conversion
-    let completedAt = null;
-
-    // Check if we have a valid date string
-    if (this.jobCardData.completed_at && typeof this.jobCardData.completed_at === 'string') {
-      // Parse the date string to a Date object
-      completedAt = new Date(this.jobCardData.completed_at);
-
-      // Validate the parsed date
-      if (isNaN(completedAt.getTime())) {
-        console.error('Invalid date format:', this.jobCardData.completed_at);
-        completedAt = null;
+  populateForm(): void {
+    if (this.jobCardData) {
+      let completedAt = null;
+      if (this.jobCardData.completed_at && typeof this.jobCardData.completed_at === 'string') {
+        completedAt = new Date(this.jobCardData.completed_at);
+        if (isNaN(completedAt.getTime())) {
+          completedAt = null;
+        }
       }
-    }
 
-    this.jobCardForm.patchValue({
-      job_card_id: this.jobCardData.job_card_id,
-      pattern_id: this.jobCardData.pattern_id,
-      job_card_status_id: this.jobCardData.job_card_status_id,
-      quotation_id: this.jobCardData.quotation_id,
-      special_instructions: this.jobCardData.special_instructions || '',
-      completed_at: completedAt
-    });
+      this.jobCardForm.patchValue({
+        job_card_id: this.jobCardData.job_card_id,
+        pattern_id: this.jobCardData.pattern_id,
+        job_card_status_id: this.jobCardData.job_card_status_id,
+        quotation_id: this.jobCardData.quotation_id,
+        special_instructions: this.jobCardData.special_instructions || '',
+        completed_at: completedAt
+      });
+    }
   }
-}
 
   loadMaterials(): void {
     if (this.jobCardData?.job_card_id) {
@@ -151,13 +153,12 @@ populateForm(): void {
           next: (res) => {
             this.materials = res.materials || [];
           },
-          error: (err) => console.error('Error loading materials:', err)
+          error: (err) => this.notification.showError('Error', 'Failed to load materials')
         });
     }
   }
 
   loadArtisans(): void {
-    // Load artisans from your existing implementation
     if (this.jobCardData?.job_card_artisans) {
       this.artisans = this.jobCardData.job_card_artisans.map(a => ({
         employee_id: a.employee.employee_id,
@@ -167,29 +168,23 @@ populateForm(): void {
     }
   }
 
-loadAllMaterials(): void {
-  this.apiService.get_materials().subscribe({
-    next: (res) => {
-      console.log('Materials response:', res);
-      // Assign directly without mapping
-      this.allMaterials = res;
-    },
-    error: (err) => console.error('Error loading materials:', err)
-  });
-}
+  loadAllMaterials(): void {
+    this.apiService.get_materials().subscribe({
+      next: (res) => {
+        this.allMaterials = res;
+      },
+      error: (err) => this.notification.showError('Error', 'Failed to load materials list')
+    });
+  }
 
-loadAllArtisans(): void {
-  this.apiService.get_artisans().subscribe({
-    next: (res) => {
-      console.log('Artisans response:', res);
-      // Assign directly without mapping
-      this.allArtisans = res;
-    },
-    error: (err) => console.error('Error loading artisans:', err)
-  });
-}
-
-
+  loadAllArtisans(): void {
+    this.apiService.get_artisans().subscribe({
+      next: (res) => {
+        this.allArtisans = res;
+      },
+      error: (err) => this.notification.showError('Error', 'Failed to load artisans list')
+    });
+  }
 
   openMaterialModal(): void {
     this.showMaterialModal = true;
@@ -246,7 +241,6 @@ loadAllArtisans(): void {
         artisans: this.artisans.map(a => a.employee_id)
       };
 
-      // Format completion date if exists
       if (payload.completed_at) {
         payload.completed_at = new Date(payload.completed_at).toISOString().split('T')[0];
       }
@@ -258,7 +252,6 @@ loadAllArtisans(): void {
           this.isSubmitting = false;
         },
         error: (err) => {
-          console.error('Error updating job card:', err);
           this.notification.showError('Error', 'Failed to update job card');
           this.isSubmitting = false;
         }

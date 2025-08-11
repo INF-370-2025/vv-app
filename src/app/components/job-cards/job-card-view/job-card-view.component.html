@@ -10,10 +10,10 @@
             <h1>
                 <b>JOB Card</b>
             </h1>
-            <h3 style="color:gray;">
+            <!-- <h3 style="color:gray;">
                 Expected Completion Date :
                 <nz-date-picker style="display: inline-block;" [(ngModel)]="completionDate" nzFormat="yyyy-MM-dd" placeholder="Select Date"></nz-date-picker>
-            </h3>
+            </h3> -->
         </div>
         <div nz-col nzSpan="8" style="text-align: end;">
             <h1><b>Status </b><br>
@@ -83,7 +83,7 @@
                 </nz-list-item>
             </nz-list>
         </div>
-        <div nz-col nzSpan="8">
+        <!-- <div nz-col nzSpan="8">
             <nz-list nzBordered>
                 <nz-list-header class="list-header">
                     <b>Progress Content</b>
@@ -97,7 +97,7 @@
                     </nz-upload>
                 </nz-list-item>
             </nz-list>
-        </div>
+        </div> -->
     </div>
 
     <br>
@@ -112,12 +112,13 @@
             </p>
         </div>
         <div nz-col nzSpan="8" style="text-align: center;">
-            <p>
-                <b>Completed Date </b> <br> {{ (job_card.completed_at | date:'medium') || 'N/A'}}
-            </p>
+            <h3 style="color:gray;">
+                <div>Expected Completion: {{ completionDate | date:'yyyy-MM-dd' }}</div>
+                <div>Actual Completion: {{ (completedAt | date:'yyyy-MM-dd') || 'Not completed' }}</div>
+            </h3>
         </div>
         <div nz-col nzSpan="8" style="text-align: end;">
-            <button nz-button nzType="primary" nzShape="round" (click)="openMarkCompleted()" *ngIf="job_card.job_card_status_id == 1 || job_card.job_card_status_id == 5">
+          <button nz-button nzType="primary" nzShape="round" (click)="openMarkCompleted()" *ngIf="job_card.job_card_status_id == 1">
               <span nz-icon nzType="check" nzTheme="outline" ></span>
                 Mark Completed
             </button>

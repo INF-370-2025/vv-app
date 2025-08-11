@@ -221,10 +221,16 @@ export class ApiService {
     );
   }
 
-  create_job_card(job_card: any) {
+  get_job_update_card(job_card_id: number) {
+    return this.http.get<any>(
+      environment.api_url +  this.job_cards_ep + `/get_job_card_update/${job_card_id}`
+    );
+  }
+
+  create_job_card(jobCardData: any) {
     return this.http.post<any>(
       environment.api_url +  this.job_cards_ep + '/create_job_card',
-      job_card
+      jobCardData
     );
   }
 
@@ -494,6 +500,12 @@ export class ApiService {
         pattern
       );
     }
+
+    delete_pattern(pattern_id: number) {
+    return this.http.delete<any>(
+      environment.api_url + this.pattern_ep  + `/delete_delivery_note/${pattern_id}`
+    );
+  }
 
   //#endregion
 

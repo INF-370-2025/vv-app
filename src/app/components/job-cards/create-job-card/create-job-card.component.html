@@ -2,58 +2,179 @@
   <h2>Create New Job Card</h2>
 
   <form nz-form [formGroup]="jobCardForm" nzLayout="vertical">
-    <!-- Pattern Dropdown (Optional) -->
-    <nz-form-item>
-      <nz-form-label>Pattern</nz-form-label>
-      <nz-form-control>
-        <nz-select formControlName="pattern_id"
-                   nzPlaceHolder="Select pattern (optional)"
-                   nzShowSearch
-                   nzAllowClear>
-          <nz-option *ngFor="let pattern of patterns"
-                    [nzValue]="pattern.pattern_id"
-                    [nzLabel]="pattern.design">
-          </nz-option>
-        </nz-select>
-      </nz-form-control>
-    </nz-form-item>
+    <nz-row [nzGutter]="24">
+      <!-- Left Column - Job Card Details -->
+      <nz-col nzSpan="12">
+        <!-- Pattern Dropdown -->
+        <nz-form-item>
+          <nz-form-label nzRequired>Pattern</nz-form-label>
+          <nz-form-control>
+            <nz-select formControlName="pattern_id" nzPlaceHolder="Select pattern">
+              <nz-option *ngFor="let pattern of patterns"
+                [nzValue]="pattern.pattern_id"
+                [nzLabel]="pattern.design">
+              </nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
 
-    <!-- Quotation Dropdown (Optional) -->
-    <nz-form-item>
-      <nz-form-label>Quotation</nz-form-label>
-      <nz-form-control>
-        <nz-select formControlName="quotation_id"
-                   nzPlaceHolder="Select quotation (optional)"
-                   nzShowSearch
-                   nzAllowClear>
-          <nz-option *ngFor="let quotation of quotations"
-                    [nzValue]="quotation.quotation_id"
-                    [nzLabel]="quotation.quotation_number">
-          </nz-option>
-        </nz-select>
-      </nz-form-control>
-    </nz-form-item>
+        <!-- Quotation Dropdown -->
+        <nz-form-item>
+          <nz-form-label nzRequired>Quotation</nz-form-label>
+          <nz-form-control>
+            <nz-select formControlName="quotation_id" nzPlaceHolder="Select quotation">
+              <nz-option *ngFor="let quotation of quotations"
+                [nzValue]="quotation.quotation_id"
+                [nzLabel]="quotation.quotation_number">
+              </nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
 
-    <!-- Special Instructions -->
+        <!-- Job Card Status -->
+        <nz-form-item>
+          <nz-form-label nzRequired>Status</nz-form-label>
+          <nz-form-control>
+            <nz-select formControlName="job_card_status_id" nzPlaceHolder="Select status">
+              <nz-option *ngFor="let status of jobCardStatuses"
+                [nzValue]="status.job_card_status_id"
+                [nzLabel]="status.status">
+              </nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Special Instructions -->
+        <nz-form-item>
+          <nz-form-label>Special Instructions</nz-form-label>
+          <nz-form-control>
+            <textarea nz-input formControlName="special_instructions"
+              placeholder="Any special instructions" rows="3"></textarea>
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Completion Date -->
+<!-- Completion Date -->
     <nz-form-item>
-      <nz-form-label>Special Instructions</nz-form-label>
-      <nz-form-control>
-        <textarea nz-input
-                  formControlName="special_instructions"
-                  placeholder="Enter any special instructions"
-                  rows="3"></textarea>
+      <nz-form-label>Completion Date</nz-form-label>
+      <nz-form-control [nzErrorTip]="dateErrorTpl">
+        <nz-date-picker
+          formControlName="completed_at"
+          nzPlaceHolder="Select completion date"
+          style="width: 100%"
+          [nzDisabled]="jobCardForm.value.job_card_status_id !== 2">
+        </nz-date-picker>
+        <ng-template #dateErrorTpl let-control>
+          <ng-container *ngIf="control.hasError('pastDate')">
+            Completion date cannot be in the past
+          </ng-container>
+          <ng-container *ngIf="control.hasError('invalidDate')">
+            Invalid date format
+          </ng-container>
+        </ng-template>
       </nz-form-control>
     </nz-form-item>
+      </nz-col>
+
+      <!-- Right Column - Materials and Artisans -->
+      <nz-col nzSpan="12">
+        <!-- Materials Section -->
+        <nz-form-item>
+          <nz-form-label>Materials</nz-form-label>
+          <nz-form-control>
+            <div class="selection-container">
+              <nz-select
+                nzShowSearch
+                nzPlaceHolder="Select material to add"
+                [(ngModel)]="selectedMaterial"
+                [ngModelOptions]="{standalone: true}"
+                style="width: 100%">
+                <nz-option
+                  *ngFor="let material of allMaterials"
+                  [nzValue]="material"
+                  [nzLabel]="material.material_name">
+                </nz-option>
+              </nz-select>
+              <button
+                nz-button
+                nzType="primary"
+                nzSize="small"
+                [disabled]="!selectedMaterial"
+                (click)="addMaterial()">
+                <span nz-icon nzType="plus"></span> Add
+              </button>
+            </div>
+
+            <nz-list nzBordered class="assigned-list">
+              <nz-list-header>
+                <b>Assigned Materials</b>
+              </nz-list-header>
+              <nz-list-item *ngFor="let material of materials">
+                {{ material.material_name }}
+                <button nz-button nzType="link" nzDanger (click)="removeMaterial(material.material_id)">
+                  <span nz-icon nzType="delete"></span>
+                </button>
+              </nz-list-item>
+              <nz-list-item *ngIf="materials.length === 0">
+                <span>No materials assigned</span>
+              </nz-list-item>
+            </nz-list>
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Artisans Section -->
+        <nz-form-item>
+          <nz-form-label>Artisans</nz-form-label>
+          <nz-form-control>
+            <div class="selection-container">
+              <nz-select
+                nzShowSearch
+                nzPlaceHolder="Select artisan to add"
+                [(ngModel)]="selectedArtisan"
+                [ngModelOptions]="{standalone: true}"
+                style="width: 100%">
+                <nz-option
+                  *ngFor="let artisan of allArtisans"
+                  [nzValue]="artisan"
+                  [nzLabel]="artisan.name + ' ' + artisan.surname">
+                </nz-option>
+              </nz-select>
+              <button
+                nz-button
+                nzType="primary"
+                nzSize="small"
+                [disabled]="!selectedArtisan"
+                (click)="addArtisan()">
+                <span nz-icon nzType="plus"></span> Add
+              </button>
+            </div>
+
+            <nz-list nzBordered class="assigned-list">
+              <nz-list-header>
+                <b>Assigned Artisans</b>
+              </nz-list-header>
+              <nz-list-item *ngFor="let artisan of artisans">
+                {{ artisan.name }} {{ artisan.surname }}
+                <button nz-button nzType="link" nzDanger (click)="removeArtisan(artisan.employee_id)">
+                  <span nz-icon nzType="delete"></span>
+                </button>
+              </nz-list-item>
+              <nz-list-item *ngIf="artisans.length === 0">
+                <span>No artisans assigned</span>
+              </nz-list-item>
+            </nz-list>
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+    </nz-row>
 
     <!-- Form Actions -->
     <div class="form-actions">
       <button nz-button nzType="default" (click)="cancel()">Cancel</button>
-      <button
-        nz-button
-        nzType="primary"
-        (click)="submitForm()"
-        [nzLoading]="isSubmitting">
-        Create
+      <button nz-button nzType="primary" (click)="submitForm()"
+        [nzLoading]="isSubmitting"
+        [disabled]="jobCardForm.invalid">
+        Create Job Card
       </button>
     </div>
   </form>

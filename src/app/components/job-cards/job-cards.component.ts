@@ -33,6 +33,9 @@ export class JobCardsComponent implements OnInit {
   patterns: pattern[] = []; //
   quotations: quotation[] = [];
   showHelp:boolean = false;
+  allMaterials: any[] = [];
+  allArtisans: any[] = [];
+
 
   constructor(
     private apiService: ApiService,
@@ -44,10 +47,37 @@ export class JobCardsComponent implements OnInit {
     this.loadJobCards();
     this.loadPatterns();
     this.loadQuotations();
+    this.loadAllMaterials(); // Add this
+    this.loadAllArtisans();  // Add this
   }
 
   showHelpModal(){
     this.showHelp = true;
+  }
+
+
+    loadAllMaterials(): void {
+    this.apiService.get_materials().subscribe({
+      next: (res) => {
+        this.allMaterials = res;
+      },
+      error: (err) => {
+        console.error('Error loading materials:', err);
+        this.notification.showError('Error', 'Failed to load materials');
+      }
+    });
+  }
+
+  loadAllArtisans(): void {
+    this.apiService.get_artisans().subscribe({
+      next: (res) => {
+        this.allArtisans = res;
+      },
+      error: (err) => {
+        console.error('Error loading artisans:', err);
+        this.notification.showError('Error', 'Failed to load artisans');
+      }
+    });
   }
 
   loadJobCardStatuses(): void {
@@ -108,11 +138,6 @@ export class JobCardsComponent implements OnInit {
     this.cancelled = this.jobCards.filter(x => x.job_card_status_id === 3);
   }
 
-  openUpdateForm(jobCard: jobCard): void {
-    this.jobCardToUpdate = jobCard;
-    this.showUpdateForm = true;
-    this.showjobCard = false;
-  }
 
   handleJobCardUpdate(updatedJobCard: jobCard): void {
     const index = this.jobCards.findIndex(j => j.job_card_id === updatedJobCard.job_card_id);
@@ -140,16 +165,6 @@ export class JobCardsComponent implements OnInit {
   }
 
 
-
-  closeUpdateForm(): void {
-    this.showUpdateForm = false;
-  }
-
-  closeJobcard(): void {
-    this.viewJob = undefined;
-    this.showjobCard = false;
-  }
-
   viewDesigns(viewJob: jobCard): void {
     this.viewingImages = [];
     viewJob.quotation?.job_request?.job_request_items?.forEach(image => {
@@ -160,11 +175,7 @@ export class JobCardsComponent implements OnInit {
     this.showDesigns = true;
   }
 
-  viewJobCard(viewJob: jobCard): void {
-    this.viewJob = viewJob;
-    this.showjobCard = true;
-    this.showUpdateForm = false;
-  }
+
 
   viewQuotation(viewJob: jobCard): void {
     if (viewJob.quotation?.quotation_url) {
@@ -174,17 +185,13 @@ export class JobCardsComponent implements OnInit {
     }
   }
 
-  openCreateForm(): void {
-    this.showCreateForm = true;
-    this.showJobCardView = false;
-    this.showUpdateForm = false;
-  }
 
-  handleJobCardCreated(newJobCard: jobCard): void {
-    this.jobCards.push(newJobCard);
-    this.updateFilteredArrays();
+
+  handleJobCardCreated(newJobCard: any): void {
+    // Handle the new job card creation
+    // Example: refresh job cards list
+    this.loadJobCards(); // You'll need to implement this
     this.showCreateForm = false;
-    this.notification.showSuccess('Success', 'Job card created successfully');
   }
 
     handleFormClose(): void {
@@ -192,4 +199,39 @@ export class JobCardsComponent implements OnInit {
     this.showJobCardView = false;
     this.showUpdateForm = false;
   }
+
+  // Add this method to your JobCardsComponent class
+resetViews(): void {
+  this.showjobCard = false;
+  this.showUpdateForm = false;
+  this.showCreateForm = false;
+  this.showDesigns = false;
+}
+
+// Update your view methods to use this:
+openUpdateForm(jobCard: jobCard): void {
+  this.resetViews();
+  this.jobCardToUpdate = jobCard;
+  this.showUpdateForm = true;
+}
+
+viewJobCard(viewJob: jobCard): void {
+  this.resetViews();
+  this.viewJob = viewJob;
+  this.showjobCard = true;
+}
+
+openCreateForm(): void {
+  this.resetViews();
+  this.showCreateForm = true;
+}
+
+closeJobcard(): void {
+  this.resetViews();
+  this.viewJob = undefined;
+}
+
+closeUpdateForm(): void {
+  this.resetViews();
+}
 }
