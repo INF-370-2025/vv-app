@@ -4,7 +4,6 @@ import { NotificationService } from '../../../services/notification.service';
 import { AuthService } from '../../../services/auth.service';
 import Chart from 'chart.js/auto';
 import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import { AppModule } from '../../../app.module';
 
 @Component({
