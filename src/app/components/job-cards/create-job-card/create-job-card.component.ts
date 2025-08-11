@@ -1,4 +1,3 @@
-// create-job-card.component.ts
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { pattern, quotation } from '../../../models/jobCard';

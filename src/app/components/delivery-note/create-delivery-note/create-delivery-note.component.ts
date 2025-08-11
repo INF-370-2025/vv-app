@@ -1,4 +1,3 @@
-// create-delivery-note.component.ts
 import { Component, EventEmitter, Output } from '@angular/core';
 import { ApiService } from '../../../services/api.service';
 import { AppModule } from '../../../app.module';

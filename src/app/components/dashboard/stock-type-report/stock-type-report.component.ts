@@ -33,14 +33,14 @@ export class StockTypeReportComponent implements AfterViewInit {
   stockTypes: StockType[] = [];
   selectedStockTypeId: number | null = null;
   stock: StockItem[] = [];
-  isLoading: boolean = false;
+  isloadingCard1: boolean = false;
+  isStockTypesLoading: boolean = false;
   isExporting: boolean = false;
   errorMessage: string | null = null;
   currentDate: Date = new Date();
   generatedBy: string = '';
   totalItems: number = 0;
   chartData: any[] = [];
-  chartImage: string | null = null;
 
   constructor(
     private apiService: ApiService,
@@ -55,7 +55,7 @@ export class StockTypeReportComponent implements AfterViewInit {
   }
 
   loadStockTypes() {
-    this.isLoading = true;
+    this.isStockTypesLoading = true;
     this.apiService.get_stock_types().subscribe({
       next: (res) => {
         this.stockTypes = res.map((type: any) => ({
@@ -63,19 +63,19 @@ export class StockTypeReportComponent implements AfterViewInit {
           name: type.type_name,
           created_at: type.created_at
         }));
-        this.isLoading = false;
+        this.isStockTypesLoading = false;
         this.getStock();
       },
       error: (err) => {
         console.error('Error loading stock types:', err);
         this.errorMessage = 'Failed to load stock types';
-        this.isLoading = false;
+        this.isStockTypesLoading = false;
       }
     });
   }
 
   getStock(stockTypeId?: number) {
-    this.isLoading = true;
+    this.isloadingCard1 = true;
     this.apiService.get_all_stock().subscribe({
       next: res => {
         let stock = res as any[];
@@ -88,37 +88,40 @@ export class StockTypeReportComponent implements AfterViewInit {
           );
         }
 
-        // Prepare chart data
+        // Sort and prepare chart data
         const sortedStock = this.stock
-          .sort((a, b) => b.stock_level - a.stock_level)
+          .sort((a, b) => a.stock_level - b.stock_level)
           .slice(0, 10);
 
         this.chartData = sortedStock;
         this.totalItems = sortedStock.length;
-        this.updateStockChart();
-        this.isLoading = false;
+
+        const labels = sortedStock.map(x => x.name);
+        const data = sortedStock.map(x => x.stock_level);
+        const backgroundColors = sortedStock.map(x =>
+          x.stock_level > 10 ? '#17726d' : '#FF0000'
+        );
+
+        this.updateStockChart(labels, data, backgroundColors);
+        this.isloadingCard1 = false;
       },
       error: (error) => {
         this.notification.showError("Failed to load stock data");
-        this.isLoading = false;
+        this.isloadingCard1 = false;
       }
     });
   }
 
-  updateStockChart() {
+  updateStockChart(labels: string[], data: number[], backgroundColors: string[]) {
+    let delayed: any;
+
     if (this.chart) {
       this.chart.destroy();
     }
 
-    if (!this.chartData || this.chartData.length === 0) {
+    if (!labels || labels.length === 0) {
       return;
     }
-
-    const labels = this.chartData.map(x => x.name);
-    const data = this.chartData.map(x => x.stock_level);
-    const backgroundColors = this.chartData.map(x =>
-      x.stock_level > 10 ? '#17726d' : '#d9534f'  // Green for safe, red for low
-    );
 
     const ctx = this.chartCanvas.nativeElement.getContext('2d');
 
@@ -130,7 +133,7 @@ export class StockTypeReportComponent implements AfterViewInit {
           label: 'Stock Level',
           data: data,
           backgroundColor: backgroundColors,
-          borderColor: backgroundColors.map(color => color + 'CC'),
+          borderColor: backgroundColors,
           borderWidth: 1
         }]
       },
@@ -138,6 +141,13 @@ export class StockTypeReportComponent implements AfterViewInit {
         responsive: true,
         maintainAspectRatio: false,
         scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'Stock Items',
+              font: { size: 14, weight: 'bold' }
+            }
+          },
           y: {
             beginAtZero: true,
             title: {
@@ -146,13 +156,6 @@ export class StockTypeReportComponent implements AfterViewInit {
               font: { size: 14, weight: 'bold' }
             },
             ticks: { precision: 0 }
-          },
-          x: {
-            title: {
-              display: true,
-              text: 'Stock Items',
-              font: { size: 14, weight: 'bold' }
-            }
           }
         },
         plugins: {
@@ -160,8 +163,8 @@ export class StockTypeReportComponent implements AfterViewInit {
           title: {
             display: true,
             text: this.selectedStockTypeId
-              ? `Stock Levels - ${this.getStockTypeName()}`
-              : 'Top 10 Stock Levels',
+              ? `Stock Levels (${this.getStockTypeName()})`
+              : 'Top 10 Stock Levels (All Types)',
             font: { size: 18, weight: 'bold' },
             padding: 20
           },
@@ -170,6 +173,14 @@ export class StockTypeReportComponent implements AfterViewInit {
               label: (context) => `${context.parsed.y} units`
             }
           }
+        },
+        animation: {
+          onComplete: () => delayed = true,
+          delay: (context) => {
+            return context.type === 'data' && context.mode === 'default' && !delayed
+              ? context.dataIndex * 300
+              : 0;
+          },
         }
       }
     });
@@ -181,8 +192,8 @@ export class StockTypeReportComponent implements AfterViewInit {
     return type ? type.name : 'Selected Type';
   }
 
-  onStockTypeChange(event: Event) {
-    const typeId = Number((event.target as HTMLSelectElement).value);
+  onStockTypeChange(event: Event | number) {
+    const typeId = typeof event === 'number' ? event : Number((event.target as HTMLSelectElement).value);
     this.selectedStockTypeId = typeId || null;
     this.getStock(typeId);
   }
@@ -224,7 +235,7 @@ export class StockTypeReportComponent implements AfterViewInit {
       doc.setFontSize(18);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(23, 114, 109); // #17726d
-      doc.text(`Stock Levels Report`, pageWidth / 2, yPos, { align: 'center' });
+      doc.text('Stock Levels Report', pageWidth / 2, yPos, { align: 'center' });
       yPos += 15;
 
       // Add metadata
@@ -264,15 +275,14 @@ export class StockTypeReportComponent implements AfterViewInit {
         const barHeight = (item.stock_level / maxValue) * chartHeight * 0.8;
         const barX = margin + (index * (barWidth + barSpacing)) + barSpacing;
         const barY = chartArea.y + chartHeight - barHeight;
-        const barColor = item.stock_level > 10 ? [23, 114, 109] : [217, 83, 79];
-        const borderColor = item.stock_level > 10 ? [13, 89, 85] : [185, 54, 50];
+        const barColor = item.stock_level > 10 ? [23, 114, 109] : [255, 0, 0]; // #17726d or red
 
         // Draw bar
         doc.setFillColor(barColor[0], barColor[1], barColor[2]);
         doc.rect(barX, barY, barWidth, barHeight, 'F');
 
         // Draw border
-        doc.setDrawColor(borderColor[0], borderColor[1], borderColor[2]);
+        doc.setDrawColor(barColor[0], barColor[1], barColor[2]);
         doc.rect(barX, barY, barWidth, barHeight);
 
         // Add value label

@@ -1,4 +1,3 @@
-// stock-report.component.ts
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { ApiService } from '../../../services/api.service';
 import { NotificationService } from '../../../services/notification.service';

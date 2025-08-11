@@ -1,4 +1,3 @@
-// low-stock.component.ts
 import { Component } from '@angular/core';
 import { ApiService } from '../../../services/api.service';
 import { NotificationService } from '../../../services/notification.service';
@@ -23,6 +22,8 @@ export class LowStockComponent {
   generatedBy: string = '';
   criticalItems: number = 0;
   warningItems: number = 0;
+  isloadingCard1: boolean = false;
+
 
   constructor(
     private apiService: ApiService,
@@ -34,6 +35,7 @@ export class LowStockComponent {
   }
 
   loadLowStock(): void {
+    this.isloadingCard1 = true;
     this.isLoading = true;
     this.errorMessage = null;
     this.currentDate = new Date();

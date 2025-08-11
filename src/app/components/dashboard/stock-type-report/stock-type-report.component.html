@@ -32,47 +32,50 @@
     </div>
 
     <div class="controls">
-      <div class="form-group">
-        <label>Filter by Stock Type:</label>
-        <select
+      <nz-spin [nzSpinning]="isStockTypesLoading">
+        <nz-select
+          class="stock-type-select"
+          nzShowSearch
+          nzAllowClear
+          nzPlaceHolder="Filter by stock type"
           [(ngModel)]="selectedStockTypeId"
-          (change)="onStockTypeChange($event)"
-          [disabled]="isLoading"
+          (ngModelChange)="onStockTypeChange($event)"
+          style="width: 200px; margin-right: 10px;"
         >
-          <option [value]="null">All Types</option>
-          <option *ngFor="let type of stockTypes" [value]="type.stock_type_id">
-            {{ type.name }}
-          </option>
-        </select>
+          <nz-option
+            *ngFor="let type of stockTypes"
+            [nzLabel]="type.name"
+            [nzValue]="type.stock_type_id"
+          >
+            <span style="color: #000">{{ type.name }}</span>
+          </nz-option>
+        </nz-select>
+
         <button
+          *ngIf="selectedStockTypeId"
           nz-button
           nzType="default"
+          nzSize="small"
           (click)="clearStockTypeFilter()"
-          [disabled]="!selectedStockTypeId || isLoading"
         >
           Clear Filter
         </button>
-      </div>
+      </nz-spin>
     </div>
 
     <div class="chart-container">
-      <canvas #chartCanvas></canvas>
-
-      <div *ngIf="isLoading" class="loading-overlay">
-        <nz-spin nzSize="large"></nz-spin>
-      </div>
+      <nz-spin [nzSpinning]="isloadingCard1">
+        <canvas #chartCanvas></canvas>
+      </nz-spin>
 
       <div
-        *ngIf="!isLoading && (!chartData || chartData.length === 0)"
+        *ngIf="!isloadingCard1 && (!chartData || chartData.length === 0)"
         class="no-data"
       >
         <nz-empty nzNotFoundContent="No stock data available"></nz-empty>
       </div>
     </div>
 
-    <div class="report-footer">
-      <p>Generated on: {{ currentDate | date:'longDate' }}</p>
-      <p>Vault Vision - Inventory Management System</p>
-    </div>
+
   </div>
 </div>
