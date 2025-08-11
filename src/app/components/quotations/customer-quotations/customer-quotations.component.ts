@@ -37,23 +37,75 @@ export class CustomerQuotationsComponent implements OnInit {
     this.loadQuotations();
   }
 
-  loadQuotations(): void {
-    this.isloading = true;
-    this.apiService.get_quotations_user(this.auth.user?.user_id!).subscribe({
-      next: (response) => {
-        console.log(this.quotations);
-        this.quotations = ([...response] as quotation[]).sort((a,b) => b.quotation_id - a.quotation_id);
-        this.pending = this.quotations.filter(x => x.quotation_status?.quotation_status_id === 1);
-        this.accepted = this.quotations.filter(x => x.quotation_status?.quotation_status_id === 2);
-        this.rejected = this.quotations.filter(x => x.quotation_status?.quotation_status_id === 3);
-        this.isloading = false;
-      },
-      error: (err) => {
-        console.error('Error loading quotations:', err);
-        this.isloading = false;
+loadQuotations(): void {
+  this.isloading = true;
+  this.apiService.get_quotations_user(this.auth.user?.user_id!).subscribe({
+    next: (response) => {
+      // 1. First check if response is an array
+      if (Array.isArray(response)) {
+        // Process as array
+        this.quotations = response.map(item => ({
+          ...item,
+          quotation_status: item.quotation_status,
+          job_request: item.job_request_details
+        }));
       }
-    });
+      // 2. Check if response has a data property that's an array
+      else if (response && Array.isArray(response.data)) {
+        this.quotations = response.data.map((item: { quotation_status: any; job_request_details: any; }) => ({
+          ...item,
+          quotation_status: item.quotation_status,
+          job_request: item.job_request_details
+        }));
+      }
+      // 3. Handle other possible structures
+      else {
+        console.error('Unexpected response format:', response);
+        this.quotations = [];
+      }
+
+      // Sort and filter
+      this.quotations.sort((a, b) => b.quotation_id - a.quotation_id);
+      this.pending = this.quotations.filter(x => x.quotation_status?.quotation_status_id === 1);
+      this.accepted = this.quotations.filter(x => x.quotation_status?.quotation_status_id === 2);
+      this.rejected = this.quotations.filter(x => x.quotation_status?.quotation_status_id === 3);
+
+      this.isloading = false;
+    },
+    error: (err) => {
+      console.error('Error loading quotations:', err);
+      this.isloading = false;
+    }
+  });
+}
+
+getContactInfo(quote: quotation): string {
+  try {
+    // Safely navigate through the nested structure
+    const user = quote.job_request?.customer?.user;
+        console.error(quote.job_request?.customer?.user);
+
+
+    if (!user) return '-';
+
+    const name = user.name ? user.name.trim() : '';
+    const surname = user.surname ? user.surname.trim() : '';
+    const phone = user.phone_number ? user.phone_number.trim() : '';
+
+    // Combine name and surname if both exist
+    const fullName = [name, surname].filter(Boolean).join(' ');
+
+    // Return formatted contact info
+    if (fullName && phone) return `${fullName} | ${phone}`;
+    if (fullName) return fullName;
+    if (phone) return phone;
+
+    return '-';
+  } catch (e) {
+    console.error('Error getting contact info:', e);
+    return '-';
   }
+}
 
   selectedTabChange(index:number) {
     this.selectedTabIndex = index;

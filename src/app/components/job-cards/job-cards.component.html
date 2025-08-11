@@ -2,6 +2,10 @@
 <div nz-row [nzJustify]="'center'">
     <div nz-col [nzSpan]="!(showjobCard || showUpdateForm) ? 22 : 18" style="text-align: start;">
         <h1 *ngIf="!(showjobCard || showUpdateForm)"><b>Job Cards</b></h1>
+          <button nz-button (click)="showHelpModal()">
+  <span nz-icon nzType="question-circle" nzTheme="outline"></span>
+  Get Help
+</button>
         <button nz-button nzType="default" *ngIf="showjobCard || showUpdateForm"
                 (click)="closeJobcard(); closeUpdateForm()">
           <span nz-icon nzType="arrow-left" nzTheme="outline"></span>
@@ -316,5 +320,122 @@
             <h3>No design images available</h3>
         </div>
     </ng-container>
+</nz-modal>
+
+
+<!-- Customer help -->
+<nz-modal
+  [nzWidth]="800"
+  [(nzVisible)]="showHelp"
+  nzClosable="true"
+  [nzTitle]="helpTitle"
+  (nzOnCancel)="showHelp=false"
+  [nzFooter]="null">
+
+  <ng-template #helpTitle>
+    <span nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px; color: #17726d;"></span>
+    <b>Help Center</b>
+  </ng-template>
+
+  <ng-container *nzModalContent>
+    <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+      <div nz-col [nzSpan]="24">
+        <div class="help-content">
+          <h2>Job Cards Help</h2>
+    <p>This page allows you to track and manage all job cards throughout their lifecycle - from pending to completion.</p>
+  </div>
+
+  <div class="help-section">
+    <h3><i nz-icon nzType="appstore" nzTheme="outline" style="margin-right: 8px;"></i> Key Features</h3>
+
+    <div class="feature">
+      <h4><i nz-icon nzType="profile" nzTheme="outline" style="margin-right: 8px;"></i> Status Tracking</h4>
+      <ul>
+        <li><nz-tag [nzColor]="'default'">Pending</nz-tag> - Jobs awaiting processing</li>
+        <li><nz-tag [nzColor]="'orange'">In Progress</nz-tag> - Active jobs being worked on</li>
+        <li><nz-tag [nzColor]="'green'">Completed</nz-tag> - Successfully finished jobs</li>
+        <li><nz-tag [nzColor]="'red'">Cancelled</nz-tag> - Jobs that were cancelled</li>
+      </ul>
+    </div>
+
+    <div class="feature">
+      <h4><i nz-icon nzType="search" nzTheme="outline" style="margin-right: 8px;"></i> Search & Filter</h4>
+      <p>Quickly find job cards by:</p>
+      <ul>
+        <li>Job card ID</li>
+        <li>Customer name</li>
+        <li>Company name</li>
+        <li>Phone number</li>
+      </ul>
+    </div>
+
+    <div class="feature">
+      <h4><i nz-icon nzType="tool" nzTheme="outline" style="margin-right: 8px;"></i> Job Management</h4>
+      <ul>
+        <li><strong>Create New Job Cards</strong> - Convert quotations to work orders</li>
+        <li><strong>View Full Details</strong> - See all job information and documents</li>
+        <li><strong>Update Status</strong> - Track job progress through workflow</li>
+        <li><strong>View Designs</strong> - Access design files and images</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="help-section">
+    <h3><i nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px;"></i> How to Use</h3>
+
+    <div class="usage-step">
+      <h4><i nz-icon nzType="plus" nzTheme="outline" style="margin-right: 8px;"></i> Creating a Job Card</h4>
+      <ol>
+        <li>Click <button nz-button nzType="primary" nzSize="small">Create New</button> in top right</li>
+        <li>Select the quotation to convert to a job card</li>
+        <li>Assign patterns and other required details</li>
+        <li>Set the initial status (typically "Pending")</li>
+        <li>Click <strong>Submit</strong> to create the job card</li>
+      </ol>
+    </div>
+
+    <div class="usage-step">
+      <h4><i nz-icon nzType="eye" nzTheme="outline" style="margin-right: 8px;"></i> Viewing Job Details</h4>
+      <ol>
+        <li>Click the <button nz-button nzType="primary" nzSize="small"><i nz-icon nzType="eye" nzTheme="outline"></i></button> action button</li>
+        <li>The full job card view will open with all details</li>
+        <li>Access related documents (quotations, designs, etc.)</li>
+        <li>Click <strong>Back to Jobs</strong> to return to the list</li>
+      </ol>
+    </div>
+
+    <div class="usage-step">
+      <h4><i nz-icon nzType="edit" nzTheme="outline" style="margin-right: 8px;"></i> Updating Job Status</h4>
+      <ol>
+        <li>Click the <button nz-button nzType="default" nzSize="small"><i nz-icon nzType="edit" nzTheme="outline"></i></button> action button</li>
+        <li>Select the new status from the dropdown</li>
+        <li>Add any relevant notes about the status change</li>
+        <li>Click <strong>Update</strong> to save changes</li>
+      </ol>
+    </div>
+
+    <div class="usage-step">
+      <h4><i nz-icon nzType="file-image" nzTheme="outline" style="margin-right: 8px;"></i> Viewing Design Files</h4>
+      <ol>
+        <li>Click the <button nz-button nzType="primary" nzSize="small">Designs</button> button</li>
+        <li>A gallery will open showing all design images</li>
+        <li>Browse through the images using the navigation controls</li>
+        <li>Close the gallery when finished</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="help-section troubleshooting">
+    <h3><i nz-icon nzType="exclamation-circle" nzTheme="outline" style="margin-right: 8px;"></i> Troubleshooting</h3>
+    <div class="warning">
+      <p><strong>Missing designs?</strong> Ensure the job request has design files uploaded</p>
+      <p><strong>Can't create job card?</strong> Verify the quotation exists and is approved</p>
+      <p><strong>Status not updating?</strong> Check you have proper permissions</p>
+    </div>
+    <p>For further assistance, contact your system administrator.</p>
+  </div>
+      </div>
+    </div>
+  </ng-container>
 </nz-modal>
 

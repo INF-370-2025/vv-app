@@ -33,6 +33,7 @@ export class AdminJobRequestsComponent {
   showJobRequestModal:boolean = false;
   viewingRequestCustomerType:number | null = null;
   showQuotationModal:boolean = false;
+  showJRHelp= false;
 
 
   constructor(private apiService: ApiService,public auth:AuthService,private notification:NotificationService,public breakpoint:BreakpointService,
@@ -58,6 +59,10 @@ export class AdminJobRequestsComponent {
         this.isloading = false;
       }
     });
+  }
+
+  showHelpModal() {
+    this.showJRHelp = true;
   }
 
   loadCustomerTypes() {

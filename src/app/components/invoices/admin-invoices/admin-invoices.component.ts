@@ -27,6 +27,7 @@ export class AdminInvoicesComponent {
   paid: invoice[] = [];
   unpaid: invoice[] = [];
   showCreateForm = false;
+  showHelp:boolean = false;
 
 
   viewingInvoice:invoice = new invoice();
@@ -44,6 +45,11 @@ export class AdminInvoicesComponent {
     this.loadInvoices();
   }
 
+
+
+  showHelpModal() {
+    this.showHelp = true;
+  }
 
   openCreateForm(): void {
     this.showCreateForm = true;

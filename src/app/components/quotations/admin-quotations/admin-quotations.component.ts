@@ -231,5 +231,7 @@ export class AdminQuotationsComponent {
             this.btnloading = false;
         }
     });
+    this.notification.showSuccess("Update successful");
+
 }
 }

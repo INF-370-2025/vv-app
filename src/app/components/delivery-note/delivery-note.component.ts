@@ -5,6 +5,7 @@ import { AppModule } from '../../app.module';
 import { NotificationService } from '../../services/notification.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { CreateDeliveryNoteComponent } from './create-delivery-note/create-delivery-note.component';
+import { NzModalService } from 'ng-zorro-antd/modal';
 
 interface DeliveryNote {
   delivery_note_id: number;
@@ -25,6 +26,7 @@ export class DeliveryNoteComponent implements OnInit {
   errorMessage: string | null = null;
   isDeleting: { [id: number]: boolean } = {};
   showCreateForm = false;
+  showHelpModal:boolean = false;
 
   constructor(
     private apiService: ApiService,
@@ -35,6 +37,11 @@ export class DeliveryNoteComponent implements OnInit {
   ngOnInit(): void {
     this.loadDeliveryNotes();
   }
+
+  showHelp() {
+  this.showHelpModal = true;
+  }
+
 
   loadDeliveryNotes(): void {
     this.isLoading = true;

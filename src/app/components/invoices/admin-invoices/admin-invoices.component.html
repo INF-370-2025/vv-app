@@ -1,6 +1,10 @@
 <div nz-row [nzJustify]="'center'">
   <div nz-col [nzSpan]="!showCreateForm ? 22 : 18" style="text-align: start;">
-    <!-- <h1 *ngIf="!showCreateForm"><b>Invoices</b></h1> -->
+    <h1 *ngIf="!showCreateForm"><b>Invoices</b></h1>
+      <button nz-button (click)="showHelpModal()">
+  <span nz-icon nzType="question-circle" nzTheme="outline"></span>
+  Get Help
+</button>
     <button *ngIf="showCreateForm" nz-button nzType="default" (click)="handleFormClose()">
       <span nz-icon nzType="arrow-left" nzTheme="outline"></span>
       Back to Invoices
@@ -230,3 +234,105 @@
 </div>
 
 
+<!-- Customer help -->
+<nz-modal
+  [nzWidth]="800"
+  [(nzVisible)]="showHelp"
+  nzClosable="true"
+  [nzTitle]="helpTitle"
+  (nzOnCancel)="showHelp=false"
+  [nzFooter]="null">
+
+  <ng-template #helpTitle>
+    <span nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px; color: #17726d;"></span>
+    <b>Help Center</b>
+  </ng-template>
+
+  <ng-container *nzModalContent>
+    <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+      <div nz-col [nzSpan]="24">
+        <div class="help-content">
+          <h2>Invoice Help</h2>
+  <p>This page allows administrators to <strong>manage all invoices</strong>, track payment statuses, and generate new invoices.</p>
+  </div>
+
+  <div class="help-section">
+    <h3><i nz-icon nzType="appstore" nzTheme="outline" style="margin-right: 8px;"></i> Key Features</h3>
+
+    <div class="feature">
+      <h4><i nz-icon nzType="folder-open" nzTheme="outline" style="margin-right: 8px;"></i> Invoice Tabs</h4>
+      <ul>
+        <li><strong>Unpaid Invoices</strong> – View and manage outstanding payments</li>
+        <li><strong>Paid Invoices</strong> – Review completed transactions</li>
+      </ul>
+    </div>
+
+    <div class="feature">
+      <h4><i nz-icon nzType="search" nzTheme="outline" style="margin-right: 8px;"></i> Search & Filter</h4>
+      <p>Quickly find invoices by:</p>
+      <ul>
+        <li>Invoice number</li>
+        <li>Job title</li>
+        <li>Customer name</li>
+        <li>Company name</li>
+        <li>Completion date</li>
+      </ul>
+    </div>
+
+    <div class="feature">
+      <h4><i nz-icon nzType="tool" nzTheme="outline" style="margin-right: 8px;"></i> Management Tools</h4>
+      <ul>
+        <li><strong>Create New Invoices</strong> – Generate invoices for completed jobs</li>
+        <li><strong>Edit Invoice Details</strong> – Update amounts or re-upload documents</li>
+        <li><strong>Update Payment Status</strong> – Mark invoices as paid</li>
+        <li><strong>View Invoice PDFs</strong> – Access and download invoice documents</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="help-section">
+    <h3><i nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px;"></i> How to Use</h3>
+
+    <div class="usage-step">
+      <h4><i nz-icon nzType="plus" nzTheme="outline" style="margin-right: 8px;"></i> Creating a New Invoice</h4>
+      <ol>
+        <li>Click the <button nz-button nzType="primary" nzSize="small">Create Invoice</button> button</li>
+        <li>Select the completed job from the list</li>
+        <li>Enter invoice details (number, amount, etc.)</li>
+        <li>Upload the invoice PDF document</li>
+        <li>Click <strong>Submit</strong> to generate the invoice</li>
+      </ol>
+    </div>
+
+    <div class="usage-step">
+      <h4><i nz-icon nzType="edit" nzTheme="outline" style="margin-right: 8px;"></i> Editing an Invoice</h4>
+      <ol>
+        <li>Click the <button nz-button nzType="primary" nzSize="small">Edit</button> button on the invoice row</li>
+        <li>Update the invoice details as needed</li>
+        <li>Replace the PDF document if required</li>
+        <li>Click <strong>Update Invoice</strong> to save changes</li>
+      </ol>
+    </div>
+
+    <div class="usage-step">
+      <h4><i nz-icon nzType="check-circle" nzTheme="outline" style="margin-right: 8px;"></i> Marking as Paid</h4>
+      <ol>
+        <li>Click the <button nz-button nzType="primary" nzSize="small">Update Status</button> button</li>
+        <li>Confirm the payment status change</li>
+        <li>The invoice will automatically move to the "Paid" tab</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="help-section troubleshooting">
+    <h3><i nz-icon nzType="exclamation-circle" nzTheme="outline" style="margin-right: 8px;"></i> Troubleshooting</h3>
+    <div class="warning">
+      <p><strong>"PDF link not available"</strong> – Try re-uploading the invoice document</p>
+      <p><strong>Upload errors</strong> – Ensure files are PDF format and under 10MB</p>
+      <p><strong>Missing invoices</strong> – Verify the job has been marked as completed</p>
+    </div>
+  </div>
+      </div>
+    </div>
+  </ng-container>
+</nz-modal>

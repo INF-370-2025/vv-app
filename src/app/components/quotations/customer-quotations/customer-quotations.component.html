@@ -48,8 +48,8 @@
                                     {{quote.total_cost | currency:'R':'symbol' }}
                                 </td>
                                 <td>
-                                    <nz-avatar nzIcon="user" [nzSrc]="quote.job_request?.customer?.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ quote.job_request?.customer?.user?.name"></nz-avatar>
-                                    {{quote.job_request?.customer?.user?.name + ' | ' + quote.job_request?.customer?.user?.phone_number || '-'}}
+                                  <nz-avatar nzIcon="user" [nzSrc]="quote.job_request?.customer?.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ quote.job_request?.customer?.user?.name"></nz-avatar>
+                                  {{ (quote.job_request?.customer?.user?.name || '') + (quote.job_request?.customer?.user?.phone_number ? ' | ' + quote.job_request?.customer?.user?.phone_number : '') || '-' }}
                                 </td>
                                 <td style="text-align: center;">
                                     <button nz-button nzType="primary" (click)="viewQuote(quote)">
@@ -58,11 +58,11 @@
                                    </button>
                                     <button [nzLoading]="btnloading" (click)="acceptQuotation(quote.quotation_id)" *ngIf="selectedTabIndex == 0" nz-button nzType="default" style="margin-left: 5px;background-color: seagreen;color: white;border: none;">
                                     <span nz-icon nzType="check" nzTheme="outline"></span>
-                                    Accept 
+                                    Accept
                                   </button>
                                     <button [nzLoading]="btnloading" (click)="rejectQuotation(quote.quotation_id)" *ngIf="selectedTabIndex == 0" nz-button nzType="default" style="margin-left: 5px;background-color: rgb(252, 61, 61);color: white;border: none;">
                                     <span nz-icon nzType="close" nzTheme="outline"></span>
-                                    Reject 
+                                    Reject
                                   </button>
                                 </td>
                             </tr>
@@ -114,10 +114,21 @@
                                 <td>
                                     {{quote.total_cost | currency:'R':'symbol' }}
                                 </td>
-                                <td>
-                                    <nz-avatar nzIcon="user" [nzSrc]="quote.job_request?.customer?.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ quote.job_request?.customer?.user?.name"></nz-avatar>
-                                    {{quote.job_request?.customer?.user?.name + ' | ' + quote.job_request?.customer?.user?.phone_number || '-'}}
-                                </td>
+                             <td>
+  <nz-avatar nzIcon="user"
+             [nzSrc]="quote.job_request?.customer?.user?.image ||
+                     'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+
+                     (quote.job_request?.customer?.user?.name || '')">
+  </nz-avatar>
+
+  <ng-container *ngIf="quote.job_request?.customer?.user as user; else noContact">
+    {{ user.name || '' }} {{ user.surname || '' }}
+    <span *ngIf="(user.name || user.surname) && user.phone_number"> | </span>
+    {{ user.phone_number || '' }}
+  </ng-container>
+
+  <ng-template #noContact>-</ng-template>
+</td>
                                 <td style="text-align: center;">
                                     <button nz-button nzType="primary" (click)="viewQuote(quote)">
                                   <i nz-icon nzType="eye" nzTheme="outline"></i>

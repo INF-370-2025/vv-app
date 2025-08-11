@@ -32,6 +32,7 @@ export class CustomerJobRequestsComponent implements OnInit {
   rejected:jobRequest[] = [];
   cancelled:jobRequest[] = [];
   customer_types:customerType[] = [];
+  showHelpModal:boolean = false;
 
   viewingJob:jobRequest = new jobRequest();
   viewingImages: GalleryItem[] = [];
@@ -63,6 +64,10 @@ export class CustomerJobRequestsComponent implements OnInit {
       this.loadJobRequests();
     }, 500);
 
+  }
+
+  showHelp(){
+    this.showHelpModal = true;
   }
 
   loadJobRequests() {

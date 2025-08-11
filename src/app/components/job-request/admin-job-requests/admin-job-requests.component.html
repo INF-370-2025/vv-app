@@ -1,5 +1,9 @@
 <div nz-row [nzJustify]="'center'">
     <div nz-col nzSpan="22">
+        <button nz-button (click)="showHelpModal()">
+  <span nz-icon nzType="question-circle" nzTheme="outline"></span>
+  Get Help
+</button>
         <nz-tabset nzType="card" (nzSelectedIndexChange)="selectedTabChange($event)" [(nzSelectedIndex)]="selectedTabIndex">
 
             <!-- Pending Tab -->
@@ -222,11 +226,11 @@
                             </button>
                             <button (click)="openQuotation()" *ngIf="selectedTabIndex == 0" nz-button nzType="default" style="background-color: seagreen;color: white;border: none;" [disabled]="viewingRequestCustomerType== null" [nz-tooltip]="viewingRequestCustomerType == null ? 'First Select Customer Classification':null">
                               <span nz-icon nzType="check" nzTheme="outline"></span>
-                              Accept 
+                              Accept
                             </button>
                             <button (click)="rejectJob()" *ngIf="selectedTabIndex == 0" nz-button nzType="default" style="background-color: rgb(252, 61, 61);color: white;border: none;">
                               <span nz-icon nzType="close" nzTheme="outline"></span>
-                              Reject 
+                              Reject
                             </button>
                         </nz-button-group>
                         <nz-tag style="float: inline-end;" *ngIf="selectedTabIndex == 1" [nzColor]="'green'">Accepted</nz-tag>
@@ -247,4 +251,116 @@
         <app-create-quotation [job_request]="viewingJob" (createdQuote)="acceptJob($event)"></app-create-quotation>
 
     </ng-container>
+</nz-modal>
+
+<!--  help -->
+<nz-modal
+  [nzWidth]="800"
+  [(nzVisible)]="showJRHelp"
+  nzClosable="true"
+  [nzTitle]="helpTitle"
+  (nzOnCancel)="showJRHelp=false"
+  [nzFooter]="null">
+
+  <ng-template #helpTitle>
+    <span nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px; color: #17726d;"></span>
+    <b>Help Center</b>
+  </ng-template>
+
+  <ng-container *nzModalContent>
+    <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+      <div nz-col [nzSpan]="24">
+        <div class="help-content">
+    <h2><i nz-icon nzType="solution" nzTheme="outline" style="margin-right: 8px;"></i> Job Requests Management</h2>
+    <p>This page allows administrators to manage customer job requests through their entire lifecycle - from submission to quotation.</p>
+  </div>
+
+  <div class="help-section">
+    <h3><i nz-icon nzType="appstore" nzTheme="outline" style="margin-right: 8px;"></i> Key Features</h3>
+
+    <div class="feature">
+      <h4><i nz-icon nzType="profile" nzTheme="outline" style="margin-right: 8px;"></i> Status Tracking</h4>
+      <ul>
+        <li><nz-tag [nzColor]="'yellow'">Pending</nz-tag> - New requests awaiting review</li>
+        <li><nz-tag [nzColor]="'green'">Accepted</nz-tag> - Approved requests ready for quotation</li>
+        <li><nz-tag [nzColor]="'red'">Rejected</nz-tag> - Declined requests</li>
+      </ul>
+    </div>
+
+    <div class="feature">
+      <h4><i nz-icon nzType="search" nzTheme="outline" style="margin-right: 8px;"></i> Search & Filter</h4>
+      <p>Quickly find job requests by:</p>
+      <ul>
+        <li>Request ID</li>
+        <li>Customer name</li>
+        <li>Phone number</li>
+        <li>Job description</li>
+      </ul>
+    </div>
+
+    <div class="feature">
+      <h4><i nz-icon nzType="tool" nzTheme="outline" style="margin-right: 8px;"></i> Request Management</h4>
+      <ul>
+        <li><strong>View Full Details</strong> - See all request information and attachments</li>
+        <li><strong>Print Design Files</strong> - Output all design images</li>
+        <li><strong>Accept Requests</strong> - Approve and create quotations</li>
+        <li><strong>Reject Requests</strong> - Decline unsuitable requests</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="help-section">
+    <h3><i nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px;"></i> How to Use</h3>
+
+    <div class="usage-step">
+      <h4><i nz-icon nzType="eye" nzTheme="outline" style="margin-right: 8px;"></i> Reviewing a Job Request</h4>
+      <ol>
+        <li>Click the <button nz-button nzType="primary" nzSize="small"><i nz-icon nzType="eye" nzTheme="outline"></i> View</button> button</li>
+        <li>Examine the job details and design files</li>
+        <li>Verify customer information</li>
+        <li>Select the appropriate customer classification</li>
+      </ol>
+    </div>
+
+    <div class="usage-step">
+      <h4><i nz-icon nzType="check" nzTheme="outline" style="margin-right: 8px;"></i> Accepting a Request</h4>
+      <ol>
+        <li>After reviewing, click <button nz-button nzType="default" nzSize="small" style="background-color: seagreen; color: white;"><i nz-icon nzType="check" nzTheme="outline"></i> Accept</button></li>
+        <li>The quotation creation form will open automatically</li>
+        <li>Complete the quotation details</li>
+        <li>Submit to finalize the acceptance</li>
+      </ol>
+    </div>
+
+    <div class="usage-step">
+      <h4><i nz-icon nzType="close" nzTheme="outline" style="margin-right: 8px;"></i> Rejecting a Request</h4>
+      <ol>
+        <li>Click <button nz-button nzType="default" nzSize="small" style="background-color: #fc3d3d; color: white;"><i nz-icon nzType="close" nzTheme="outline"></i> Reject</button></li>
+        <li>The request will be immediately moved to "Rejected"</li>
+        <li>Optionally notify the customer about the rejection</li>
+      </ol>
+    </div>
+
+    <div class="usage-step">
+      <h4><i nz-icon nzType="printer" nzTheme="outline" style="margin-right: 8px;"></i> Printing Design Files</h4>
+      <ol>
+        <li>While viewing a request, click <button nz-button nzType="default" nzSize="small"><i nz-icon nzType="printer" nzTheme="outline"></i> Print Files</button></li>
+        <li>A new window will open with all design images</li>
+        <li>Use your browser's print function to output the files</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="help-section troubleshooting">
+    <h3><i nz-icon nzType="exclamation-circle" nzTheme="outline" style="margin-right: 8px;"></i> Troubleshooting</h3>
+    <div class="warning">
+      <p><strong>Can't accept request?</strong> Ensure you've selected a customer classification first</p>
+      <p><strong>Missing design files?</strong> Verify the customer uploaded attachments</p>
+      <p><strong>Status not updating?</strong> Refresh the page or check your connection</p>
+    </div>
+    <p>For further assistance, contact your system administrator.</p>
+  </div>
+      </div>
+    </div>
+  </ng-container>
 </nz-modal>

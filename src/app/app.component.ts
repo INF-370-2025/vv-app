@@ -36,14 +36,17 @@ export class AppComponent {
   //Drawer
   visible = false;
   placement: NzDrawerPlacement = 'right';
-  roles: role[] = [
-    {"role_id":1, "role_name": "Admin"},
-    {"role_id":2, "role_name": "Manager"},
-    {"role_id":3, "role_name": "Accountant"},
-    {"role_id":4, "role_name": "Receptionist"},
-    {"role_id":5, "role_name": "Artisan"},
-    {"role_id":6, "role_name": "Customer"},
+  roles: any[] = [
+    {"idx":0,"role_id":1,"created_at":"2025-05-01 08:00:00+00","role_name":"Admin"},
+    {"idx":4,"role_id":5,"created_at":"2025-05-01 08:20:00+00","role_name":"Artisan"},
+    {"idx":5,"role_id":6,"created_at":"2025-05-21 08:09:37.88906+00","role_name":"Customer"},
+
   ];
+
+  selectedRole: number = this.authService.user?.role_id || 1;
+  showSearch = true;
+  allowClear = true;
+  dropdownMatchSelectWidth = true;
 
   year: any = new Date().getFullYear();
 
@@ -62,8 +65,10 @@ export class AppComponent {
         if(this.router.url == '/login' || this.router.url === '/register') {
           console.log("Welcome to VV")
         } else {
-          this.router.navigateByUrl('/logi  n');
+          this.router.navigateByUrl('/login');
         };
+      } else {
+        this.selectedRole = this.authService.user?.role_id || 1;
       }
     }, 1000);
   }
@@ -110,12 +115,38 @@ export class AppComponent {
     this.visible = !this.visible;
   }
 
-  async changeRole(role:number) {
-    const response = await this.supabase.change_role(this.authService.user?.uuid!, role);
-    if(!response) {
-      this.notification.showError("Failed to Change Role, Please try again later");
-    } else {
-      window.location.reload();
+  // async changeRole(role:number) {
+  //   const response = await this.supabase.change_role(this.authService.user?.uuid!, role);
+  //   if(!response) {
+  //     this.notification.showError("Failed to Change Role, Please try again later");
+  //   } else {
+  //     window.location.reload();
+  //   }
+  // }
+
+  async changeRole(roleId: number) {
+    if (!this.authService.user?.uuid) {
+      this.notification.showError("User not found");
+      return;
+    }
+
+    this.spinner.show();
+    try {
+      const success = await this.supabase.change_role(this.authService.user.uuid, roleId);
+      if (success) {
+        this.notification.showSuccess(`Role changed to ${this.roles.find(r => r.role_id === roleId)?.role_name}`);
+        // Instead of refreshUserData, reload the page
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      } else {
+        this.notification.showError("Failed to change role");
+      }
+    } catch (error) {
+      this.notification.showError("Error changing role");
+      console.error(error);
+    } finally {
+      this.spinner.hide();
     }
   }
 

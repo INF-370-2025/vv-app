@@ -7,6 +7,7 @@ import { NotificationService } from '../../../services/notification.service';
 import { SupabaseService } from '../../../services/supabase.service';
 import { invoice } from '../../../models/invoice';
 import { AuthService } from '../../../services/auth.service';
+import { NzModalService } from 'ng-zorro-antd/modal';
 
 @Component({
   selector: 'app-customer-invoices',
@@ -24,6 +25,7 @@ export class CustomerInvoicesComponent {
   invoices: invoice[] = [];
   paid: invoice[] = [];
   unpaid: invoice[] = [];
+  showHelpModal: boolean = false
 
   viewingInvoice:invoice = new invoice();
   showEditModal:boolean = false;
@@ -38,6 +40,10 @@ export class CustomerInvoicesComponent {
 
   ngOnInit() {
     this.loadInvoices();
+  }
+
+  showHelp(){
+    this.showHelpModal = true;
   }
 
   loadInvoices(): void {

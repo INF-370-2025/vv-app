@@ -20,6 +20,7 @@ export class PatternComponent implements OnInit {
   errorMessage: string | null = null;
   showCreateForm = false;
   patternTypes: pattern_type[] = [];
+  showHelp: boolean = false;
 
   constructor(
     private apiService: ApiService,
@@ -31,6 +32,9 @@ export class PatternComponent implements OnInit {
     this.loadPatternTypes();
   }
 
+  showHelpModal(){
+    this.showHelp = true;
+  }
   loadPatterns(): void {
     this.isLoading = true;
     this.errorMessage = null;

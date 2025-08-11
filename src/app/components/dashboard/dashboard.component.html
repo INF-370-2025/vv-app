@@ -7,6 +7,10 @@
 
 <!--Admin-->
 <ng-container *ngIf="authService.user?.role_id == 1">
+  <button nz-button (click)="openAdminHelpModal()">
+  <span nz-icon nzType="question-circle" nzTheme="outline"></span>
+  Get Help
+</button>
     <nz-collapse [nzBordered]="false">
         <nz-collapse-panel [nzHeader]="panel" #p [nzExpandedIcon]="'caret-right'" [nzActive]="true">
             <ng-template #panel>
@@ -19,8 +23,71 @@
                 <span nz-icon nzType="caret-right" class="ant-collapse-arrow" [nzRotate]="p.nzActive ? 90 : -90"></span>
             </ng-template>
 
-            <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
-                <!-- ... your 4 statistic cards ... -->
+                        <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+                <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="6" [nzLg]="6" [nzXl]="6">
+                    <nz-spin [nzSpinning]="isloading">
+                        <nz-card nzHoverable="true" style="text-align: center !important; position: relative;">
+                            <button routerLink="/job-requests" nz-button nzType="default" nzShape="circle" nzSize="large" style="position: absolute; top: 10px; right: 10px; z-index: 10;">
+                            <i nz-icon nzType="arrow-right" nzTheme="outline"></i>
+                            </button>
+                            <span nz-icon nzType="vv:engineering" nzTheme="outline" style="font-size: 40px !important;" class="color"></span>
+                            <h3><b>New Requests</b></h3>
+                            <div nz-row [nzJustify]="'center'" [nzGutter]="5">
+                                <nz-col nzSpan="24" style="text-align: center !important;">
+                                    <h1><b>{{ adminStats?.new_requests }}</b></h1>
+                                </nz-col>
+                            </div>
+                        </nz-card>
+                    </nz-spin>
+                </div>
+                <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="6" [nzLg]="6" [nzXl]="6">
+                    <nz-spin [nzSpinning]="isloading">
+                        <nz-card nzHoverable="true" style="text-align: center !important; position: relative;">
+                            <button routerLink="/job-cards" nz-button nzType="default" nzShape="circle" nzSize="large" style="position: absolute; top: 10px; right: 10px; z-index: 10;">
+                            <i nz-icon nzType="arrow-right" nzTheme="outline"></i>
+                            </button>
+                            <span nz-icon nzType="vv:orders" nzTheme="outline" style="font-size: 40px !important;" class="color"></span>
+                            <h3><b>Completed Jobs <small class="color">(week)</small></b></h3>
+                            <div nz-row [nzJustify]="'center'" [nzGutter]="5">
+                                <nz-col nzSpan="24" style="text-align: center !important;">
+                                    <h1><b>{{ adminStats?.completed_job_cards_week }}</b></h1>
+                                </nz-col>
+                            </div>
+                        </nz-card>
+                    </nz-spin>
+                </div>
+                <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="6" [nzLg]="6" [nzXl]="6">
+                    <nz-spin [nzSpinning]="isloading">
+                        <nz-card nzHoverable="true" style="text-align: center !important; position: relative;">
+                            <button routerLink="/customers" nz-button nzType="default" nzShape="circle" nzSize="large" style="position: absolute; top: 10px; right: 10px; z-index: 10;">
+                            <i nz-icon nzType="arrow-right" nzTheme="outline"></i>
+                        </button>
+                            <span nz-icon nzType="vv:customers" nzTheme="outline" style="font-size: 40px !important;" class="color"></span>
+                            <h3><b>Total Customers</b></h3>
+                            <div nz-row [nzJustify]="'center'" [nzGutter]="5">
+                                <nz-col nzSpan="24" style="text-align: center !important;">
+                                    <h1><b>{{ adminStats?.total_customers }}</b></h1>
+                                </nz-col>
+                            </div>
+                        </nz-card>
+                    </nz-spin>
+                </div>
+                <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="6" [nzLg]="6" [nzXl]="6">
+                    <nz-spin [nzSpinning]="isloading">
+                        <nz-card nzHoverable="true" style="text-align: center !important; position: relative;">
+                            <button routerLink="/timelogs" nz-button nzType="default" nzShape="circle" nzSize="large" style="position: absolute; top: 10px; right: 10px; z-index: 10;">
+                            <i nz-icon nzType="arrow-right" nzTheme="outline"></i>
+                            </button>
+                            <span nz-icon nzType="vv:employees" nzTheme="outline" style="font-size: 40px !important;" class="color"></span>
+                            <h3><b>Employees Clocked In <small class="color">(today)</small></b></h3>
+                            <div nz-row [nzJustify]="'center'" [nzGutter]="5">
+                                <nz-col nzSpan="24" style="text-align: center !important;">
+                                    <h1><b>{{ adminStats?.employees_clocked_in_today }}</b></h1>
+                                </nz-col>
+                            </div>
+                        </nz-card>
+                    </nz-spin>
+                </div>
             </div>
 
             <!-- Charts Section - Corrected Structure -->
@@ -75,7 +142,7 @@
             </div>
         </nz-collapse-panel>
     </nz-collapse>
-</ng-container>
+
 
     <br>
 
@@ -142,10 +209,15 @@
     </div>
   </nz-collapse-panel>
 </nz-collapse>
+</ng-container>
 
 
 <!--Customer Dashboard-->
 <ng-container *ngIf="authService.user?.role_id == 6">
+    <button nz-button (click)="openCustomerHelpModal()">
+  <span nz-icon nzType="question-circle" nzTheme="outline"></span>
+  Get Help
+</button>
     <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
 
         <div nz-col [nzXs]="12" [nzSm]="6" [nzMd]="6" [nzLg]="6" [nzXl]="6">
@@ -181,8 +253,12 @@
 </ng-container>
 
 <!--Employee Dashboard-->
-<ng-container *ngIf="authService.user?.role_id == 5">
 
+<ng-container *ngIf="authService.user?.role_id == 5">
+  <button nz-button (click)="openEmployeeHelpModal()">
+  <span nz-icon nzType="question-circle" nzTheme="outline"></span>
+  Get Help
+</button>
 <nz-collapse [nzBordered]="false" >
     <nz-collapse-panel [nzHeader]="panel" #p [nzExpandedIcon]="'caret-right'" [nzActive]="true ">
         <ng-template #panel>
@@ -255,3 +331,135 @@
 </nz-collapse>
 </ng-container>
 
+
+<!-- Admin help -->
+<nz-modal
+  [nzWidth]="800"
+  [(nzVisible)]="showAdminHelpModal"
+  nzClosable="true"
+  [nzTitle]="helpTitle"
+  (nzOnCancel)="showAdminHelpModal=false"
+  [nzFooter]="null">
+
+  <ng-template #helpTitle>
+    <span nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px; color: #17726d;"></span>
+    <b>Help Center</b>
+  </ng-template>
+
+  <ng-container *nzModalContent>
+    <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+      <div nz-col [nzSpan]="24">
+        <div class="help-content">
+          <h2>Dashboard Help</h2>
+          <ul>
+            <li>Statistics Section: Displays important metrics like job statuses and stock levels, visualized through interactive charts.</li>
+            <li>Reports Section: Offers quick access to various reports, including:
+              <ul>
+                <li>Monthly Hours Worked</li>
+                <li>Monthly Quotation Summary</li>
+                <li>Stock by Type and Price</li>
+                <li>Pending Quotations</li>
+                <li>List of Stock to Order</li>
+                <li>List of Unpaid Invoices</li>
+              </ul>
+            </li>
+            <li>Filtering Options: Stock levels can be filtered by type for better analysis</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</nz-modal>
+
+<!-- Employee help -->
+<nz-modal
+  [nzWidth]="800"
+  [(nzVisible)]="showEmployeeHelpModal"
+  nzClosable="true"
+  [nzTitle]="helpTitle"
+  (nzOnCancel)="showEmployeeHelpModal=false"
+  [nzFooter]="null">
+
+  <ng-template #helpTitle>
+    <span nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px; color: #17726d;"></span>
+    <b>Help Center</b>
+  </ng-template>
+
+  <ng-container *nzModalContent>
+    <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+      <div nz-col [nzSpan]="24">
+        <div class="help-content">
+          <h2>Dashboard Help</h2>
+          <ul>
+            <li>Work Summary: Displays monthly performance metrics, including:</li>
+            <li>Reports Section: Offers quick access to various reports, including:
+              <ul>
+                <li>Jobs Completed</li>
+                <li>Hours Worked</li>
+                <li>Accumulated Pay</li>
+              </ul>
+            </li>
+            <li>Timesheet Calendar: An integrated calendar to track and manage work hours.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</nz-modal>
+
+
+<!-- Customer help -->
+<nz-modal
+  [nzWidth]="800"
+  [(nzVisible)]="showCustomerHelpModal"
+  nzClosable="true"
+  [nzTitle]="helpTitle"
+  (nzOnCancel)="showCustomerHelpModal=false"
+  [nzFooter]="null">
+
+  <ng-template #helpTitle>
+    <span nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px; color: #17726d;"></span>
+    <b>Help Center</b>
+  </ng-template>
+
+  <ng-container *nzModalContent>
+    <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+      <div nz-col [nzSpan]="24">
+        <div class="help-content">
+          <h2>Dashboard Help</h2>
+          <p>Welcome to your Customer Dashboard! This page provides quick access to key features related to your jobs, quotes, and invoices.</p>
+          <p>Key Features Include</p>
+          <ol>
+            <li>Job Requests</li>
+              <ul>
+                <li>View and manage your submitted job requests.</li>
+                <li>Track the status of ongoing work.</li>
+              </ul>
+            <li>Quotations</li>
+              <ul>
+                <li>Review quotes sent by the company.</li>
+                <li>Approve or request changes to pricing and services.</li>
+              </ul>
+            <li>Invoices</li>
+              <ul>
+                <li>Check issued invoices and payment status.</li>
+                <li>Download or print invoices for your records.</li>
+              </ul>
+            <li>Delivery Notes</li>
+              <ul>
+                <li>Access proof of delivery for completed jobs.</li>
+                <li>Verify received services or products.</li>
+              </ul>
+            <li>Filtering Options: Stock levels can be filtered by type for better analysis</li>
+          </ol>
+          <p>How to use:</p>
+          <ul>
+            <li>Click any of the cards to navigate to the relevant section.</li>
+            <li>Contact support if you need help with quotes, payments, or job updates.</li>
+          </ul>
+          <p>This dashboard helps you stay informed and manage your interactions with the company efficiently.</p>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</nz-modal>

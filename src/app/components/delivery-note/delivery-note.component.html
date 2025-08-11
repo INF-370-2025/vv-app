@@ -1,6 +1,10 @@
 <div nz-row [nzJustify]="'center'">
   <div nz-col [nzSpan]="!showCreateForm ? 22 : 18" style="text-align: start;">
     <h1 *ngIf="!showCreateForm"><b>Delivery Notes</b></h1>
+      <button nz-button (click)="showHelp()">
+  <span nz-icon nzType="question-circle" nzTheme="outline"></span>
+  Get Help
+</button>
     <button *ngIf="showCreateForm" nz-button nzType="default" (click)="handleFormClose()">
       <span nz-icon nzType="arrow-left" nzTheme="outline"></span>
       Back to Delivery Notes
@@ -93,3 +97,44 @@
     </nz-card>
   </div>
 </div>
+
+<!-- help -->
+<nz-modal
+  [nzWidth]="800"
+  [(nzVisible)]="showHelpModal"
+  nzClosable="true"
+  [nzTitle]="helpTitle"
+  (nzOnCancel)="showHelpModal=false"
+  [nzFooter]="null">
+
+  <ng-template #helpTitle>
+    <span nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px; color: #17726d;"></span>
+    <b>Help Center</b>
+  </ng-template>
+
+  <ng-container *nzModalContent>
+    <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+      <div nz-col [nzSpan]="24">
+        <div class="help-content">
+          <h2>Delivery Note Help</h2>
+          <p>Key Features Include</p>
+          <ol>
+            <li>View Delivery Notes - Click the "View" button to open a note in a new tab.</li>
+
+            <li>Delete Delivery Notes - Remove outdated or incorrect notes (requires confirmation).</li>
+
+            <li>Create New Notes  Click "Create Delivery Note" to generate a new document.</li>
+
+          </ol>
+          <p>How to use:</p>
+          <ul>
+            <li>View a Note → Click the eye icon next to a note to open it.</li>
+            <li>Delete a Note → Click the trash icon, then confirm deletion.</li>
+            <li>Add a New Note → Click the "Create Delivery Note" button and fill in the required details</li>
+          </ul>
+          <p>⚠ Note: Once deleted, a delivery note cannot be recovered.</p>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</nz-modal>

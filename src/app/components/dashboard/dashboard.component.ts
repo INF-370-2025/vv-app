@@ -46,6 +46,10 @@ export class DashboardComponent {
   stockTypes: any[] = [];
   selectedStockTypeId: number | null = null;
   isStockTypesLoading = false;
+  showAdminHelpModal = false;
+  helpText = '';
+  showCustomerHelpModal = false;
+  showEmployeeHelpModal = false;
 
   quotations: quotation[] = [];
   pending: quotation[] = [];
@@ -587,6 +591,21 @@ getStockTypeName(): string {
     },
     nzWidth: '90vw'
   });
+}
+
+openAdminHelpModal() {
+  this.helpText = '';
+  this.showAdminHelpModal = true;
+}
+
+openEmployeeHelpModal() {
+  this.helpText = '';
+  this.showEmployeeHelpModal = true;
+}
+
+openCustomerHelpModal() {
+  this.helpText = '';
+  this.showCustomerHelpModal = true;
 }
 }
 //npm install chart.js

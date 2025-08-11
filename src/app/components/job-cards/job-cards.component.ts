@@ -32,6 +32,7 @@ export class JobCardsComponent implements OnInit {
   jobCardToUpdate: jobCard | null = null;   jobCardStatuses: jobCardStatus[] = [];
   patterns: pattern[] = []; //
   quotations: quotation[] = [];
+  showHelp:boolean = false;
 
   constructor(
     private apiService: ApiService,
@@ -43,6 +44,10 @@ export class JobCardsComponent implements OnInit {
     this.loadJobCards();
     this.loadPatterns();
     this.loadQuotations();
+  }
+
+  showHelpModal(){
+    this.showHelp = true;
   }
 
   loadJobCardStatuses(): void {
