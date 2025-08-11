@@ -93,15 +93,11 @@ export class JobCardViewComponent implements OnInit {
 
     this.apiService.send_email(newEmail).subscribe({
       next: (res) => {
-        this.notification.showSuccess('Success', 'Job card updated successfully');
+        this.notification.showSuccess('Success', 'Email updated successfully');
       },
       error: (err) => {
-        console.error('Error updating job card:', err);
-        // ADD DETAILED ERROR LOGGING:
-        if (err.error) {
-          console.error('Backend error:', err.error);
-        }
-        this.notification.showError('Error', 'Failed to update job card');
+        this.notification.showError('Error', 'Failed to email');
+        console.log(newEmail);
       }
     });
   }

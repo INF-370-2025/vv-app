@@ -15,7 +15,7 @@ export class ApiService {
   //#region Default
 
     send_email(email: any) {
-      return this.http.post<any>(environment.api_url + '/send_email', email)
+      return this.http.post<any>(environment.api_url + 'send-email', email)
     }
 
   //#region Customers
