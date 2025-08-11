@@ -7,7 +7,7 @@ import { SupabaseService } from '../../../services/supabase.service';
 import { stock } from '../../../models/stock';
 import { employee } from '../../../models/user';
 import { NzUploadFile } from 'ng-zorro-antd/upload';
-
+import { email } from '../../../models/general';
 
 @Component({
   selector: 'app-job-card-view',
@@ -70,7 +70,40 @@ export class JobCardViewComponent implements OnInit {
   };
 
   openMarkCompleted() {
+    this.job_card.job_card_status_id = 2;
 
+    this.apiService.update_job_card(this.job_card.job_card_id, this.job_card).subscribe({
+      next: (res) => {
+        this.notification.showSuccess('Success', 'Job card updated successfully');
+      },
+      error: (err) => {
+        console.error('Error updating job card:', err);
+        // ADD DETAILED ERROR LOGGING:
+        if (err.error) {
+          console.error('Backend error:', err.error);
+        }
+        this.notification.showError('Error', 'Failed to update job card');
+      }
+    });
+
+    let newEmail = new email();
+    newEmail.to_email = this.job_card.quotation?.job_request?.customer?.user?.email_address!;
+    newEmail.subject = "Order Ready For Collection";
+    newEmail.body = "Good day valued customer, this email is to notify you that your order is completed and ready for collection";
+
+    this.apiService.send_email(newEmail).subscribe({
+      next: (res) => {
+        this.notification.showSuccess('Success', 'Job card updated successfully');
+      },
+      error: (err) => {
+        console.error('Error updating job card:', err);
+        // ADD DETAILED ERROR LOGGING:
+        if (err.error) {
+          console.error('Backend error:', err.error);
+        }
+        this.notification.showError('Error', 'Failed to update job card');
+      }
+    });
   }
 
   viewQuote() {

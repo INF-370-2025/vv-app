@@ -22,3 +22,9 @@ export class timeLogCode {
     created_at!:Date
     code!:string
 }
+
+export class email {
+    to_email!:string
+    subject!:string
+    body!:string
+}

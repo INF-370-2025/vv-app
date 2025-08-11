@@ -228,6 +228,8 @@ export class UserComponent implements OnInit{
 
     let userToInsert = new insertUser();
 
+    let employeeToInsert = new insertEmployee();
+
     userToInsert.title_id = this.employeeForm.value.title;
     userToInsert.role_id = this.employeeForm.value.role;
     userToInsert.name = this.employeeForm.value.name;
@@ -238,12 +240,14 @@ export class UserComponent implements OnInit{
     userToInsert.image = "0";
     userToInsert.is_employee = true;
 
+    employeeToInsert.address = this.employeeForm.value.address;
+    employeeToInsert.emergency_contact = this.employeeForm.value.emergency_contact;
+    employeeToInsert.job_scope = this.employeeForm.value.job_scope;
+    employeeToInsert.hourly_rate = this.employeeForm.value.hourly_rate;
+
     this.apiService.create_user(userToInsert).subscribe({
         next: res => {
-          console.log(userToInsert);
           this.createdUser.emit();
-          this.notification.showSuccess("Employee successfully created");
-          this.showCreateEmployeeModal = false;
           console.log(userToInsert);
         },
         error: (error) => {
@@ -251,6 +255,24 @@ export class UserComponent implements OnInit{
           this.isloading = false;
         }
       });
+
+      this.loadUsers();
+        this.employees.sort((a, b) => b.user_id - a.user_id);
+        employeeToInsert.user_id = this.employees[0].user_id;
+
+    this.apiService.create_employee(employeeToInsert).subscribe({
+      next: res => {
+        this.notification.showSuccess("Employee successfully created");
+        this.showCreateEmployeeModal = false;
+        console.log(employeeToInsert);
+      },
+      error: (error) => {
+        this.notification.showError("An Error Occoured while creating");
+        this.isloading = false;
+        console.log(employeeToInsert);
+      }
+    });
+
   }
 
   async createUser(user:user) {

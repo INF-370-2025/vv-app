@@ -12,6 +12,12 @@ export class ApiService {
 
   constructor(private http: HttpClient) { }
 
+  //#region Default
+
+    send_email(email: any) {
+      return this.http.post<any>(environment.api_url + '/send_email', email)
+    }
+
   //#region Customers
 
     customers_ep = 'customers';
@@ -99,6 +105,13 @@ export class ApiService {
     update_employee(employee_id: number, employee: any) {
     return this.http.put<any>(
       environment.api_url +  this.employees_ep + `/update_employee/${employee_id}`,
+      employee
+    );
+    }
+
+    create_employee(employee: any){
+      return this.http.post<any>(
+      environment.api_url + this.employees_ep + '/create_employee',
       employee
     );
     }
