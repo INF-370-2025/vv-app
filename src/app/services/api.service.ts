@@ -129,6 +129,12 @@ export class ApiService {
       return this.http.get<any>(environment.api_url + this.employees_ep  + `/clock_out/${employee_id}`)
     }
 
+    get_artisans() {
+      return this.http.get<any>(
+      environment.api_url + this.employees_ep + '/get_artisans'
+      );
+   }
+
   //#endregion
 
   //#region Users
@@ -224,14 +230,22 @@ export class ApiService {
 
   update_job_card(job_card_id: number, job_card: any) {
     return this.http.put<any>(
-      environment.api_url +  this.job_cards_ep + `/update_job_card/${job_card_id}`,
+      environment.api_url + this.job_cards_ep + `/update_job_card/${job_card_id}`,
       job_card
+    );
+  }
+
+  get_job_card_with_materials(job_card_id: number) {
+    return this.http.get<any>(
+      environment.api_url + this.job_cards_ep + `/get_job_card_with_materials/${job_card_id}`
     );
   }
 
   get_completed_job_cards(){
     return this.http.get<any>(environment.api_url + this.job_cards_ep + `/get_completed_job_cards`)
   }
+
+
 
 //#endregion
 
@@ -387,6 +401,15 @@ export class ApiService {
       return this.http.get<any>(environment.api_url + this.general_ep + `/get_artisan_stats/${user_id}`)
     }
 
+    // Add to your ApiService
+    get_artisan_stats(job_card_id: number) {
+      return this.http.get<any>(
+        environment.api_url + this.general_ep + `/get_artisan_stats/${job_card_id}`
+      );
+    }
+
+
+
   //#endregion
 
   //#region Stock
@@ -495,7 +518,6 @@ export class ApiService {
       );
     }
 
-  // Material Import
     import_material_excel(file: File): Observable<any> {
       const formData = new FormData();
       formData.append('file', file);

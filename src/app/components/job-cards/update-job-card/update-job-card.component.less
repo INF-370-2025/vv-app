@@ -1,0 +1,137 @@
+/* update-job-card.component.less */
+.form-container {
+  padding: 24px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+  .form-actions {
+    margin-top: 24px;
+    text-align: right;
+
+    button {
+      margin-left: 8px;
+    }
+  }
+
+  .selection-container {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+
+    nz-select {
+      flex: 1;
+    }
+  }
+
+  .assigned-list {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #f0f0f0;
+    border-radius: 4px;
+    padding: 8px;
+    margin-top: 8px;
+
+    nz-list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+
+      &:not(:last-child) {
+        border-bottom: 1px solid #f0f0f0;
+      }
+    }
+  }
+
+  nz-date-picker {
+    width: 100%;
+  }
+}
+/* update-job-card.component.less */
+:host ::ng-deep {
+  /* Fix dropdown text color */
+  .ant-select-selection-item,
+  .ant-select-item-option-content {
+    color: #333 !important;
+  }
+
+  .ant-select-selection-placeholder {
+    color: #888 !important;
+  }
+
+  /* Ensure dropdown items have proper contrast */
+  .ant-select-item {
+    color: #333 !important;
+
+    &:hover {
+      background-color: #f5f5f5 !important;
+    }
+  }
+
+  /* Selected item style */
+  .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+    background-color: #e6f7ff !important;
+    color: #333 !important;
+  }
+}
+
+/* Form text colors */
+nz-select, nz-option, .ant-list-item {
+  color: #333;
+}
+
+.selection-container {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+
+  nz-select {
+    flex: 1;
+  }
+}
+
+.assigned-list {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #f0f0f0;
+  border-radius: 4px;
+  padding: 8px;
+  margin-top: 8px;
+
+  nz-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    color: #333; /* Ensure list text color */
+
+    &:not(:last-child) {
+      border-bottom: 1px solid #f0f0f0;
+    }
+  }
+}
+/* update-job-card.component.less */
+.form-actions {
+  margin-top: 24px;
+  text-align: right;
+
+  button {
+    margin-left: 8px;
+
+    /* Visual feedback for dirty state */
+    &:not([disabled]) {
+      background-color: #1890ff;
+      border-color: #1890ff;
+      color: white;
+    }
+  }
+
+  /* Visual feedback for disabled state */
+  button[disabled] {
+    background-color: #f5f5f5;
+    border-color: #d9d9d9;
+    color: rgba(0, 0, 0, 0.25);
+    cursor: not-allowed;
+  }
+}

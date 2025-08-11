@@ -4,7 +4,6 @@ import { jobCard } from '../../../models/jobCard';
 import { ApiService } from '../../../services/api.service';
 import { NotificationService } from '../../../services/notification.service';
 import { SupabaseService } from '../../../services/supabase.service';
-import { stock } from '../../../models/stock';
 import { employee } from '../../../models/user';
 import { NzUploadFile } from 'ng-zorro-antd/upload';
 import { email } from '../../../models/general';
@@ -14,56 +13,50 @@ import { email } from '../../../models/general';
   standalone: true,
   imports: [AppModule],
   templateUrl: './job-card-view.component.html',
-  styleUrl: './job-card-view.component.less'
+  styleUrls: ['./job-card-view.component.less']
 })
 export class JobCardViewComponent implements OnInit {
-
-  @Input() job_card : jobCard = new jobCard();
+  @Input() job_card: jobCard = new jobCard();
   @Output() closeView = new EventEmitter<number>();
 
-  btnLoading:boolean = false;
-  materials:stock[] = [];
-  showMaterialModal:boolean = false;
-  artisans:employee[] = [];
-  showArtisanModal:boolean = false;
+  btnLoading: boolean = false;
+  materials: any[] = []; // Stores materials for display
+  showMaterialModal: boolean = false;
+  artisans: employee[] = [];
+  showArtisanModal: boolean = false;
 
   file!: NzUploadFile | undefined;
-  fileList :any[] = [];
+  fileList: any[] = [];
 
   completionDate!: Date;
 
-  constructor(private notification:NotificationService,public apiService:ApiService,private supabase:SupabaseService) {}
+  constructor(
+    private notification: NotificationService,
+    public apiService: ApiService,
+    private supabase: SupabaseService
+  ) {}
 
   ngOnInit(): void {
-    console.log(this.job_card);
     this.completionDate = this.job_card.quotation?.job_request?.finish_date!;
+    this.loadMaterials();
   }
 
-  openMaterialModal() {
-
+  loadMaterials() {
+    if (this.job_card.job_card_id) {
+      this.apiService.get_job_card_with_materials(this.job_card.job_card_id)
+        .subscribe({
+          next: (res) => {
+            this.materials = res.materials || [];
+          },
+          error: (err) => {
+            console.error('Error loading materials:', err);
+            this.notification.showError('Error', 'Failed to load materials');
+          }
+        });
+    }
   }
 
-  addMaterial(stock_id:number) {
-
-  }
-
-  removeStockItem(stock_id:number) {
-
-  }
-
-  openArtisianModal() {
-
-  }
-
-  addArtisan(employee_id:number) {
-
-  }
-
-  removeEmployee(employee_id:number) {
-
-  }
-
-  beforeUpload = (file: NzUploadFile,$event:any): boolean => {
+  beforeUpload = (file: NzUploadFile, $event: any): boolean => {
     this.fileList = this.fileList.concat(file);
     this.file = this.fileList[0];
     return false;
@@ -78,7 +71,6 @@ export class JobCardViewComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error updating job card:', err);
-        // ADD DETAILED ERROR LOGGING:
         if (err.error) {
           console.error('Backend error:', err.error);
         }
@@ -93,10 +85,10 @@ export class JobCardViewComponent implements OnInit {
 
     this.apiService.send_email(newEmail).subscribe({
       next: (res) => {
-        this.notification.showSuccess('Success', 'Email updated successfully');
+        this.notification.showSuccess('Success', 'Email sent successfully');
       },
       error: (err) => {
-        this.notification.showError('Error', 'Failed to email');
+        this.notification.showError('Error', 'Failed to send email');
         console.log(newEmail);
       }
     });

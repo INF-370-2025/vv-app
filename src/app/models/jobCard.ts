@@ -8,7 +8,7 @@ export class jobCard{
     job_card_id!: number;
     created_at!: Date;
     special_instructions!:string;
-    completed_at!:Date;
+    completed_at!: string | null;
     job_card_status_id!:number;
     job_card_status?:jobCardStatus;
     quotation_id?:number;

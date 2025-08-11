@@ -1,5 +1,4 @@
 <nz-card class="box">
-
     <div nz-row [nzGutter]="[24,24]" [nzAlign]="'middle'">
         <div nz-col nzSpan="8" style="text-align: start;">
             <h1>
@@ -47,7 +46,6 @@
     </div>
 
     <br>
-    <!-- <hr class="hr"> -->
     <br>
 
     <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]" [nzAlign]="'top'">
@@ -55,26 +53,14 @@
             <nz-list nzBordered style="text-align: center;">
                 <nz-list-header class="list-header">
                     <b>Materials</b>
-                    <button nz-button nzType="primary" nzShape="round" class="btn-add" (click)="openMaterialModal()" *ngIf="job_card.job_card_material_items != null">
-                      <span nz-icon nzType="plus" nzTheme="outline" ></span>
-                    </button>
                 </nz-list-header>
-                <nz-list-item *ngFor="let item of job_card.job_card_material_items">
+                <nz-list-item *ngFor="let material of materials">
                     <span nz-typography>
-                      <b>{{item.stock.name}}</b><br>
-                        <small>
-                          {{ item.stock.material?.material_name! }}
-                        </small>
+                      <b>{{ material.material_name }}</b>
                     </span>
-                    <button nz-button nzDanger nzShape="round" class="btn-minus" nzSize="small" [nz-tooltip]="'Remove ' + item.stock.name" nz-popconfirm nzPopconfirmTitle="Are you sure you want to remove this" (nzOnConfirm)="removeStockItem(item.stock_id)" [nzIcon]="iconTpl">
-                      <span nz-icon nzType="minus" nzTheme="outline" ></span>
-                    </button>
                 </nz-list-item>
-                <nz-list-item *ngIf="job_card.job_card_material_items == null" style="text-align: center;">
-                    <button nz-button nzType="primary" nzShape="round" class="btn-add" (click)="openMaterialModal()">
-                      Add Materials to Job
-                      <span nz-icon nzType="plus" nzTheme="outline" ></span>
-                    </button>
+                <nz-list-item *ngIf="materials.length === 0" style="text-align: center;">
+                    <span>No materials assigned</span>
                 </nz-list-item>
             </nz-list>
         </div>
@@ -82,9 +68,6 @@
             <nz-list nzBordered>
                 <nz-list-header class="list-header">
                     <b>Artisans</b>
-                    <button nz-button nzType="primary" nzShape="round" class="btn-add" (click)="openArtisianModal()" *ngIf="job_card.job_card_artisans != null">
-                      <span nz-icon nzType="plus" nzTheme="outline" ></span>
-                    </button>
                 </nz-list-header>
                 <nz-list-item *ngFor="let item of job_card.job_card_artisans">
                     <span nz-typography>
@@ -94,16 +77,9 @@
                         {{item.employee.job_scope}}
                       </small>
                     </span>
-                    <button nz-button nzDanger nzShape="round" class="btn-minus" nzSize="small" [nz-tooltip]="'Remove ' + item.employee.user?.name" nz-popconfirm nzPopconfirmTitle="Are you sure you want to remove this employee" (nzOnConfirm)="removeEmployee(item.employee_id)"
-                        [nzIcon]="iconTpl">
-                      <span nz-icon nzType="minus" nzTheme="outline" ></span>
-                    </button>
                 </nz-list-item>
-                <nz-list-item *ngIf="job_card.job_card_artisans == null" style="text-align: center;">
-                    <button nz-button nzType="primary" nzShape="round" class="btn-add" (click)="openArtisianModal()">
-                      Add Artisian to Job
-                      <span nz-icon nzType="plus" nzTheme="outline" ></span>
-                    </button>
+                <nz-list-item *ngIf="!job_card.job_card_artisans || job_card.job_card_artisans.length === 0" style="text-align: center;">
+                    <span>No artisans assigned</span>
                 </nz-list-item>
             </nz-list>
         </div>
@@ -124,10 +100,6 @@
         </div>
     </div>
 
-    <ng-template #iconTpl>
-        <span nz-icon nzType="question-circle-o" style="color: red;"></span>
-    </ng-template>
-
     <br>
     <hr class="hr">
     <br>
@@ -136,9 +108,7 @@
         <div nz-col nzSpan="8" style="text-align: start;">
             <p>
                 <b>Special Instructions : </b>
-                <textarea nz-input [value]="job_card.special_instructions || 'N/A'">
-                  
-                </textarea>
+                <textarea nz-input [value]="job_card.special_instructions || 'N/A'"></textarea>
             </p>
         </div>
         <div nz-col nzSpan="8" style="text-align: center;">
@@ -163,9 +133,4 @@
             </nz-button-group>
         </div>
     </div>
-
-
 </nz-card>
-
-
-<!--Modal-->
