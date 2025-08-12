@@ -8,7 +8,7 @@ import { StockViewComponent } from './stock-view/stock-view.component';
 import { CreateStockComponent } from './create-stock/create-stock.component';
 import { UpdateStockComponent } from './update-stock/update-stock.component';
 import { material } from '../../models/stock';
-import { stock_type } from '../../models/stock';
+import { stock_type, stock_category } from '../../models/stock';
 import { saveAs } from 'file-saver';
 
 @Component({
@@ -31,6 +31,7 @@ export class StockComponent implements OnInit {
   stockToUpdate?: stock;
   materials: material [] = [];
   stockTypes: stock_type [] = [];
+  stockCategories:  stock_category [] = [];
   importResult: any = null;
   importing = false;
 
@@ -77,7 +78,8 @@ export class StockComponent implements OnInit {
         (item.name && item.name.toLowerCase().includes(value)) ||
         (item.description && item.description.toLowerCase().includes(value)) ||
         (item.material?.material_name && item.material.material_name.toLowerCase().includes(value)) ||
-        (item.stock_type?.type_name && item.stock_type.type_name.toLowerCase().includes(value))
+        (item.stock_type?.type_name && item.stock_type.type_name.toLowerCase().includes(value)) ||
+        (item.stock_category?.category_name && item.stock_category.category_name.toLowerCase().includes(value))
       );
     }
   }
@@ -92,7 +94,8 @@ export class StockComponent implements OnInit {
         (item.name && item.name.toLowerCase().includes(value)) ||
         (item.description && item.description.toLowerCase().includes(value)) ||
         (item.material?.material_name && item.material.material_name.toLowerCase().includes(value)) ||
-        (item.stock_type?.type_name && item.stock_type.type_name.toLowerCase().includes(value))
+        (item.stock_type?.type_name && item.stock_type.type_name.toLowerCase().includes(value))||
+        (item.stock_category?.category_name && item.stock_category.category_name.toLowerCase().includes(value))
       );
     }
   }
@@ -107,7 +110,8 @@ export class StockComponent implements OnInit {
         (item.name && item.name.toLowerCase().includes(value)) ||
         (item.description && item.description.toLowerCase().includes(value)) ||
         (item.material?.material_name && item.material.material_name.toLowerCase().includes(value)) ||
-        (item.stock_type?.type_name && item.stock_type.type_name.toLowerCase().includes(value))
+        (item.stock_type?.type_name && item.stock_type.type_name.toLowerCase().includes(value)) ||
+        (item.stock_category?.category_name && item.stock_category.category_name.toLowerCase().includes(value))
       );
     }
   }
@@ -184,6 +188,17 @@ export class StockComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading stock types:', err);
+      }
+    });
+  }
+
+  loadStockCategories(): void {
+    this.apiService.get_stock_categories().subscribe({
+      next: (response) => {
+        this.stockCategories = response as stock_category[];
+      },
+      error: (err) => {
+        console.error('Error loading stock categories:', err);
       }
     });
   }

@@ -1,9 +1,6 @@
 <div nz-row [nzJustify]="'center'">
     <div nz-col nzSpan="22">
-        <button nz-button (click)="showHelpModal()">
-  <span nz-icon nzType="question-circle" nzTheme="outline"></span>
-  Get Help
-</button>
+
         <nz-tabset nzType="card" (nzSelectedIndexChange)="selectedTabChange($event)" [(nzSelectedIndex)]="selectedTabIndex">
 
             <!-- Pending Tab -->
@@ -169,6 +166,10 @@
             </nz-tab>
 
         </nz-tabset>
+        <button nz-button (click)="showHelpModal()">
+          <span nz-icon nzType="question-circle" nzTheme="outline"></span>
+            Get Help
+        </button>
     </div>
 </div>
 

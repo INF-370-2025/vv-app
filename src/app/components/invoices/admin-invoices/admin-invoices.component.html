@@ -1,10 +1,6 @@
 <div nz-row [nzJustify]="'center'">
   <div nz-col [nzSpan]="!showCreateForm ? 22 : 18" style="text-align: start;">
     <!-- <h1 *ngIf="!showCreateForm"><b>Invoices</b></h1> -->
-      <button nz-button (click)="showHelpModal()">
-  <span nz-icon nzType="question-circle" nzTheme="outline"></span>
-  Get Help
-</button>
     <button *ngIf="showCreateForm" nz-button nzType="default" (click)="handleFormClose()">
       <span nz-icon nzType="arrow-left" nzTheme="outline"></span>
       Back to Invoices
@@ -153,6 +149,10 @@
       <button nz-button nzType="primary" (click)="openCreateForm()">
         Create Invoice
         <span nz-icon nzType="plus" nzTheme="outline"></span>
+      </button>
+      <button nz-button (click)="showHelpModal()">
+        <span nz-icon nzType="question-circle" nzTheme="outline"></span>
+        Get Help
       </button>
     </ng-template>
   </div>

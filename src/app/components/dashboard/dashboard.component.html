@@ -7,11 +7,6 @@
 
 <!-- Admin Section -->
 <ng-container *ngIf="authService.user?.role_id == 1">
-    <button nz-button (click)="openAdminHelpModal()">
-        <span nz-icon nzType="question-circle" nzTheme="outline"></span>
-        Get Help
-    </button>
-
     <nz-collapse [nzBordered]="false">
         <nz-collapse-panel [nzHeader]="panel" #p [nzExpandedIcon]="'caret-right'" [nzActive]="true">
             <ng-template #panel>
@@ -97,57 +92,6 @@
                     </nz-spin>
                 </div>
             </div>
-
-            <!-- CHARTS SECTION (COMMENTED FOR POTENTIAL REMOVAL) -->
-            <!--
-            <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
-                <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="14" [nzLg]="14" [nzXl]="14">
-                    <nz-spin [nzSpinning]="isloadingCard">
-                        <nz-card nzHoverable="true">
-                            <canvas id="canvas_jobs" class="chart-canvas"></canvas>
-                        </nz-card>
-                    </nz-spin>
-                </div>
-
-                <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="10" [nzLg]="10" [nzXl]="10">
-                    <nz-spin [nzSpinning]="isloadingCard1">
-                        <nz-card nzHoverable="true">
-                            <div class="chart-header">
-                                <nz-select
-                                    class="stock-type-select"
-                                    nzShowSearch
-                                    nzAllowClear
-                                    nzPlaceHolder="Filter by stock type"
-                                    [(ngModel)]="selectedStockTypeId"
-                                    (ngModelChange)="onStockTypeChange($event)"
-                                    [nzLoading]="isStockTypesLoading"
-                                    style="width: 200px; margin-right: 10px;"
-                                >
-                                    <nz-option
-                                        *ngFor="let type of stockTypes"
-                                        [nzLabel]="type.name"
-                                        [nzValue]="type.stock_type_id"
-                                    >
-                                        <span style="color: #000">{{ type.name }}</span>
-                                    </nz-option>
-                                </nz-select>
-
-                                <button
-                                    *ngIf="selectedStockTypeId"
-                                    nz-button
-                                    nzType="default"
-                                    nzSize="small"
-                                    (click)="clearStockTypeFilter()"
-                                >
-                                    Clear Filter
-                                </button>
-                            </div>
-                            <canvas id="canvas_levels"></canvas>
-                        </nz-card>
-                    </nz-spin>
-                </div>
-            </div>
-            -->
         </nz-collapse-panel>
     </nz-collapse>
 
@@ -233,15 +177,15 @@
             </div>
         </nz-collapse-panel>
     </nz-collapse>
+        <button nz-button (click)="openAdminHelpModal()">
+        <span nz-icon nzType="question-circle" nzTheme="outline"></span>
+        Get Help
+    </button>
 </ng-container>
 
 
 <!--Customer Dashboard-->
 <ng-container *ngIf="authService.user?.role_id == 6">
-    <button nz-button (click)="openCustomerHelpModal()">
-      <span nz-icon nzType="question-circle" nzTheme="outline"></span>
-      Get Help
-    </button>
     <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
 
         <div nz-col [nzXs]="12" [nzSm]="6" [nzMd]="6" [nzLg]="6" [nzXl]="6">
@@ -274,15 +218,15 @@
 
 
     </div>
+    <button nz-button (click)="openCustomerHelpModal()" style="position: absolute;">
+      <span nz-icon nzType="question-circle" nzTheme="outline"></span>
+      Get Help
+    </button>
 </ng-container>
 
 <!--Employee Dashboard-->
 
 <ng-container *ngIf="authService.user?.role_id == 5">
-  <button nz-button (click)="openEmployeeHelpModal()">
-  <span nz-icon nzType="question-circle" nzTheme="outline"></span>
-  Get Help
-</button>
 <nz-collapse [nzBordered]="false" >
     <nz-collapse-panel [nzHeader]="panel" #p [nzExpandedIcon]="'caret-right'" [nzActive]="true ">
         <ng-template #panel>
@@ -353,6 +297,10 @@
         </div>
     </nz-collapse-panel>
 </nz-collapse>
+  <button nz-button (click)="openEmployeeHelpModal()">
+  <span nz-icon nzType="question-circle" nzTheme="outline"></span>
+  Get Help
+</button>
 </ng-container>
 
 

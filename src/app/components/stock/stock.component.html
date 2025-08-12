@@ -55,7 +55,7 @@
 
 
 <div nz-row [nzJustify]="'center'" *ngIf="!showStockView && !showCreateView && !showUpdateView">
-  <div nz-col nzSpan="22">
+  <div nz-col nzSpan="24">
     <nz-tabset nzType="card">
 
       <!-- Low Stock Tab -->
@@ -64,7 +64,7 @@
           <nz-table #lowStockTable [nzData]="lowStock" [nzPageSize]="20">
             <thead>
               <tr>
-                <th colspan="6">
+                <th colspan="8">
                   <div style="display: flex; justify-content: space-between; align-items: center;">
                     <nz-input-group [nzSuffix]="suffixIconSearch" style="max-width: 300px;">
                       <input type="text" nz-input placeholder="Search low stock"
@@ -82,8 +82,10 @@
                 <th>Item</th>
                 <th>Material</th>
                 <th>Type</th>
+                <th>Category</th>
                 <th>Stock Level</th>
-                <th>Action</th>
+                <th>View</th>
+                <th>Update</th>
               </tr>
             </thead>
             <tbody>
@@ -96,6 +98,7 @@
                 </td>
                 <td>{{item.material?.material_name || 'N/A'}}</td>
                 <td>{{item.stock_type?.type_name || 'N/A'}}</td>
+                <td>{{item.stock_category?.category_name || 'N/A'}}</td>
                 <td>
                   <div style="display: flex; align-items: center; gap: 8px;">
                     <nz-tag [nzColor]="'red'">{{item.stock_level}}</nz-tag>
@@ -105,16 +108,16 @@
                     </span>
                   </div>
                 </td>
-                <td>
-                  <div style="display; flex; gap: 8px;">
+                  <td style="display; flex; gap: 8px;">
                     <button nz-button nzType="primary" (click)="viewStock(item)">
                       <i nz-icon nzType="eye" nzTheme="outline"></i>
                     </button>
+                  </td>
+                  <td style="display; flex; gap: 8px;">
                     <button nz-button nzType="default" (click)="openUpdateView(item)">
                       <i nz-icon nzType="edit" nzTheme="outline"></i>
                     </button>
-                  </div>
-                </td>
+                  </td>
               </tr>
             </tbody>
           </nz-table>
@@ -127,7 +130,7 @@
           <nz-table #mediumStockTable [nzData]="mediumStock" [nzPageSize]="20">
             <thead>
               <tr>
-                <th colspan="6">
+                <th colspan="8">
                   <div style="display: flex; justify-content: space-between; align-items: center;">
                     <nz-input-group [nzSuffix]="suffixIconSearch" style="max-width: 300px;">
                       <input type="text" nz-input placeholder="Search medium stock"
@@ -145,8 +148,10 @@
                 <th>Item</th>
                 <th>Material</th>
                 <th>Type</th>
+                <th>Category</th>
                 <th>Stock Level</th>
-                <th>Action</th>
+                <th>View</th>
+                <th>Update</th>
               </tr>
             </thead>
             <tbody>
@@ -158,19 +163,20 @@
                 </td>
                 <td>{{item.material?.material_name || 'N/A'}}</td>
                 <td>{{item.stock_type?.type_name || 'N/A'}}</td>
+                <td>{{item.stock_category?.category_name || 'N/A'}}</td>
                 <td>
                   <nz-tag [nzColor]="'orange'">{{item.stock_level}}</nz-tag>
                 </td>
-                <td>
-                  <div style="display; flex; gap: 8px;">
+                  <td style="display; flex; gap: 8px;">
                     <button nz-button nzType="primary" (click)="viewStock(item)">
                       <i nz-icon nzType="eye" nzTheme="outline"></i>
                     </button>
+                  </td>
+                  <td style="display; flex; gap: 8px;">
                     <button nz-button nzType="default" (click)="openUpdateView(item)">
                       <i nz-icon nzType="edit" nzTheme="outline"></i>
                     </button>
-                  </div>
-                </td>
+                  </td>
               </tr>
             </tbody>
           </nz-table>
@@ -183,7 +189,7 @@
           <nz-table #highStockTable [nzData]="highStock" [nzPageSize]="20">
             <thead>
               <tr>
-                <th colspan="6">
+                <th colspan="8">
                   <div style="display: flex; justify-content: space-between; align-items: center;">
                     <nz-input-group [nzSuffix]="suffixIconSearch" style="max-width: 300px;">
                       <input type="text" nz-input placeholder="Search high stock"
@@ -201,8 +207,10 @@
                 <th>Item</th>
                 <th>Material</th>
                 <th>Type</th>
+                <th>Category</th>
                 <th>Stock Level</th>
-                <th>Action</th>
+                <th>View</th>
+                <th>Update</th>
               </tr>
             </thead>
             <tbody>
@@ -214,19 +222,20 @@
                 </td>
                 <td>{{item.material?.material_name || 'N/A'}}</td>
                 <td>{{item.stock_type?.type_name || 'N/A'}}</td>
+                <td>{{item.stock_category?.category_name || 'N/A'}}</td>
                 <td>
                   <nz-tag [nzColor]="'green'">{{item.stock_level}}</nz-tag>
                 </td>
-                <td>
-                  <div style="display; flex; gap: 8px;">
+                  <td style="display; flex; gap: 8px;">
                     <button nz-button nzType="primary" (click)="viewStock(item)">
                       <i nz-icon nzType="eye" nzTheme="outline"></i>
                     </button>
+                  </td>
+                  <td style="display; flex; gap: 8px;">
                     <button nz-button nzType="default" (click)="openUpdateView(item)">
                       <i nz-icon nzType="edit" nzTheme="outline"></i>
                     </button>
-                  </div>
-                </td>
+                  </td>
               </tr>
             </tbody>
           </nz-table>

@@ -445,6 +445,10 @@ export class ApiService {
       );
     }
 
+    get_stock_categories() {
+      return this.http.get<any>(environment.api_url + this.stock_ep + `/get_stock_categories`);
+    }
+
     create_stock(stock: any) {
       return this.http.post<any>(
         environment.api_url + this.stock_ep + '/create_stock',

@@ -1,10 +1,6 @@
 <div nz-row [nzJustify]="'center'">
     <div nz-col [nzSpan]="!(showjobCard || showUpdateForm) ? 22 : 18" style="text-align: start;">
         <h1 *ngIf="!(showjobCard || showUpdateForm)"><b>Job Cards</b></h1>
-          <button nz-button (click)="showHelpModal()">
-  <span nz-icon nzType="question-circle" nzTheme="outline"></span>
-  Get Help
-</button>
         <button nz-button nzType="default" *ngIf="showjobCard || showUpdateForm"
                 (click)="closeJobcard(); closeUpdateForm()">
           <span nz-icon nzType="arrow-left" nzTheme="outline"></span>
@@ -53,7 +49,7 @@
 
 <!-- Table View -->
 <div nz-row [nzJustify]="'center'" *ngIf="!(showjobCard || showUpdateForm || showCreateForm)">
-    <div nz-col nzSpan="22">
+    <div nz-col nzSpan="24">
         <nz-tabset nzType="card" [nzTabBarExtraContent]="extraTemplate">
 
             <!-- Pending Tab -->
@@ -74,7 +70,8 @@
                                 <th>Company Details</th>
                                 <th>Files</th>
                                 <th>Quote</th>
-                                <th>Actions</th>
+                                <th>View</th>
+                                <th>Update</th>
                             </tr>
                         </thead>
                         <tbody class="table-body">
@@ -100,28 +97,28 @@
                                     {{job.quotation?.job_request?.customer?.user?.phone_number || '-'}}
                                 </td>
                                 <td>
-                                    <button nz-button nzType="primary" (click)="viewDesigns(job)"
-                                            [disabled]="!job.quotation?.job_request?.job_request_items?.length">
-                                        <i nz-icon nzType="file-jpg" nzTheme="outline"></i> Designs
-                                    </button>
+                                  <button nz-button nzType="primary" (click)="viewDesigns(job)"
+                                          [disabled]="!job.quotation?.job_request?.job_request_items?.length">
+                                      <i nz-icon nzType="file-jpg" nzTheme="outline"></i> Designs
+                                  </button>
                                 </td>
                                 <td>
-                                    <button nz-button nzType="primary" (click)="viewQuotation(job)"
-                                            [disabled]="!job.quotation?.quotation_url">
-                                        <i nz-icon nzType="file-pdf" nzTheme="outline"></i> Quotation
-                                    </button>
+                                  <button nz-button nzType="primary" (click)="viewQuotation(job)"
+                                          [disabled]="!job.quotation?.quotation_url">
+                                      <i nz-icon nzType="file-pdf" nzTheme="outline"></i> Quotation
+                                  </button>
                                 </td>
                                 <td>
-                                    <div class="action-buttons">
-                                        <button nz-button nzType="primary" (click)="viewJobCard(job)"
-                                                nzTooltipTitle="View Details">
-                                            <i nz-icon nzType="eye" nzTheme="outline"></i>
-                                        </button>
-                                        <button nz-button nzType="default" (click)="openUpdateForm(job)"
-                                                nzTooltipTitle="Edit Job Card" style="margin-left: 8px;">
-                                            <i nz-icon nzType="edit" nzTheme="outline"></i>
-                                        </button>
-                                    </div>
+                                  <button nz-button nzType="primary" (click)="viewJobCard(job)"
+                                          nzTooltipTitle="View Details">
+                                      <i nz-icon nzType="eye" nzTheme="outline"></i>
+                                  </button>
+                                </td>
+                                <td>
+                                  <button nz-button nzType="default" (click)="openUpdateForm(job)"
+                                          nzTooltipTitle="Edit Job Card" style="margin-left: 8px;">
+                                      <i nz-icon nzType="edit" nzTheme="outline"></i>
+                                  </button>
                                 </td>
                             </tr>
                         </tbody>
@@ -135,7 +132,7 @@
                     <nz-table #progressTable [nzData]="inProgress" [nzPageSize]="20">
                         <thead>
                             <tr>
-                                <th colSpan="3">
+                                <th colSpan="5">
                                     <nz-input-group [nzSuffix]="suffixIconSearch">
                                         <input type="text" nz-input placeholder="Search Here"
                                                (keyup)="inProgress = searchJobs($event, 1)" />
@@ -147,7 +144,8 @@
                                 <th>Company Name</th>
                                 <th>Registration</th>
                                 <th>Contact</th>
-                                <th>Actions</th>
+                                <th>View</th>
+                                <th>Update</th>
                             </tr>
                         </thead>
                         <tbody class="table-body">
@@ -168,16 +166,17 @@
                                     {{job.quotation?.job_request?.customer?.user?.phone_number || '-'}}
                                 </td>
                                 <td>
-                                    <div class="action-buttons">
-                                        <button nz-button nzType="primary" (click)="viewJobCard(job)"
-                                                nzTooltipTitle="View Details">
-                                            <i nz-icon nzType="eye" nzTheme="outline"></i>
-                                        </button>
-                                        <button nz-button nzType="default" (click)="openUpdateForm(job)"
-                                                nzTooltipTitle="Edit Job Card" style="margin-left: 8px;">
-                                            <i nz-icon nzType="edit" nzTheme="outline"></i>
-                                        </button>
-                                    </div>
+                                <td>
+                                  <button nz-button nzType="primary" (click)="viewJobCard(job)"
+                                          nzTooltipTitle="View Details">
+                                      <i nz-icon nzType="eye" nzTheme="outline"></i>
+                                  </button>
+                                </td>
+                                <td>
+                                  <button nz-button nzType="default" (click)="openUpdateForm(job)"
+                                          nzTooltipTitle="Edit Job Card" style="margin-left: 8px;">
+                                      <i nz-icon nzType="edit" nzTheme="outline"></i>
+                                  </button>
                                 </td>
                             </tr>
                         </tbody>
@@ -203,7 +202,8 @@
                                 <th>Company Name</th>
                                 <th>Registration</th>
                                 <th>Contact</th>
-                                <th>Actions</th>
+                                <th>View</th>
+                                <th> </th>
                             </tr>
                         </thead>
                         <tbody class="table-body">
@@ -255,7 +255,8 @@
                                 <th>Company Name</th>
                                 <th>Registration</th>
                                 <th>Contact</th>
-                                <th>Actions</th>
+                                <th>View</th>
+                                <th>Update</th>
                             </tr>
                         </thead>
                         <tbody class="table-body">
@@ -276,24 +277,27 @@
                                     {{job.quotation?.job_request?.customer?.user?.phone_number || '-'}}
                                 </td>
                                 <td>
-                                    <div class="action-buttons">
-                                        <button nz-button nzType="primary" (click)="viewJobCard(job)"
-                                                nzTooltipTitle="View Details">
-                                            <i nz-icon nzType="eye" nzTheme="outline"></i>
-                                        </button>
-                                        <button nz-button nzType="default" (click)="openUpdateForm(job)"
-                                                nzTooltipTitle="Edit Job Card" style="margin-left: 8px;">
-                                            <i nz-icon nzType="edit" nzTheme="outline"></i>
-                                        </button>
-                                    </div>
+                                  <button nz-button nzType="primary" (click)="viewJobCard(job)"
+                                          nzTooltipTitle="View Details">
+                                      <i nz-icon nzType="eye" nzTheme="outline"></i>
+                                  </button>
+                                </td>
+                                <td>
+                                  <button nz-button nzType="default" (click)="openUpdateForm(job)"
+                                          nzTooltipTitle="Edit Job Card" style="margin-left: 8px;">
+                                      <i nz-icon nzType="edit" nzTheme="outline"></i>
+                                  </button>
                                 </td>
                             </tr>
                         </tbody>
                     </nz-table>
                 </nz-spin>
             </nz-tab>
-
         </nz-tabset>
+          <button nz-button (click)="showHelpModal()">
+            <span nz-icon nzType="question-circle" nzTheme="outline"></span>
+            Get Help
+          </button>
 
 <ng-template #extraTemplate>
     <button nz-button nzType="primary" (click)="openCreateForm()">
@@ -303,6 +307,8 @@
 </ng-template>
     </div>
 </div>
+
+
 
 <!-- Job Card View -->
 <!-- <div nz-row [nzJustify]="'center'" *ngIf="showjobCard">

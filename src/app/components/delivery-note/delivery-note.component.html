@@ -1,10 +1,6 @@
 <div nz-row [nzJustify]="'center'">
   <div nz-col [nzSpan]="!showCreateForm ? 22 : 18" style="text-align: start;">
     <h1 *ngIf="!showCreateForm"><b>Delivery Notes</b></h1>
-      <button nz-button (click)="showHelp()">
-  <span nz-icon nzType="question-circle" nzTheme="outline"></span>
-  Get Help
-</button>
     <button *ngIf="showCreateForm" nz-button nzType="default" (click)="handleFormClose()">
       <span nz-icon nzType="arrow-left" nzTheme="outline"></span>
       Back to Delivery Notes
@@ -14,7 +10,7 @@
 
 <!-- Delivery Notes List View -->
 <div nz-row [nzJustify]="'center'" *ngIf="!showCreateForm">
-  <div nz-col nzSpan="22">
+  <div nz-col nzSpan="16">
     <nz-tabset nzType="card" [nzTabBarExtraContent]="extraTemplateDeliveryNotes">
       <nz-tab [nzTitle]="'Delivery Notes'">
         <nz-spin [nzSpinning]="isLoading">
@@ -41,41 +37,45 @@
               <tr>
                 <th>ID</th>
                 <th>Job Card ID</th>
-                <th>Actions</th>
+                <th>View</th>
+                <th>Delete</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let note of deliveryNotesTable.data">
                 <td><b>#{{note.delivery_note_id}}</b></td>
                 <td>{{note.job_card_id}}</td>
-                <td>
-                  <div class="actions-container">
-                    <button
-                      nz-button
-                      nzType="primary"
-                      nzSize="small"
-                      (click)="viewDeliveryNote(note)"
-                      [disabled]="!note.delivery_note_url">
-                      <i nz-icon nzType="eye" nzTheme="outline"></i> View
-                    </button>
-
-                    <button
-                      nz-button
-                      nzType="default"
-                      nzDanger
-                      nzSize="small"
-                      (click)="deleteDeliveryNote(note)"
-                      [nzLoading]="isDeleting[note.delivery_note_id]">
-                      <i nz-icon nzType="delete" nzTheme="outline"></i> Delete
-                    </button>
-                  </div>
-                </td>
+                    <td>
+                      <button
+                        nz-button
+                        nzType="primary"
+                        nzSize="small"
+                        (click)="viewDeliveryNote(note)"
+                        [disabled]="!note.delivery_note_url">
+                        <i nz-icon nzType="eye" nzTheme="outline"></i> View
+                      </button>
+                    </td>
+                    <td>
+                      <button
+                        nz-button
+                        nzType="default"
+                        nzDanger
+                        nzSize="small"
+                        (click)="deleteDeliveryNote(note)"
+                        [nzLoading]="isDeleting[note.delivery_note_id]">
+                        <i nz-icon nzType="delete" nzTheme="outline"></i> Delete
+                      </button>
+                    </td>
               </tr>
             </tbody>
           </nz-table>
         </nz-spin>
       </nz-tab>
     </nz-tabset>
+    <button nz-button (click)="showHelp()">
+      <span nz-icon nzType="question-circle" nzTheme="outline"></span>
+      Get Help
+    </button>
 
     <ng-template #extraTemplateDeliveryNotes>
       <button nz-button nzType="primary" (click)="openCreateForm()">
