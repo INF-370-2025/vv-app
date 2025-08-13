@@ -1,23 +1,43 @@
+<!-- timesheet-calander.component.html -->
 <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
     <div nz-col nzSpan="24">
         <nz-button-group>
-            <button nz-button (click)="clockIn()" >
+            <button nz-button (click)="generateClockInCode()" [nzLoading]="isGeneratingCode">
                 <span nz-icon nzType="clock-circle" nzTheme="outline"></span>
-                Clock In
+                Generate Clock-In Code
             </button>
-            <button nz-button (click)="clockOut()" >
+            <button nz-button (click)="generateClockOutCode()" [nzLoading]="isGeneratingCode">
                 <span nz-icon nzType="field-time" nzTheme="outline"></span>
-                Clock Out
+                Generate Clock-Out Code
             </button>
         </nz-button-group>
     </div>
-    <div nz-col nzSpan="24">
-       <nz-qrcode *ngIf="showCode" [nzValue]="clockCode" nzLevel="H" [nzStatus]="isQrloading ? 'loading':'active'"></nz-qrcode>
-        <nz-qrcode *ngIf="showExpired" [nzValue]="clockCode" nzLevel="H" [nzStatus]="'expired'"></nz-qrcode>
-    </div>
 </div>
 <br>
+
+<!-- Custom Fullscreen Overlay -->
+<div *ngIf="showCodeOverlay" class="overlay" @fadeIn>
+    <div class="overlay-content">
+        <div class="code-container">
+            <h1 class="clock-code">{{ clockCode }}</h1>
+<!-- timesheet-calander.component.html -->
+            <div class="countdown-container">
+              <nz-statistic
+                [nzValue]="formattedCountdown"
+                nzTitle="EXPIRES IN">
+              </nz-statistic>
+            </div>
+            <div class="instructions">
+                <p>Share this code with employees for {{ clockAction === 'clock_in' ? 'CLOCKING IN' : 'CLOCKING OUT' }}</p>
+            </div>
+            <button nz-button nzType="primary" nzSize="large" (click)="closeOverlay()" class="close-button">
+                <span nz-icon nzType="close" nzTheme="outline"></span>
+                CLOSE
+            </button>
+        </div>
+    </div>
+</div>
+
 <nz-spin [nzSpinning]="isloading">
     <full-calendar #calendar [options]="calendarOptions" [deepChangeDetection]="true"></full-calendar>
 </nz-spin>
-

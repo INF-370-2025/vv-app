@@ -1,0 +1,298 @@
+Folder PATH listing
+Volume serial number is 5C23-4453
+C:.
+|   favicon.ico
+|   index.html
+|   main.ts
+|   structure.txt
+|   styles.less
+|   
++---app
+|   |   app.component.html
+|   |   app.component.less
+|   |   app.component.spec.ts
+|   |   app.component.ts
+|   |   app.config.ts
+|   |   app.module.ts
+|   |   app.routes.ts
+|   |   
+|   +---auth
+|   |   +---login
+|   |   |       login.component.html
+|   |   |       login.component.less
+|   |   |       login.component.ts
+|   |   |       
+|   |   +---profile
+|   |   |       profile.component.html
+|   |   |       profile.component.less
+|   |   |       profile.component.ts
+|   |   |       
+|   |   \---register
+|   |           register.component.html
+|   |           register.component.less
+|   |           register.component.ts
+|   |           
+|   +---components
+|   |   +---contact
+|   |   |       contact.component.html
+|   |   |       contact.component.less
+|   |   |       contact.component.ts
+|   |   |       
+|   |   +---dashboard
+|   |   |   |   dashboard.component.html
+|   |   |   |   dashboard.component.less
+|   |   |   |   dashboard.component.ts
+|   |   |   |   
+|   |   |   +---job-cards-report
+|   |   |   |       job-cards-report.component.html
+|   |   |   |       job-cards-report.component.less
+|   |   |   |       job-cards-report.component.spec.ts
+|   |   |   |       job-cards-report.component.ts
+|   |   |   |       
+|   |   |   +---low-stock
+|   |   |   |       low-stock.component.html
+|   |   |   |       low-stock.component.less
+|   |   |   |       low-stock.component.spec.ts
+|   |   |   |       low-stock.component.ts
+|   |   |   |       
+|   |   |   +---monthly-hours-worked
+|   |   |   |       monthly-hours-worked.component.html
+|   |   |   |       monthly-hours-worked.component.less
+|   |   |   |       monthly-hours-worked.component.spec.ts
+|   |   |   |       monthly-hours-worked.component.ts
+|   |   |   |       
+|   |   |   +---pending-quotes
+|   |   |   |       pending-quotes.component.html
+|   |   |   |       pending-quotes.component.less
+|   |   |   |       pending-quotes.component.spec.ts
+|   |   |   |       pending-quotes.component.ts
+|   |   |   |       
+|   |   |   +---quotations-report
+|   |   |   |       quotations-report.component.html
+|   |   |   |       quotations-report.component.less
+|   |   |   |       quotations-report.component.spec.ts
+|   |   |   |       quotations-report.component.ts
+|   |   |   |       
+|   |   |   +---stock-report
+|   |   |   |       stock-report.component.html
+|   |   |   |       stock-report.component.less
+|   |   |   |       stock-report.component.spec.ts
+|   |   |   |       stock-report.component.ts
+|   |   |   |       
+|   |   |   +---stock-type-report
+|   |   |   |       stock-type-report.component.html
+|   |   |   |       stock-type-report.component.less
+|   |   |   |       stock-type-report.component.spec.ts
+|   |   |   |       stock-type-report.component.ts
+|   |   |   |       
+|   |   |   \---unpaid-invoices
+|   |   |           unpaid-invoices.component.html
+|   |   |           unpaid-invoices.component.less
+|   |   |           unpaid-invoices.component.spec.ts
+|   |   |           unpaid-invoices.component.ts
+|   |   |           
+|   |   +---delivery-note
+|   |   |   |   delivery-note.component.html
+|   |   |   |   delivery-note.component.less
+|   |   |   |   delivery-note.component.spec.ts
+|   |   |   |   delivery-note.component.ts
+|   |   |   |   
+|   |   |   \---create-delivery-note
+|   |   |           create-delivery-note.component.html
+|   |   |           create-delivery-note.component.less
+|   |   |           create-delivery-note.component.spec.ts
+|   |   |           create-delivery-note.component.ts
+|   |   |           
+|   |   +---employee
+|   |   |   |   employee.component.html
+|   |   |   |   employee.component.less
+|   |   |   |   employee.component.ts
+|   |   |   |   
+|   |   |   \---timesheet-calander
+|   |   |           timesheet-calander.component.html
+|   |   |           timesheet-calander.component.less
+|   |   |           timesheet-calander.component.ts
+|   |   |           
+|   |   +---help
+|   |   |       help.component.html
+|   |   |       help.component.less
+|   |   |       help.component.spec.ts
+|   |   |       help.component.ts
+|   |   |       
+|   |   +---invoices
+|   |   |   |   invoices.component.html
+|   |   |   |   invoices.component.less
+|   |   |   |   invoices.component.ts
+|   |   |   |   
+|   |   |   +---admin-invoices
+|   |   |   |       admin-invoices.component.html
+|   |   |   |       admin-invoices.component.less
+|   |   |   |       admin-invoices.component.ts
+|   |   |   |       
+|   |   |   +---create-invoice
+|   |   |   |       create-invoice.component.html
+|   |   |   |       create-invoice.component.less
+|   |   |   |       create-invoice.component.ts
+|   |   |   |       
+|   |   |   \---customer-invoices
+|   |   |           customer-invoices.component.html
+|   |   |           customer-invoices.component.less
+|   |   |           customer-invoices.component.ts
+|   |   |           
+|   |   +---job-cards
+|   |   |   |   job-cards.component.html
+|   |   |   |   job-cards.component.less
+|   |   |   |   job-cards.component.ts
+|   |   |   |   
+|   |   |   +---create-job-card
+|   |   |   |       create-job-card.component.html
+|   |   |   |       create-job-card.component.less
+|   |   |   |       create-job-card.component.spec.ts
+|   |   |   |       create-job-card.component.ts
+|   |   |   |       
+|   |   |   +---job-card-view
+|   |   |   |       job-card-view.component.html
+|   |   |   |       job-card-view.component.less
+|   |   |   |       job-card-view.component.ts
+|   |   |   |       
+|   |   |   \---update-job-card
+|   |   |           update-job-card.component.html
+|   |   |           update-job-card.component.less
+|   |   |           update-job-card.component.spec.ts
+|   |   |           update-job-card.component.ts
+|   |   |           
+|   |   +---job-request
+|   |   |   |   job-request.component.html
+|   |   |   |   job-request.component.less
+|   |   |   |   job-request.component.ts
+|   |   |   |   
+|   |   |   +---admin-job-requests
+|   |   |   |       admin-job-requests.component.html
+|   |   |   |       admin-job-requests.component.less
+|   |   |   |       admin-job-requests.component.ts
+|   |   |   |       
+|   |   |   \---customer-job-requests
+|   |   |           customer-job-requests.component.html
+|   |   |           customer-job-requests.component.less
+|   |   |           customer-job-requests.component.ts
+|   |   |           
+|   |   +---pattern
+|   |   |   |   pattern.component.html
+|   |   |   |   pattern.component.less
+|   |   |   |   pattern.component.spec.ts
+|   |   |   |   pattern.component.ts
+|   |   |   |   
+|   |   |   \---create-pattern
+|   |   |           create-pattern.component.html
+|   |   |           create-pattern.component.less
+|   |   |           create-pattern.component.spec.ts
+|   |   |           create-pattern.component.ts
+|   |   |           
+|   |   +---quotations
+|   |   |   |   quotations.component.html
+|   |   |   |   quotations.component.less
+|   |   |   |   quotations.component.ts
+|   |   |   |   
+|   |   |   +---admin-quotations
+|   |   |   |       admin-quotations.component.html
+|   |   |   |       admin-quotations.component.less
+|   |   |   |       admin-quotations.component.ts
+|   |   |   |       
+|   |   |   +---create-quotation
+|   |   |   |       create-quotation.component.html
+|   |   |   |       create-quotation.component.less
+|   |   |   |       create-quotation.component.ts
+|   |   |   |       
+|   |   |   \---customer-quotations
+|   |   |           customer-quotations.component.html
+|   |   |           customer-quotations.component.less
+|   |   |           customer-quotations.component.ts
+|   |   |           
+|   |   +---receipts
+|   |   |       receipts.component.html
+|   |   |       receipts.component.less
+|   |   |       receipts.component.ts
+|   |   |       
+|   |   +---role
+|   |   |       role.component.html
+|   |   |       role.component.less
+|   |   |       role.component.ts
+|   |   |       
+|   |   +---stock
+|   |   |   |   stock.component.html
+|   |   |   |   stock.component.less
+|   |   |   |   stock.component.spec.ts
+|   |   |   |   stock.component.ts
+|   |   |   |   
+|   |   |   +---create-stock
+|   |   |   |       create-stock.component.html
+|   |   |   |       create-stock.component.less
+|   |   |   |       create-stock.component.spec.ts
+|   |   |   |       create-stock.component.ts
+|   |   |   |       
+|   |   |   +---stock-view
+|   |   |   |       stock-view.component.html
+|   |   |   |       stock-view.component.less
+|   |   |   |       stock-view.component.spec.ts
+|   |   |   |       stock-view.component.ts
+|   |   |   |       
+|   |   |   \---update-stock
+|   |   |           update-stock.component.html
+|   |   |           update-stock.component.less
+|   |   |           update-stock.component.spec.ts
+|   |   |           update-stock.component.ts
+|   |   |           
+|   |   \---user
+|   |           user.component.html
+|   |           user.component.less
+|   |           user.component.ts
+|   |           
+|   +---models
+|   |       delivery_notes.ts
+|   |       general.ts
+|   |       invoice.ts
+|   |       jobCard.ts
+|   |       jobRequest.ts
+|   |       pattern.ts
+|   |       quotation.ts
+|   |       role.ts
+|   |       stock.ts
+|   |       title.ts
+|   |       user.ts
+|   |       
+|   \---services
+|           api.service.ts
+|           auth.service.ts
+|           breakpoint.service.ts
+|           icon.service.ts
+|           notification.service.ts
+|           supabase.service.ts
+|           theme.service.ts
+|           
++---assets
+|   |   .gitkeep
+|   |   
+|   +---favicons
+|   |       android-chrome-192x192.png
+|   |       android-chrome-512x512.png
+|   |       apple-touch-icon.png
+|   |       favicon-16x16.png
+|   |       favicon-32x32.png
+|   |       site.webmanifest
+|   |       
+|   \---images
+|           background-login.jpg
+|           background.jpg
+|           logo.png
+|           
++---environments
+|       environment.ts
+|       environments.prod.ts
+|       
+\---styles
+    |   main.less
+    |   
+    \---themes
+            main.less
+            mixin.less
+            

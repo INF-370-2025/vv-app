@@ -1,3 +1,4 @@
+import { jobRequest } from './../../../models/jobRequest';
 import { Component } from '@angular/core';
 import { AppModule } from '../../../app.module';
 import { quotation, upsertQuotation } from '../../../models/quotation';
@@ -8,6 +9,7 @@ import { SupabaseService } from '../../../services/supabase.service';
 import { NzUploadFile, UploadFileStatus } from 'ng-zorro-antd/upload';
 import { customer } from '../../../models/user';
 import { user } from '../../../models/user';
+
 
 @Component({
   selector: 'app-admin-quotations',
@@ -60,22 +62,31 @@ export class AdminQuotationsComponent {
     });
   }
 
-  loadQuotations(): void {
-    this.isloading = true;
-    this.apiService.get_quotations().subscribe({
-      next: (response) => {
-        this.quotations = ([...response] as quotation[]).sort((a,b) => b.quotation_id - a.quotation_id);
-        this.pending = this.quotations.filter(x => x.quotation_status?.quotation_status_id === 1);
-        this.accepted = this.quotations.filter(x => x.quotation_status?.quotation_status_id === 2);
-        this.rejected = this.quotations.filter(x => x.quotation_status?.quotation_status_id === 3);
-        this.isloading = false;
-      },
-      error: (err) => {
-        console.error('Error loading quotations:', err);
-        this.isloading = false;
+loadQuotations(): void {
+  this.isloading = true;
+  this.apiService.get_quotations().subscribe({
+    next: (response) => {
+      this.quotations = ([...response] as quotation[]).sort((a,b) => b.quotation_id - a.quotation_id);
+
+      // DEBUG LOGS
+      console.log('Quotations loaded:', this.quotations);
+      if (this.quotations.length > 0) {
+        console.log('First quotation job_request:', this.quotations[0].job_request);
+        console.log('First customer:', this.quotations[0].job_request?.customer);
+        console.log('First user:', this.quotations[0].job_request?.customer?.user);
       }
-    });
-  }
+
+      this.pending = this.quotations.filter(x => x.quotation_status?.quotation_status_id === 1);
+      this.accepted = this.quotations.filter(x => x.quotation_status?.quotation_status_id === 2);
+      this.rejected = this.quotations.filter(x => x.quotation_status?.quotation_status_id === 3);
+      this.isloading = false;
+    },
+    error: (err) => {
+      console.error('Error loading quotations:', err);
+      this.isloading = false;
+    }
+  });
+}
 
   selectedTabChange(index:number) {
     this.selectedTabIndex = index;

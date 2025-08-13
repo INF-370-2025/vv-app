@@ -28,3 +28,9 @@ export class email {
     subject!:string
     body!:string
 }
+
+export class FAQ {
+    faq_id!: number;
+    faq_q!:string;
+    faq_a!:string;
+}

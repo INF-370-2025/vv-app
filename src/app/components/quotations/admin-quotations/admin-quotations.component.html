@@ -32,7 +32,7 @@
                                     <b>#{{quote.quotation_number | titlecase}}</b>
                                 </td>
                                 <td>
-                                    <b>Job Requested on  : </b> {{quote.job_request?.created_at| date:"medium"}}
+                                    <b>Job Requested on  : </b> {{quote.job_request?.created_at || '-'}}
                                 </td>
                                 <td>
                                     <b>Status: </b>

@@ -121,13 +121,13 @@ export class ApiService {
       return this.http.get<any>(environment.api_url +  this.employees_ep + `/get_time_logs`)
     }
 
-    clock_in(employee_id: number) {
-      return this.http.get<any>(environment.api_url +  this.employees_ep  + `/clock_in/${employee_id}`)
-    }
+    // clock_in(employee_id: number) {
+    //   return this.http.get<any>(environment.api_url +  this.employees_ep  + `/clock_in/${employee_id}`)
+    // }
 
-    clock_out(employee_id: number) {
-      return this.http.get<any>(environment.api_url + this.employees_ep  + `/clock_out/${employee_id}`)
-    }
+    // clock_out(employee_id: number) {
+    //   return this.http.get<any>(environment.api_url + this.employees_ep  + `/clock_out/${employee_id}`)
+    // }
 
     get_artisans() {
       return this.http.get<any>(
@@ -578,11 +578,36 @@ export class ApiService {
   //#region employee time logs
   employee_time_logs_ep = 'employee_time_logs';
 
-get_monthly_hours_worked(year: number) {
-  return this.http.get<any>(
-    environment.api_url + this.employee_time_logs_ep + `/monthly_hours_worked?year=${year}`
-  );
-}
+  get_monthly_hours_worked(year: number) {
+    return this.http.get<any>(
+      environment.api_url + this.employee_time_logs_ep + `/monthly_hours_worked?year=${year}`
+    );
+  }
+
+
+  generateClockCode(type: 'clock_in' | 'clock_out'): Observable<{ code: number, expires_at: string }> {
+    return this.http.post<{ code: number, expires_at: string }>(
+      environment.api_url + this.employee_time_logs_ep + '/generate-clock-code',
+      { type }
+    );
+  }
+
+
+  clock_in(employee_id: number) {
+    return this.http.get<any>(environment.api_url + this.employee_time_logs_ep + `/clock_in/${employee_id}`);
+  }
+
+  clock_out(employee_id: number) {
+    return this.http.get<any>(environment.api_url + this.employee_time_logs_ep + `/clock_out/${employee_id}`);
+  }
+
+
+  verifyClockCode(employeeId: number, code: number, type: 'clock_in' | 'clock_out'): Observable<{ valid: boolean }> {
+    return this.http.post<{ valid: boolean }>(
+      environment.api_url + this.employee_time_logs_ep + '/verify-clock-code',
+      { employee_id: employeeId, code, type }
+    );
+  }
 
   //#endregion
 

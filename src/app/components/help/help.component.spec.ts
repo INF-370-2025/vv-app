@@ -11,7 +11,7 @@ describe('HelpComponent', () => {
       imports: [HelpComponent]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(HelpComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -20,4 +20,4 @@ describe('HelpComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-});
+});z

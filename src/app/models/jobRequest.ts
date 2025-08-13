@@ -2,7 +2,7 @@ import { customer } from "./user";
 
 export class jobRequest{
     job_request_id!: number;
-    created_at!: Date;
+    created_at!: string;
     customer_id?:number;
     customer?:customer;
     title?:string;
