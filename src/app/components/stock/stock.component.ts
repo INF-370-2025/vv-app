@@ -34,6 +34,7 @@ export class StockComponent implements OnInit {
   stockCategories:  stock_category [] = [];
   importResult: any = null;
   importing = false;
+  showHelp: boolean = false;
 
   constructor(
     private apiService: ApiService,
@@ -43,6 +44,16 @@ export class StockComponent implements OnInit {
   ngOnInit(): void {
     this.loadStock();
   }
+
+
+  openHelpModal(): void {
+  this.showHelp = true;
+}
+
+// Function to close the help modal
+closeHelpModal(): void {
+  this.showHelp = false;
+}
 
   loadStock(): void {
     this.isLoading = true;

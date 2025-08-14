@@ -193,6 +193,9 @@
 
 
         </nz-tabset>
+        <button nz-button nzType="default" (click)="openHelpModal()" style="float: right; margin-right: 16px;">
+          <i nz-icon nzType="question-circle" nzTheme="outline"></i> Help
+        </button>
     </div>
 </div>
 
@@ -280,4 +283,109 @@
             </form>
         </nz-spin>
     </ng-container>
+</nz-modal>
+
+
+<!-- Quotations Help Modal -->
+<nz-modal
+  [nzWidth]="800"
+  [(nzVisible)]="showHelp"
+  nzClosable="true"
+  [nzTitle]="helpTitle"
+  (nzOnCancel)="showHelp=false"
+  [nzFooter]="null">
+
+  <ng-template #helpTitle>
+    <span nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px; color: #17726d;"></span>
+    <b>Quotations Help Center</b>
+  </ng-template>
+
+  <ng-container *nzModalContent>
+    <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+      <div nz-col [nzSpan]="24">
+        <div class="help-content">
+          <h2>Quotations Management</h2>
+          <p>This page allows you to manage all quotations sent to customers, track their status, and make updates as needed.</p>
+        </div>
+
+        <div class="help-section">
+          <h3><i nz-icon nzType="appstore" nzTheme="outline" style="margin-right: 8px;"></i> Key Features</h3>
+
+          <div class="feature">
+            <h4><i nz-icon nzType="profile" nzTheme="outline" style="margin-right: 8px;"></i> Status Tracking</h4>
+            <ul>
+              <li><nz-tag [nzColor]="'yellow'">Pending</nz-tag> - Quotations awaiting customer response</li>
+              <li><nz-tag [nzColor]="'green'">Accepted</nz-tag> - Quotations approved by customer</li>
+              <li><nz-tag [nzColor]="'red'">Rejected</nz-tag> - Quotations declined by customer</li>
+            </ul>
+          </div>
+
+          <div class="feature">
+            <h4><i nz-icon nzType="search" nzTheme="outline" style="margin-right: 8px;"></i> Search & Filter</h4>
+            <p>Quickly find quotations by:</p>
+            <ul>
+              <li>Quotation number</li>
+              <li>Job title</li>
+              <li>Customer name</li>
+              <li>Status</li>
+            </ul>
+          </div>
+
+          <div class="feature">
+            <h4><i nz-icon nzType="tool" nzTheme="outline" style="margin-right: 8px;"></i> Quotation Management</h4>
+            <ul>
+              <li><strong>View Details</strong> - See full quotation information</li>
+              <li><strong>Edit Quotations</strong> - Update pricing and details</li>
+              <li><strong>Track Status</strong> - Monitor customer responses</li>
+              <li><strong>View PDFs</strong> - Access generated quotation documents</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="help-section">
+          <h3><i nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px;"></i> How to Use</h3>
+
+          <div class="usage-step">
+            <h4><i nz-icon nzType="eye" nzTheme="outline" style="margin-right: 8px;"></i> Viewing Quotation Details</h4>
+            <ol>
+              <li>Click the <button nz-button nzType="primary" nzSize="small"><i nz-icon nzType="eye" nzTheme="outline"></i> View</button> button</li>
+              <li>The full quotation view will open with all details</li>
+              <li>Review pricing, job details, and customer information</li>
+              <li>Click <strong>Close</strong> to return to the list</li>
+            </ol>
+          </div>
+
+          <div class="usage-step">
+            <h4><i nz-icon nzType="edit" nzTheme="outline" style="margin-right: 8px;"></i> Editing a Quotation</h4>
+            <ol>
+              <li>Click the <button nz-button nzType="primary" nzSize="small"><i nz-icon nzType="edit" nzTheme="outline"></i> Edit</button> button</li>
+              <li>Update the required fields (total cost, deposit, status)</li>
+              <li>Upload a new quotation PDF if needed</li>
+              <li>Click <strong>Update Quotation</strong> to save changes</li>
+            </ol>
+          </div>
+
+          <div class="usage-step">
+            <h4><i nz-icon nzType="file-pdf" nzTheme="outline" style="margin-right: 8px;"></i> Managing Quotation PDFs</h4>
+            <ol>
+              <li>In edit mode, drag and drop your PDF file</li>
+              <li>Or click to browse and select the file</li>
+              <li>The system only accepts PDF files</li>
+              <li>Remove existing files by clicking the delete icon</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="help-section troubleshooting">
+          <h3><i nz-icon nzType="exclamation-circle" nzTheme="outline" style="margin-right: 8px;"></i> Troubleshooting</h3>
+          <div class="warning">
+            <p><strong>Can't edit quotation?</strong> Ensure you have the proper permissions</p>
+            <p><strong>PDF not uploading?</strong> Verify the file is PDF format and under 5MB</p>
+            <p><strong>Status not updating?</strong> Check all required fields are completed</p>
+          </div>
+          <p>For further assistance, contact your system administrator.</p>
+        </div>
+      </div>
+    </div>
+  </ng-container>
 </nz-modal>

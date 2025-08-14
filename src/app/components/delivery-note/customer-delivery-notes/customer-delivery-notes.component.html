@@ -1,0 +1,139 @@
+<div nz-row [nzJustify]="'center'">
+
+<!-- Delivery Notes List View -->
+  <div nz-col nzSpan="16">
+    <nz-tabset nzType="card" >
+      <nz-tab [nzTitle]="'Delivery Notes'">
+        <nz-spin [nzSpinning]="isLoading">
+          <!-- Error message -->
+          <div *ngIf="errorMessage" class="error-message">
+            <nz-alert nzType="error" [nzMessage]="errorMessage" nzShowIcon></nz-alert>
+            <button nz-button nzType="primary" (click)="loadDeliveryNotes()" style="margin-top: 16px;">
+              <i nz-icon nzType="reload"></i> Retry
+            </button>
+          </div>
+
+          <!-- Empty state -->
+          <div *ngIf="!isLoading && !errorMessage && deliveryNotes.length === 0" class="empty-state">
+            <nz-empty nzNotFoundContent="No delivery notes found"></nz-empty>
+          </div>
+
+          <!-- table -->
+          <nz-table *ngIf="!isLoading && deliveryNotes.length > 0"
+                    #deliveryNotesTable
+                    [nzData]="deliveryNotes"
+                    [nzPageSize]="20"
+                    nzSize="middle">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Job Card ID</th>
+                <th>View</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let note of deliveryNotesTable.data">
+                <td><b>#{{note.delivery_note_id}}</b></td>
+                <td>{{note.job_card_id}}</td>
+                    <td>
+                      <button
+                        nz-button
+                        nzType="primary"
+                        nzSize="small"
+                        (click)="viewDeliveryNote(note)"
+                        [disabled]="!note.delivery_note_url">
+                        <i nz-icon nzType="eye" nzTheme="outline"></i> View
+                      </button>
+                    </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </nz-spin>
+      </nz-tab>
+    </nz-tabset>
+    <button nz-button (click)="showHelp()">
+      <span nz-icon nzType="question-circle" nzTheme="outline"></span>
+      Get Help
+    </button>
+
+
+
+<nz-modal
+  [nzWidth]="800"
+  [(nzVisible)]="showHelpModal"
+  nzClosable="true"
+  [nzTitle]="helpTitle"
+  (nzOnCancel)="showHelpModal=false"
+  [nzFooter]="null">
+
+  <ng-template #helpTitle>
+    <span nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px; color: #17726d;"></span>
+    <b>Delivery Notes Help</b>
+  </ng-template>
+
+  <ng-container *nzModalContent>
+    <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+      <div nz-col [nzSpan]="24">
+        <div class="help-content">
+          <h2>Delivery Notes Management</h2>
+          <p>View and manage all delivery documentation for completed jobs.</p>
+        </div>
+
+        <div class="help-section">
+          <h3><i nz-icon nzType="appstore" nzTheme="outline" style="margin-right: 8px;"></i> Key Features</h3>
+
+          <div class="feature">
+            <h4><i nz-icon nzType="container" nzTheme="outline" style="margin-right: 8px;"></i> Document Tracking</h4>
+            <ul>
+              <li>View all delivery notes in one place</li>
+              <li>Access documents by job card</li>
+              <li>Quickly verify delivery completion</li>
+            </ul>
+          </div>
+
+          <div class="feature">
+            <h4><i nz-icon nzType="search" nzTheme="outline" style="margin-right: 8px;"></i> Navigation</h4>
+            <ul>
+              <li>Sort by Delivery Note ID</li>
+              <li>Filter by Job Card ID</li>
+              <li>View status at a glance</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="help-section">
+          <h3><i nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px;"></i> How to Use</h3>
+
+          <div class="usage-step">
+            <h4><i nz-icon nzType="eye" nzTheme="outline" style="margin-right: 8px;"></i> Viewing a Delivery Note</h4>
+            <ol>
+              <li>Locate the note in the table</li>
+              <li>Click <button nz-button nzType="primary" nzSize="small"><i nz-icon nzType="eye" nzTheme="outline"></i> View</button></li>
+              <li>The PDF will open in a new tab</li>
+              <li>Print or download as needed</li>
+            </ol>
+            <p class="warning-text"><i nz-icon nzType="warning" nzTheme="outline"></i> Grayed out buttons indicate unavailable documents</p>
+          </div>
+
+          <div class="usage-step">
+            <h4><i nz-icon nzType="reload" nzTheme="outline" style="margin-right: 8px;"></i> Refreshing the List</h4>
+            <ol>
+              <li>If notes aren't loading:</li>
+              <li>Click <button nz-button nzType="primary" nzSize="small"><i nz-icon nzType="reload" nzTheme="outline"></i> Retry</button></li>
+              <li>Check your network connection</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="help-section troubleshooting">
+          <h3><i nz-icon nzType="exclamation-circle" nzTheme="outline" style="margin-right: 8px;"></i> Troubleshooting</h3>
+          <div class="warning">
+            <p><strong>Can't view document?</strong> The note may not have generated properly</p>
+            <p><strong>Missing job card?</strong> Verify the job exists in the system</p>
+            <p><strong>Empty list?</strong> Check if any deliveries have been processed</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</nz-modal>

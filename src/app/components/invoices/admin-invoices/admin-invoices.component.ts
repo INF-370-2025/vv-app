@@ -17,8 +17,6 @@ import { CreateInvoiceComponent } from '../create-invoice/create-invoice.compone
   styleUrl: './admin-invoices.component.less'
 })
 export class AdminInvoicesComponent {
-
-
   selectedTabIndex:number = 0;
   isloading:boolean = false;
   btnloading:boolean = false;
@@ -29,7 +27,6 @@ export class AdminInvoicesComponent {
   showCreateForm = false;
   showHelp:boolean = false;
 
-
   viewingInvoice:invoice = new invoice();
   showEditModal:boolean = false;
   editInvoiceform:FormGroup = new FormGroup({
@@ -39,14 +36,28 @@ export class AdminInvoicesComponent {
   file!: NzUploadFile | undefined;
   fileList :any[] = [];
 
- constructor(private apiService: ApiService,private notification:NotificationService,private supabase:SupabaseService) {}
+  constructor(private apiService: ApiService,private notification:NotificationService,private supabase:SupabaseService) {}
 
   ngOnInit() {
     this.loadInvoices();
   }
 
+  viewPop(invoice: invoice) {
+    if (invoice.invoice_url) {
+        // Create a temporary anchor element to trigger the download
+        const link = document.createElement('a');
+        link.href = invoice.invoice_url;
+        link.target = '_blank';
+        link.download = `POP_${invoice.invoice_number || invoice.invoice_id}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    } else {
+        this.notification.showError("Proof of Payment not available.");
+    }
+  }
 
-
+  // ... rest of the existing methods remain the same ...
   showHelpModal() {
     this.showHelp = true;
   }
@@ -155,7 +166,6 @@ export class AdminInvoicesComponent {
   }
 
   async submitEditInvoice() {
-
     this.btnloading = true;
     const file_url = null;
     if(this.file) {
@@ -189,23 +199,19 @@ export class AdminInvoicesComponent {
     }
   }
 
-updateInvoiceStatus(invoice: any) {
-  this.btnloading = true;
+  updateInvoiceStatus(invoice: any) {
+    this.btnloading = true;
 
-  this.apiService.update_invoice_status(invoice.invoice_id).subscribe({
-    next: res => {
-      this.notification.showSuccess("Invoice marked as paid");
-
-      // Just reload the invoices - no complex state management needed
-      this.loadInvoices();
-
-      this.btnloading = false;
-    },
-    error: (error) => {
-      this.notification.showError("Failed to update invoice status");
-      this.btnloading = false;
-    }
-  });
-}
-
+    this.apiService.update_invoice_status(invoice.invoice_id).subscribe({
+      next: res => {
+        this.notification.showSuccess("Invoice marked as paid");
+        this.loadInvoices();
+        this.btnloading = false;
+      },
+      error: (error) => {
+        this.notification.showError("Failed to update invoice status");
+        this.btnloading = false;
+      }
+    });
+  }
 }

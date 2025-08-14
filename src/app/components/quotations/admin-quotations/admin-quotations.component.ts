@@ -23,6 +23,7 @@ export class AdminQuotationsComponent {
   selectedTabIndex:number = 0;
   isloading:boolean = false;
   btnloading:boolean = false;
+  showHelp: boolean = false;
 
 
   quotations: quotation[] = [];
@@ -244,5 +245,14 @@ loadQuotations(): void {
     });
     this.notification.showSuccess("Update successful");
 
+}
+
+openHelpModal(): void {
+  this.showHelp = true;
+}
+
+// Function to close the help modal
+closeHelpModal(): void {
+  this.showHelp = false;
 }
 }

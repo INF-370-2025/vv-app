@@ -573,6 +573,10 @@ export class ApiService {
     );
   }
 
+  get_delivery_notes_user(user_id:number) {
+    return this.http.get<any>(environment.api_url + this.delivery_note_ep + `/get_devlivery_notes_user/${user_id}`)
+  }
+
   //#endregion
 
   //#region employee time logs

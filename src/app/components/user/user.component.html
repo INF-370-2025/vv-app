@@ -108,6 +108,9 @@
               Create New
             <span nzType="plus" nzTheme="outline"></span>
           </button>
+          <button nz-button nzType="default" (click)="openHelpModal()" style="float: right; margin-left: 8px;">
+            <i nz-icon nzType="question-circle" nzTheme="outline"></i> Help
+          </button>
         </ng-template>
     </div>
 </div>
@@ -586,4 +589,129 @@
         </div>
     </ng-container>
     </form>
+</nz-modal>
+
+<!-- Users Help Modal -->
+<nz-modal
+  [nzWidth]="800"
+  [(nzVisible)]="showHelp"
+  nzClosable="true"
+  [nzTitle]="helpTitle"
+  (nzOnCancel)="showHelp=false"
+  [nzFooter]="null">
+
+  <ng-template #helpTitle>
+    <span nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px; color: #17726d;"></span>
+    <b>Users Management Help Center</b>
+  </ng-template>
+
+  <ng-container *nzModalContent>
+    <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+      <div nz-col [nzSpan]="24">
+        <div class="help-content">
+          <h2>Users Management System</h2>
+          <p>This page allows you to manage all system users including customers and employees, with tools for viewing, creating, and updating user information.</p>
+        </div>
+
+        <div class="help-section">
+          <h3><i nz-icon nzType="appstore" nzTheme="outline" style="margin-right: 8px;"></i> Key Features</h3>
+
+          <div class="feature">
+            <h4><i nz-icon nzType="team" nzTheme="outline" style="margin-right: 8px;"></i> User Categories</h4>
+            <ul>
+              <li><strong>Customers</strong> - Clients who purchase your products/services</li>
+              <li><strong>Employees</strong> - Staff members with system access</li>
+            </ul>
+          </div>
+
+          <div class="feature">
+            <h4><i nz-icon nzType="search" nzTheme="outline" style="margin-right: 8px;"></i> Search & Filter</h4>
+            <p>Quickly find users by:</p>
+            <ul>
+              <li>Name or surname</li>
+              <li>Email address</li>
+              <li>Phone number</li>
+              <li>Company name (for customers)</li>
+              <li>Employee ID (for staff)</li>
+            </ul>
+          </div>
+
+          <div class="feature">
+            <h4><i nz-icon nzType="tool" nzTheme="outline" style="margin-right: 8px;"></i> User Management</h4>
+            <ul>
+              <li><strong>View full details</strong> - Complete user profiles</li>
+              <li><strong>Create new users</strong> - Add customers or employees</li>
+              <li><strong>Update information</strong> - Modify user details</li>
+              <li><strong>Employee-specific actions</strong> - Payslips, warnings, etc.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="help-section">
+          <h3><i nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px;"></i> How to Use</h3>
+
+          <div class="usage-step">
+            <h4><i nz-icon nzType="eye" nzTheme="outline" style="margin-right: 8px;"></i> Viewing User Details</h4>
+            <ol>
+              <li>Click the <button nz-button nzType="primary" nzSize="small"><i nz-icon nzType="eye" nzTheme="outline"></i> View</button> button</li>
+              <li>The detailed user profile will show all information</li>
+              <li>For employees: view position, rate, and warnings</li>
+              <li>For customers: view company details and contact info</li>
+            </ol>
+          </div>
+
+          <div class="usage-step">
+            <h4><i nz-icon nzType="plus" nzTheme="outline" style="margin-right: 8px;"></i> Creating New Users</h4>
+            <ol>
+              <li>Click the <button nz-button nzType="primary" nzSize="small">Create New</button> button</li>
+              <li>Select the appropriate tab (Customers or Employees)</li>
+              <li>Fill in all required details in the form</li>
+              <li>Click <strong>Create</strong> to add the new user</li>
+            </ol>
+          </div>
+
+          <div class="usage-step">
+            <h4><i nz-icon nzType="edit" nzTheme="outline" style="margin-right: 8px;"></i> Updating User Information</h4>
+            <ol>
+              <li>View the user's details</li>
+              <li>Click the <button nz-button nzType="default" nzSize="small" style="background-color: lightseagreen;color: white;border: none;"><i nz-icon nzType="check" nzTheme="outline"></i> Update</button> button</li>
+              <li>Modify any fields as needed</li>
+              <li>Click <strong>Update</strong> to save changes</li>
+            </ol>
+          </div>
+
+          <div class="usage-step">
+            <h4><i nz-icon nzType="file-text" nzTheme="outline" style="margin-right: 8px;"></i> Managing Employee Documents</h4>
+            <ol>
+              <li>View the employee's details</li>
+              <li>Click <button nz-button nzType="default" nzSize="small"><i nz-icon nzType="printer" nzTheme="outline"></i> Upload Payslip</button></li>
+              <li>Drag and drop or select the PDF file</li>
+              <li>Click <strong>Upload</strong> to complete the process</li>
+            </ol>
+          </div>
+
+          <div class="usage-step">
+            <h4><i nz-icon nzType="warning" nzTheme="outline" style="margin-right: 8px;"></i> Employee Warnings</h4>
+            <ol>
+              <li>View the employee's details</li>
+              <li>Click <button nz-button nzType="default" nzSize="small" style="background-color: yellow;color: black;border: none;"><i nz-icon nzType="close" nzTheme="outline"></i> Warn Employee</button></li>
+              <li>Enter the reason and select warning type</li>
+              <li>Click <strong>Warn</strong> to record the warning</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="help-section troubleshooting">
+          <h3><i nz-icon nzType="exclamation-circle" nzTheme="outline" style="margin-right: 8px;"></i> Troubleshooting</h3>
+          <div class="warning">
+            <p><strong>Can't create user?</strong> Ensure all required fields are completed</p>
+            <p><strong>User not appearing?</strong> Check if filters are applied or try refreshing</p>
+            <p><strong>Update not saving?</strong> Verify you have proper permissions</p>
+            <p><strong>Payslip upload failed?</strong> Ensure file is PDF format and under size limit</p>
+          </div>
+          <p>For further assistance, contact your system administrator.</p>
+        </div>
+      </div>
+    </div>
+  </ng-container>
 </nz-modal>

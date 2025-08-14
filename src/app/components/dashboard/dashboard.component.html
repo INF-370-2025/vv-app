@@ -60,7 +60,7 @@
                 <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="6" [nzLg]="6" [nzXl]="6">
                     <nz-spin [nzSpinning]="isloading">
                         <nz-card nzHoverable="true" style="text-align: center !important; position: relative;">
-                            <button routerLink="/customers" nz-button nzType="default" nzShape="circle" nzSize="large" style="position: absolute; top: 10px; right: 10px; z-index: 10;">
+                            <button routerLink="/user" nz-button nzType="default" nzShape="circle" nzSize="large" style="position: absolute; top: 10px; right: 10px; z-index: 10;">
                                 <i nz-icon nzType="arrow-right" nzTheme="outline"></i>
                             </button>
                             <span nz-icon nzType="vv:customers" nzTheme="outline" style="font-size: 40px !important;" class="color"></span>
@@ -75,7 +75,7 @@
                 </div>
 
                 <!-- Employees Clocked In Card -->
-                <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="6" [nzLg]="6" [nzXl]="6">
+                <!-- <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="6" [nzLg]="6" [nzXl]="6">
                     <nz-spin [nzSpinning]="isloading">
                         <nz-card nzHoverable="true" style="text-align: center !important; position: relative;">
                             <button routerLink="/timelogs" nz-button nzType="default" nzShape="circle" nzSize="large" style="position: absolute; top: 10px; right: 10px; z-index: 10;">
@@ -90,7 +90,7 @@
                             </div>
                         </nz-card>
                     </nz-spin>
-                </div>
+                </div> -->
             </div>
         </nz-collapse-panel>
     </nz-collapse>
@@ -184,62 +184,88 @@
 </ng-container>
 
 
-<!--Customer Dashboard-->
+<!-- Customer Dashboard -->
 <ng-container *ngIf="authService.user?.role_id == 6">
-    <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
-
-        <div nz-col [nzXs]="12" [nzSm]="6" [nzMd]="6" [nzLg]="6" [nzXl]="6">
-            <nz-card nzHoverable="true" style="height: 100%;border:none;" class="box" routerLink="/job-requests">
-                <span nz-icon nzType="vv:job_requests" nzTheme="outline" style="font-size: 40px !important;" class="color"></span><br> Job Requests
-            </nz-card>
-        </div>
-
-
-        <div nz-col [nzXs]="12" [nzSm]="6" [nzMd]="6" [nzLg]="6" [nzXl]="6">
-            <nz-card nzHoverable="true" style="height: 100%;border:none;" class="box" routerLink="/quotations">
-                <span nz-icon nzType="file-pdf" nzTheme="outline" style="font-size: 40px !important;" class="color"></span><br> Quotations
-            </nz-card>
-        </div>
-
-
-        <div nz-col [nzXs]="12" [nzSm]="6" [nzMd]="6" [nzLg]="6" [nzXl]="6">
-            <nz-card nzHoverable="true" style="height: 100%;border:none;" class="box" routerLink="/invoices">
-                <span nz-icon nzType="file-protect" nzTheme="outline" style="font-size: 40px !important;" class="color"></span><br> Invoices
-            </nz-card>
-        </div>
-
-
-        <div nz-col [nzXs]="12" [nzSm]="6" [nzMd]="6" [nzLg]="6" [nzXl]="6">
-            <nz-card nzHoverable="true" style="height: 100%;border:none;" class="box" routerLink="/delivery-notes">
-                <span nz-icon nzType="file-done" nzTheme="outline" style="font-size: 40px !important;" class="color"></span><br> Delivery Notes
-            </nz-card>
-        </div>
-
-
-
+  <div class="customer-dashboard">
+    <div class="dashboard-header">
+      <button nz-button nzType="default" (click)="openCustomerHelpModal()" class="help-button">
+        <span nz-icon nzType="question-circle" nzTheme="outline"></span>
+        Get Help
+      </button>
     </div>
-    <button nz-button (click)="openCustomerHelpModal()" style="position: absolute;">
-      <span nz-icon nzType="question-circle" nzTheme="outline"></span>
-      Get Help
-    </button>
+
+    <div class="dashboard-cards">
+      <div nz-row [nzJustify]="'space-between'" [nzGutter]="[16, 24]">
+        <!-- Job Requests Card -->
+        <div nz-col [nzFlex]="'1 0 20%'" class="dashboard-card-col">
+          <nz-card class="dashboard-card" nzHoverable routerLink="/job-requests">
+            <div class="card-content">
+              <span nz-icon nzType="vv:job_requests" nzTheme="outline" class="card-icon"></span>
+              <div class="card-label">Job Requests</div>
+            </div>
+          </nz-card>
+        </div>
+
+        <!-- Quotations Card -->
+        <div nz-col [nzFlex]="'1 0 20%'" class="dashboard-card-col">
+          <nz-card class="dashboard-card" nzHoverable routerLink="/quotations">
+            <div class="card-content">
+              <span nz-icon nzType="file-pdf" nzTheme="outline" class="card-icon"></span>
+              <div class="card-label">Quotations</div>
+            </div>
+          </nz-card>
+        </div>
+
+        <!-- Invoices Card -->
+        <div nz-col [nzFlex]="'1 0 20%'" class="dashboard-card-col">
+          <nz-card class="dashboard-card" nzHoverable routerLink="/invoices">
+            <div class="card-content">
+              <span nz-icon nzType="file-protect" nzTheme="outline" class="card-icon"></span>
+              <div class="card-label">Invoices</div>
+            </div>
+          </nz-card>
+        </div>
+
+        <!-- Delivery Notes Card -->
+        <div nz-col [nzFlex]="'1 0 20%'" class="dashboard-card-col">
+          <nz-card class="dashboard-card" nzHoverable routerLink="/delivery_note">
+            <div class="card-content">
+              <span nz-icon nzType="file-done" nzTheme="outline" class="card-icon"></span>
+              <div class="card-label">Delivery Notes</div>
+            </div>
+          </nz-card>
+        </div>
+
+        <!-- Help Card (distinct color) -->
+        <div nz-col [nzFlex]="'1 0 20%'" class="dashboard-card-col">
+          <nz-card class="dashboard-card help-card" nzHoverable routerLink="/help">
+            <div class="card-content">
+              <span nz-icon nzType="question-circle" nzTheme="outline" class="card-icon"></span>
+              <div class="card-label">Help Center</div>
+            </div>
+          </nz-card>
+        </div>
+      </div>
+    </div>
+  </div>
 </ng-container>
 
 <!--Employee Dashboard-->
 
 <ng-container *ngIf="authService.user?.role_id == 5">
 <nz-collapse [nzBordered]="false" >
-    <nz-collapse-panel [nzHeader]="panel" #p [nzExpandedIcon]="'caret-right'" [nzActive]="true ">
+    <!-- <nz-collapse-panel [nzHeader]="panel" #p [nzExpandedIcon]="'caret-right'" [nzActive]="true ">
         <ng-template #panel>
             <h2 style="float: inline-start;">
                 <b>Employee Dashboard</b>
-            </h2>
-        </ng-template>
+            </h2> -->
+        <!-- </ng-template> -->
         <ng-template #expandedIcon let-active>
             {{ active }}
-            <span nz-icon nzType="caret-right" class="ant-collapse-arrow" [nzRotate]="p.nzActive ? 90 : -90"></span>
+            <!-- <span nz-icon nzType="caret-right" class="ant-collapse-arrow" [nzRotate]="p.nzActive ? 90 : -90"></span> -->
         </ng-template>
 
-        <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+        <!-- <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
             <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="6" [nzLg]="6" [nzXl]="6">
                 <nz-spin [nzSpinning]="isloading">
                     <nz-card nzHoverable="true" style="text-align: center !important; position: relative;">
@@ -259,9 +285,9 @@
             <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="6" [nzLg]="6" [nzXl]="6">
                 <nz-spin [nzSpinning]="isloading">
                     <nz-card nzHoverable="true" style="text-align: center !important; position: relative;">
-                        <!-- <button routerLink="/job-cards" nz-button nzType="default" nzShape="circle" nzSize="large" style="position: absolute; top: 10px; right: 10px; z-index: 10;">
+                         <button routerLink="/job-cards" nz-button nzType="default" nzShape="circle" nzSize="large" style="position: absolute; top: 10px; right: 10px; z-index: 10;">
                           <i nz-icon nzType="arrow-right" nzTheme="outline"></i>
-                        </button> -->
+                        </button>
                         <span nz-icon nzType="vv:orders" nzTheme="outline" style="font-size: 40px !important;" class="color"></span>
                         <h3><b>Hours worked<small class="color">(month)</small></b></h3>
                         <div nz-row [nzJustify]="'center'" [nzGutter]="5">
@@ -271,13 +297,13 @@
                         </div>
                     </nz-card>
                 </nz-spin>
-            </div>
-            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="6" [nzLg]="6" [nzXl]="6">
+            </div> -->
+            <!-- <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="6" [nzLg]="6" [nzXl]="6">
                 <nz-spin [nzSpinning]="isloading">
                     <nz-card nzHoverable="true" style="text-align: center !important; position: relative;">
-                        <!-- <button routerLink="/customers" nz-button nzType="default" nzShape="circle" nzSize="large" style="position: absolute; top: 10px; right: 10px; z-index: 10;">
+                         <button routerLink="/customers" nz-button nzType="default" nzShape="circle" nzSize="large" style="position: absolute; top: 10px; right: 10px; z-index: 10;">
                         <i nz-icon nzType="arrow-right" nzTheme="outline"></i>
-                      </button> -->
+                      </button>
                         <span nz-icon nzType="vv:customers" nzTheme="outline" style="font-size: 40px !important;" class="color"></span>
                         <h3><b>Accumulated Pay <small class="color">(month)</small></b></h3>
                         <div nz-row [nzJustify]="'center'" [nzGutter]="5">
@@ -287,15 +313,15 @@
                         </div>
                     </nz-card>
                 </nz-spin>
-            </div>
-        </div>
+            </div> -->
+
 
         <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
             <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
                 <app-timesheet-calander></app-timesheet-calander>
             </div>
         </div>
-    </nz-collapse-panel>
+    <!-- </nz-collapse-panel> -->
 </nz-collapse>
   <button nz-button (click)="openEmployeeHelpModal()">
   <span nz-icon nzType="question-circle" nzTheme="outline"></span>
@@ -304,7 +330,6 @@
 </ng-container>
 
 
-<!-- Admin help -->
 <nz-modal
   [nzWidth]="800"
   [(nzVisible)]="showAdminHelpModal"
@@ -322,21 +347,57 @@
     <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
       <div nz-col [nzSpan]="24">
         <div class="help-content">
-          <h2>Dashboard Help</h2>
-          <ul>
-            <li>Statistics Section: Displays important metrics like job statuses and stock levels, visualized through interactive charts.</li>
-            <li>Reports Section: Offers quick access to various reports, including:
-              <ul>
-                <li>Monthly Hours Worked</li>
-                <li>Monthly Quotation Summary</li>
-                <li>Stock by Type and Price</li>
-                <li>Pending Quotations</li>
-                <li>List of Stock to Order</li>
-                <li>List of Unpaid Invoices</li>
-              </ul>
-            </li>
-            <li>Filtering Options: Stock levels can be filtered by type for better analysis</li>
-          </ul>
+          <h2>Admin Dashboard Help</h2>
+          <p>This dashboard provides real-time business insights and quick access to management tools.</p>
+        </div>
+
+        <div class="help-section">
+          <h3><i nz-icon nzType="dashboard" nzTheme="outline" style="margin-right: 8px;"></i> Key Features</h3>
+
+          <div class="feature">
+            <h4><i nz-icon nzType="bar-chart" nzTheme="outline" style="margin-right: 8px;"></i> Statistics Overview</h4>
+            <ul>
+              <li><strong>New Requests</strong> - Current open job requests</li>
+              <li><strong>Completed Jobs</strong> - Weekly completed work orders</li>
+              <li><strong>Total Customers</strong> - All customers in system</li>
+              <li><strong>Employees Clocked In</strong> - Currently working staff</li>
+            </ul>
+            <p>Click any statistic to view detailed records.</p>
+          </div>
+
+
+        </div>
+
+        <div class="help-section">
+          <h3><i nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px;"></i> How to Use</h3>
+
+          <div class="usage-step">
+            <h4><i nz-icon nzType="eye" nzTheme="outline" style="margin-right: 8px;"></i> Viewing Detailed Data</h4>
+            <ol>
+              <li>Click the <button nz-button nzType="link" nzSize="small"><i nz-icon nzType="arrow-right" nzTheme="outline"></i></button> icon on any statistic card</li>
+              <li>You'll be taken to the relevant section</li>
+              <li>Use filters to narrow down results</li>
+            </ol>
+          </div>
+
+          <div class="usage-step">
+            <h4><i nz-icon nzType="file-pdf" nzTheme="outline" style="margin-right: 8px;"></i> Generating Reports</h4>
+            <ol>
+              <li>Click any report type from the Reports section</li>
+              <li>Wait for the report to generate</li>
+              <li>Use the <button nz-button nzType="default" nzSize="small"><i nz-icon nzType="download" nzTheme="outline"></i></button> button to export</li>
+              <li>Filter data using available options</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="help-section troubleshooting">
+          <h3><i nz-icon nzType="exclamation-circle" nzTheme="outline" style="margin-right: 8px;"></i> Troubleshooting</h3>
+          <div class="warning">
+            <p><strong>Data not updating?</strong> Try refreshing the page</p>
+            <p><strong>Missing reports?</strong> Verify your admin permissions</p>
+            <p><strong>Incorrect numbers?</strong> Check date filters</p>
+          </div>
         </div>
       </div>
     </div>
@@ -353,26 +414,71 @@
   [nzFooter]="null">
 
   <ng-template #helpTitle>
-    <span nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px; color: #17726d;"></span>
-    <b>Help Center</b>
+    <span nz-icon nzType="clock-circle" nzTheme="outline" style="margin-right: 8px;"></span>
+    <b>Timesheet System Help</b>
   </ng-template>
 
   <ng-container *nzModalContent>
     <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
       <div nz-col [nzSpan]="24">
         <div class="help-content">
-          <h2>Dashboard Help</h2>
-          <ul>
-            <li>Work Summary: Displays monthly performance metrics, including:</li>
-            <li>Reports Section: Offers quick access to various reports, including:
-              <ul>
-                <li>Jobs Completed</li>
-                <li>Hours Worked</li>
-                <li>Accumulated Pay</li>
-              </ul>
-            </li>
-            <li>Timesheet Calendar: An integrated calendar to track and manage work hours.</li>
-          </ul>
+          <h2>Timesheet Calendar Overview</h2>
+          <p>This system allows you to manage employee time tracking through generated codes and calendar visualization.</p>
+        </div>
+
+        <div class="help-section">
+          <h3><i nz-icon nzType="clock-circle" nzTheme="outline"></i> Code Generation</h3>
+
+          <div class="feature">
+            <h4>Clock-In/Clock-Out Codes</h4>
+            <ul>
+              <li><button nz-button nzSize="small"><i nz-icon nzType="clock-circle" nzTheme="outline"></i> Generate Clock-In Code</button> - Creates a unique code for employees to clock in</li>
+              <li><button nz-button nzSize="small"><i nz-icon nzType="field-time" nzTheme="outline"></i> Generate Clock-Out Code</button> - Creates a unique code for employees to clock out</li>
+              <li>Codes expire after a set time period (shown in countdown)</li>
+            </ul>
+          </div>
+
+          <div class="usage-step">
+            <h4>How to Generate and Share Codes</h4>
+            <ol>
+              <li>Click either the Clock-In or Clock-Out code generation button</li>
+              <li>Wait for the system to generate a unique code</li>
+              <li>Share the displayed code with employees</li>
+              <li>Employees must enter this code in their timesheet app</li>
+              <li>The code will automatically expire after countdown completes</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="help-section">
+          <h3><i nz-icon nzType="calendar" nzTheme="outline"></i> Calendar View</h3>
+
+          <div class="feature">
+            <h4>Timesheet Visualization</h4>
+            <ul>
+              <li>Interactive calendar displays all employee timesheet entries</li>
+              <li>View daily, weekly, or monthly time tracking data</li>
+              <li>Click on events to see detailed time entry information</li>
+            </ul>
+          </div>
+
+          <div class="usage-step">
+            <h4>Using the Calendar</h4>
+            <ol>
+              <li>Use the calendar header navigation to change views</li>
+              <li>Click on any event to see details</li>
+              <li>Different colors indicate different statuses (clock-in, clock-out, etc.)</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="help-section troubleshooting">
+          <h3><i nz-icon nzType="exclamation-circle" nzTheme="outline"></i> Troubleshooting</h3>
+          <div class="warning">
+            <p><strong>Code not working?</strong> Verify the code hasn't expired and was entered correctly</p>
+            <p><strong>Calendar not loading?</strong> Check your internet connection and refresh the page</p>
+            <p><strong>Missing time entries?</strong> Ensure employees properly submitted their codes</p>
+          </div>
         </div>
       </div>
     </div>
@@ -380,7 +486,6 @@
 </nz-modal>
 
 
-<!-- Customer help -->
 <nz-modal
   [nzWidth]="800"
   [(nzVisible)]="showCustomerHelpModal"
@@ -391,45 +496,86 @@
 
   <ng-template #helpTitle>
     <span nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px; color: #17726d;"></span>
-    <b>Help Center</b>
+    <b>Customer Dashboard Help</b>
   </ng-template>
 
   <ng-container *nzModalContent>
     <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
       <div nz-col [nzSpan]="24">
         <div class="help-content">
-          <h2>Dashboard Help</h2>
-          <p>Welcome to your Customer Dashboard! This page provides quick access to key features related to your jobs, quotes, and invoices.</p>
-          <p>Key Features Include</p>
-          <ol>
-            <li>Job Requests</li>
-              <ul>
-                <li>View and manage your submitted job requests.</li>
-                <li>Track the status of ongoing work.</li>
-              </ul>
-            <li>Quotations</li>
-              <ul>
-                <li>Review quotes sent by the company.</li>
-                <li>Approve or request changes to pricing and services.</li>
-              </ul>
-            <li>Invoices</li>
-              <ul>
-                <li>Check issued invoices and payment status.</li>
-                <li>Download or print invoices for your records.</li>
-              </ul>
-            <li>Delivery Notes</li>
-              <ul>
-                <li>Access proof of delivery for completed jobs.</li>
-                <li>Verify received services or products.</li>
-              </ul>
-            <li>Filtering Options: Stock levels can be filtered by type for better analysis</li>
-          </ol>
-          <p>How to use:</p>
-          <ul>
-            <li>Click any of the cards to navigate to the relevant section.</li>
-            <li>Contact support if you need help with quotes, payments, or job updates.</li>
-          </ul>
-          <p>This dashboard helps you stay informed and manage your interactions with the company efficiently.</p>
+          <h2>Welcome to Your Customer Dashboard</h2>
+          <p>This is your central hub for managing all job-related documents and requests.</p>
+        </div>
+
+        <div class="help-section">
+          <h3><i nz-icon nzType="appstore" nzTheme="outline" style="margin-right: 8px;"></i> Dashboard Features</h3>
+
+          <div class="feature">
+            <h4><i nz-icon nzType="vv:job_requests" nzTheme="outline" style="margin-right: 8px;"></i> Job Requests</h4>
+            <ul>
+              <li>Submit new service requests</li>
+              <li>Track status of existing requests</li>
+              <li>View request history</li>
+            </ul>
+          </div>
+
+          <div class="feature">
+            <h4><i nz-icon nzType="file-pdf" nzTheme="outline" style="margin-right: 8px;"></i> Quotations</h4>
+            <ul>
+              <li>View and download price quotes</li>
+              <li>Check quotation status</li>
+              <li>Approve or request changes</li>
+            </ul>
+          </div>
+
+          <div class="feature">
+            <h4><i nz-icon nzType="file-protect" nzTheme="outline" style="margin-right: 8px;"></i> Invoices</h4>
+            <ul>
+              <li>View and pay outstanding invoices</li>
+              <li>Download payment receipts</li>
+              <li>Access invoice history</li>
+            </ul>
+          </div>
+
+          <div class="feature">
+            <h4><i nz-icon nzType="file-done" nzTheme="outline" style="margin-right: 8px;"></i> Delivery Notes</h4>
+            <ul>
+              <li>View completed job documentation</li>
+              <li>Download delivery confirmations</li>
+              <li>Access historical records</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="help-section">
+          <h3><i nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px;"></i> How to Navigate</h3>
+
+          <div class="usage-step">
+            <h4><i nz-icon nzType="folder-open" nzTheme="outline" style="margin-right: 8px;"></i> Accessing Sections</h4>
+            <ol>
+              <li>Click any card to enter that section</li>
+              <li>Use the main menu for additional options</li>
+              <li>Return to dashboard using the home icon</li>
+            </ol>
+          </div>
+
+          <div class="usage-step">
+            <h4><i nz-icon nzType="search" nzTheme="outline" style="margin-right: 8px;"></i> Finding Documents</h4>
+            <ol>
+              <li>Each section has search functionality</li>
+              <li>Filter by date range or status</li>
+              <li>Use the "View" buttons to open documents</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="help-section troubleshooting">
+          <h3><i nz-icon nzType="exclamation-circle" nzTheme="outline" style="margin-right: 8px;"></i> Common Questions</h3>
+          <div class="warning">
+            <p><strong>Can't find a document?</strong> Check your filters or refresh the page</p>
+            <p><strong>Document won't open?</strong> Ensure you have PDF reader software</p>
+            <p><strong>Missing features?</strong> Some options may require approval first</p>
+          </div>
         </div>
       </div>
     </div>

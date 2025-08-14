@@ -242,6 +242,9 @@
         </nz-spin>
       </nz-tab>
     </nz-tabset>
+    <button nz-button nzType="default" (click)="openHelpModal()" style="float: right; margin-left: 8px;">
+      <i nz-icon nzType="question-circle" nzTheme="outline"></i> Help
+    </button>
   </div>
 </div>
 
@@ -273,3 +276,121 @@
     </app-update-stock>
   </div>
 </div>
+
+
+<!-- Stock Help Modal -->
+<nz-modal
+  [nzWidth]="800"
+  [(nzVisible)]="showHelp"
+  nzClosable="true"
+  [nzTitle]="helpTitle"
+  (nzOnCancel)="showHelp=false"
+  [nzFooter]="null">
+
+  <ng-template #helpTitle>
+    <span nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px; color: #17726d;"></span>
+    <b>Stock Management Help Center</b>
+  </ng-template>
+
+  <ng-container *nzModalContent>
+    <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+      <div nz-col [nzSpan]="24">
+        <div class="help-content">
+          <h2>Stock Inventory System</h2>
+          <p>This page allows you to monitor and manage all inventory items categorized by stock levels, with tools for creating, updating, and bulk importing/exporting stock data.</p>
+        </div>
+
+        <div class="help-section">
+          <h3><i nz-icon nzType="appstore" nzTheme="outline" style="margin-right: 8px;"></i> Key Features</h3>
+
+          <div class="feature">
+            <h4><i nz-icon nzType="profile" nzTheme="outline" style="margin-right: 8px;"></i> Stock Level Tracking</h4>
+            <ul>
+              <li><nz-tag [nzColor]="'red'">Low Stock (<50)</nz-tag> - Items needing urgent replenishment</li>
+              <li><nz-tag [nzColor]="'orange'">Medium Stock (50-249)</nz-tag> - Adequate but monitor closely</li>
+              <li><nz-tag [nzColor]="'green'">High Stock (250+)</nz-tag> - Well-stocked items</li>
+              <li><nz-tag [nzColor]="'volcano'">Critical Level (≤10)</nz-tag> - Highlighted with warning icon</li>
+            </ul>
+          </div>
+
+          <div class="feature">
+            <h4><i nz-icon nzType="search" nzTheme="outline" style="margin-right: 8px;"></i> Search & Filter</h4>
+            <p>Quickly find inventory items by:</p>
+            <ul>
+              <li>Stock ID</li>
+              <li>Item name or description</li>
+              <li>Material type</li>
+              <li>Category</li>
+              <li>Stock level range</li>
+            </ul>
+          </div>
+
+          <div class="feature">
+            <h4><i nz-icon nzType="swap" nzTheme="outline" style="margin-right: 8px;"></i> Bulk Operations</h4>
+            <ul>
+              <li><strong>Export to Excel</strong> - Download current inventory data</li>
+              <li><strong>Import from Excel</strong> - Bulk update stock levels</li>
+              <li><strong>Create New Items</strong> - Add individual stock entries</li>
+              <li><strong>Update Existing</strong> - Modify stock details and quantities</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="help-section">
+          <h3><i nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px;"></i> How to Use</h3>
+
+          <div class="usage-step">
+            <h4><i nz-icon nzType="eye" nzTheme="outline" style="margin-right: 8px;"></i> Viewing Stock Details</h4>
+            <ol>
+              <li>Click the <button nz-button nzType="primary" nzSize="small"><i nz-icon nzType="eye" nzTheme="outline"></i></button> action button</li>
+              <li>The detailed stock view will show complete item information</li>
+              <li>Review all specifications, history, and related data</li>
+              <li>Click <strong>Back to Stock</strong> to return to the list</li>
+            </ol>
+          </div>
+
+          <div class="usage-step">
+            <h4><i nz-icon nzType="plus" nzTheme="outline" style="margin-right: 8px;"></i> Creating New Stock Items</h4>
+            <ol>
+              <li>Click the <button nz-button nzType="primary" nzSize="small">Create</button> button in any tab</li>
+              <li>Fill in all required item details</li>
+              <li>Set the initial stock level</li>
+              <li>Click <strong>Submit</strong> to add to inventory</li>
+            </ol>
+          </div>
+
+          <div class="usage-step">
+            <h4><i nz-icon nzType="edit" nzTheme="outline" style="margin-right: 8px;"></i> Updating Stock Items</h4>
+            <ol>
+              <li>Click the <button nz-button nzType="default" nzSize="small"><i nz-icon nzType="edit" nzTheme="outline"></i></button> action button</li>
+              <li>Modify any fields as needed (quantity, details, etc.)</li>
+              <li>Click <strong>Update</strong> to save changes</li>
+              <li>Changes will reflect immediately in the appropriate stock level tab</li>
+            </ol>
+          </div>
+
+          <div class="usage-step">
+            <h4><i nz-icon nzType="file-excel" nzTheme="outline" style="margin-right: 8px;"></i> Importing/Exporting Data</h4>
+            <ol>
+              <li><strong>Export:</strong> Click <button nz-button nzType="primary" nzSize="small"><i nz-icon nzType="export" nzTheme="outline"></i> Export</button> to download current data</li>
+              <li><strong>Import:</strong> Click <button nz-button nzType="default" nzSize="small"><i nz-icon nzType="import" nzTheme="outline"></i> Import</button> and select your Excel file</li>
+              <li>The system will validate and process the import</li>
+              <li>Check the status alert for results</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="help-section troubleshooting">
+          <h3><i nz-icon nzType="exclamation-circle" nzTheme="outline" style="margin-right: 8px;"></i> Troubleshooting</h3>
+          <div class="warning">
+            <p><strong>Import failed?</strong> Ensure your Excel file matches the required format</p>
+            <p><strong>Can't update stock?</strong> Verify you have proper permissions</p>
+            <p><strong>Item not showing?</strong> Check if it's filtered or in a different stock level tab</p>
+            <p><strong>Critical items not highlighted?</strong> Refresh the page to ensure latest data</p>
+          </div>
+          <p>For further assistance, contact your inventory system administrator.</p>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</nz-modal>

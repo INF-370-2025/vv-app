@@ -1,0 +1,127 @@
+<div class="help-container">
+  <div class="search-container">
+    <nz-input-group [nzSuffix]="suffixIconSearch">
+      <input
+        type="text"
+        nz-input
+        placeholder="Search help articles..."
+        [(ngModel)]="searchQuery"
+        (input)="filterSections()"
+      />
+    </nz-input-group>
+    <ng-template #suffixIconSearch>
+      <i nz-icon nzType="search"></i>
+    </ng-template>
+  </div>
+
+  <div class="help-section" *ngFor="let section of filteredSections">
+    <div class="section-header" (click)="toggleSection(section.id)">
+      <h2>
+        <i nz-icon [nzType]="section.icon" nzTheme="outline"></i>
+        {{section.title}}
+      </h2>
+      <span class="toggle-icon">{{section.open ? '-' : '+'}}</span>
+    </div>
+
+    <div class="section-content" *ngIf="section.open">
+      <!-- Job Requests -->
+      <div *ngIf="section.id === 'job-requests'">
+        <p>Create and manage all your service requests through this section.</p>
+
+        <div class="feature">
+          <h3><i nz-icon nzType="tags" nzTheme="outline"></i> Request Statuses</h3>
+          <ul>
+            <li><nz-tag nzColor="orange">Pending</nz-tag> - New requests awaiting review</li>
+            <li><nz-tag nzColor="green">Accepted</nz-tag> - Approved and in progress</li>
+            <li><nz-tag nzColor="red">Rejected</nz-tag> - Declined by our team</li>
+            <li><nz-tag nzColor="black">Cancelled</nz-tag> - Withdrawn by you</li>
+          </ul>
+        </div>
+
+        <div class="usage-step">
+          <h3><i nz-icon nzType="plus" nzTheme="outline"></i> Creating a New Request</h3>
+          <ol>
+            <li>Click the <nz-tag>Create New</nz-tag> button</li>
+            <li>Fill in all required details</li>
+            <li>Upload supporting documents</li>
+            <li>Submit your request</li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- Invoices -->
+      <div *ngIf="section.id === 'invoices'">
+        <p>View and manage all your invoices and payments.</p>
+
+        <div class="feature">
+          <h3><i nz-icon nzType="file-text" nzTheme="outline"></i> Invoice Statuses</h3>
+          <ul>
+            <li><nz-tag nzColor="red">Unpaid</nz-tag> - Outstanding payments</li>
+            <li><nz-tag nzColor="green">Paid</nz-tag> - Completed transactions</li>
+          </ul>
+        </div>
+
+        <div class="usage-step">
+          <h3><i nz-icon nzType="upload" nzTheme="outline"></i> Submitting Payment Proof</h3>
+          <ol>
+            <li>Locate the unpaid invoice</li>
+            <li>Click <nz-tag><i nz-icon nzType="upload" nzTheme="outline"></i> Upload Proof of Payment</nz-tag></li>
+            <li>Attach your payment confirmation</li>
+            <li>Submit for verification</li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- Quotations -->
+      <div *ngIf="section.id === 'quotations'">
+        <p>Review and manage all price quotations for your job requests.</p>
+
+        <div class="feature">
+          <h3><i nz-icon nzType="dollar" nzTheme="outline"></i> Quotation Actions</h3>
+          <ul>
+            <li><nz-tag nzColor="green">Accept</nz-tag> - Approve the quote to proceed</li>
+            <li><nz-tag nzColor="red">Reject</nz-tag> - Decline with optional feedback</li>
+            <li><nz-tag>View</nz-tag> - See full quote details</li>
+          </ul>
+        </div>
+
+        <div class="usage-step">
+          <h3><i nz-icon nzType="check" nzTheme="outline"></i> Accepting a Quotation</h3>
+          <ol>
+            <li>Click <nz-tag nzColor="green">Accept</nz-tag> next to a quote</li>
+            <li>Review the terms and conditions</li>
+            <li>Confirm your acceptance</li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- Delivery Notes -->
+      <div *ngIf="section.id === 'delivery-notes'">
+        <p>Access documentation for completed jobs and deliveries.</p>
+
+        <div class="feature">
+          <h3><i nz-icon nzType="file-done" nzTheme="outline"></i> Key Features</h3>
+          <ul>
+            <li>View delivery confirmations</li>
+            <li>Download signed documents</li>
+            <li>Access historical records</li>
+          </ul>
+        </div>
+
+        <div class="usage-step">
+          <h3><i nz-icon nzType="eye" nzTheme="outline"></i> Viewing Delivery Notes</h3>
+          <ol>
+            <li>Locate the delivery note in the list</li>
+            <li>Click <nz-tag>View</nz-tag></li>
+            <li>The document will open in a new tab</li>
+            <li>Print or save as needed</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="filteredSections.length === 0" class="no-results">
+    <nz-empty nzNotFoundContent="No matching help articles found"></nz-empty>
+  </div>
+</div>

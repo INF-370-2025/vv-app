@@ -20,6 +20,7 @@ export class CustomerQuotationsComponent implements OnInit {
   selectedTabIndex:number = 0;
   isloading:boolean = false;
   btnloading:boolean = false;
+  showHelpModal = false;
 
 
   quotations: quotation[] = [];
@@ -37,20 +38,22 @@ export class CustomerQuotationsComponent implements OnInit {
     this.loadQuotations();
   }
 
+
+    openHelpModal(): void {
+    this.showHelpModal = true;
+  }
+
 loadQuotations(): void {
   this.isloading = true;
   this.apiService.get_quotations_user(this.auth.user?.user_id!).subscribe({
     next: (response) => {
-      // 1. First check if response is an array
       if (Array.isArray(response)) {
-        // Process as array
         this.quotations = response.map(item => ({
           ...item,
           quotation_status: item.quotation_status,
           job_request: item.job_request_details
         }));
       }
-      // 2. Check if response has a data property that's an array
       else if (response && Array.isArray(response.data)) {
         this.quotations = response.data.map((item: { quotation_status: any; job_request_details: any; }) => ({
           ...item,
@@ -58,7 +61,6 @@ loadQuotations(): void {
           job_request: item.job_request_details
         }));
       }
-      // 3. Handle other possible structures
       else {
         console.error('Unexpected response format:', response);
         this.quotations = [];

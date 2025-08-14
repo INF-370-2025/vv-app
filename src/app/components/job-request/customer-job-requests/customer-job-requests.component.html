@@ -5,9 +5,7 @@
   <span nz-icon nzType="question-circle" nzTheme="outline"></span>
   Get Help
 </button>
-        <button nz-button nzType="default" routerLink="/home" style="float: start !important;">
-            Back to Dashboard
-        </button>
+
         <br>
         <nz-tabset nzType="card" (nzSelectedIndexChange)="selectedTabChange($event)" [(nzSelectedIndex)]="selectedTabIndex" [nzTabBarExtraContent]="extraTemplate">
 
@@ -322,7 +320,7 @@
         <form [formGroup]="jobRequestForm">
            <nz-spin [nzSpinning]="btnloading">
             <ng-template #title3>
-                <b>Create Employee</b>
+                <b>Create Job Request</b>
             </ng-template>
             <ng-container *nzModalContent>
                     <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
@@ -400,7 +398,7 @@
 </nz-modal>
 
 
-<!-- Admin help -->
+<!--  help -->
 <nz-modal
   [nzWidth]="800"
   [(nzVisible)]="showHelpModal"
@@ -411,28 +409,82 @@
 
   <ng-template #helpTitle>
     <span nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px; color: #17726d;"></span>
-    <b>Help Center</b>
+    <b>Job Requests Help</b>
   </ng-template>
 
   <ng-container *nzModalContent>
     <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
       <div nz-col [nzSpan]="24">
         <div class="help-content">
-          <h2>Dashboard Help</h2>
-          <ul>
-            <li>Statistics Section: Displays important metrics like job statuses and stock levels, visualized through interactive charts.</li>
-            <li>Reports Section: Offers quick access to various reports, including:
-              <ul>
-                <li>Monthly Hours Worked</li>
-                <li>Monthly Quotation Summary</li>
-                <li>Stock by Type and Price</li>
-                <li>Pending Quotations</li>
-                <li>List of Stock to Order</li>
-                <li>List of Unpaid Invoices</li>
-              </ul>
-            </li>
-            <li>Filtering Options: Stock levels can be filtered by type for better analysis</li>
-          </ul>
+          <h2>Job Requests Management</h2>
+          <p>Track and manage all job requests through their lifecycle from submission to completion.</p>
+        </div>
+
+        <div class="help-section">
+          <h3><i nz-icon nzType="appstore" nzTheme="outline" style="margin-right: 8px;"></i> Request Statuses</h3>
+
+          <div class="feature">
+            <ul>
+              <li><nz-tag [nzColor]="'yellow'">Pending</nz-tag> - New requests awaiting review</li>
+              <li><nz-tag [nzColor]="'green'">Accepted</nz-tag> - Approved and in progress</li>
+              <li><nz-tag [nzColor]="'red'">Rejected</nz-tag> - Declined by your team</li>
+              <li><nz-tag [nzColor]="'black'">Cancelled</nz-tag> - Withdrawn by customer</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="help-section">
+          <h3><i nz-icon nzType="search" nzTheme="outline" style="margin-right: 8px;"></i> Navigation & Search</h3>
+
+          <div class="feature">
+            <ul>
+              <li>Switch between status tabs at the top</li>
+              <li>Search by request ID, company name or contact</li>
+              <li>Use the <button nz-button nzType="default" nzSize="small">Back to Dashboard</button> to return</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="help-section">
+          <h3><i nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px;"></i> How to Use</h3>
+
+          <div class="usage-step">
+            <h4><i nz-icon nzType="plus" nzTheme="outline" style="margin-right: 8px;"></i> Creating a New Request</h4>
+            <ol>
+              <li>Click <button nz-button nzType="primary" nzSize="small">Create New</button></li>
+              <li>Fill in all required details</li>
+              <li>Upload supporting documents</li>
+              <li>Click <strong>Create Job Request</strong> to submit</li>
+            </ol>
+          </div>
+
+          <div class="usage-step">
+            <h4><i nz-icon nzType="eye" nzTheme="outline" style="margin-right: 8px;"></i> Viewing Request Details</h4>
+            <ol>
+              <li>Click <button nz-button nzType="primary" nzSize="small"><i nz-icon nzType="eye" nzTheme="outline"></i> View</button></li>
+              <li>Review all request information</li>
+              <li>Check attached documents in the gallery</li>
+            </ol>
+          </div>
+
+          <div class="usage-step">
+            <h4><i nz-icon nzType="close-circle" nzTheme="outline" style="margin-right: 8px;"></i> Cancelling a Request</h4>
+            <ol>
+              <li>Click <button nz-button nzType="default" nzDanger nzSize="small"><i nz-icon nzType="close-circle" nzTheme="outline"></i> Cancel</button></li>
+              <li>Confirm cancellation in the popup</li>
+              <li>The request will move to Cancelled tab</li>
+            </ol>
+            <p class="warning-text"><i nz-icon nzType="warning" nzTheme="outline"></i> Cancellation may not be reversible</p>
+          </div>
+        </div>
+
+        <div class="help-section troubleshooting">
+          <h3><i nz-icon nzType="exclamation-circle" nzTheme="outline" style="margin-right: 8px;"></i> Troubleshooting</h3>
+          <div class="warning">
+            <p><strong>Can't view request?</strong> Check your internet connection</p>
+            <p><strong>Missing documents?</strong> Ensure files were uploaded properly</p>
+            <p><strong>Status not updating?</strong> Refresh the page or try again later</p>
+          </div>
         </div>
       </div>
     </div>

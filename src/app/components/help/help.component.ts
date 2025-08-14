@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { AppModule } from '../../app.module';
+import { AuthService } from '../../services/auth.service';
+import { CustomerHelpComponent } from './customer-help/customer-help.component';
+import { AdminHelpComponent } from './admin-help/admin-help.component';
 
 interface FAQ {
   faq_id: number;
@@ -11,7 +14,7 @@ interface FAQ {
 @Component({
   selector: 'app-help',
   standalone: true,
-  imports: [AppModule],
+  imports: [AppModule, CustomerHelpComponent, AdminHelpComponent],
   templateUrl: './help.component.html',
   styleUrl: './help.component.less'
 })
@@ -46,7 +49,7 @@ export class HelpComponent implements OnInit {
   errorMessage: string | null = null;
   searchQuery = '';
 
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService, public auth:AuthService) {}
 
   ngOnInit(): void {
     this.loadFAQs();

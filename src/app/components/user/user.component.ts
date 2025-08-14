@@ -49,6 +49,7 @@ export class UserComponent implements OnInit{
   file!: NzUploadFile | undefined;
   fileList :any[] = [];
   employeeIdToUpdate:number = 0;
+  showHelp: boolean = false;
 
   i: number = 1;
   j: number = 1;
@@ -94,6 +95,15 @@ export class UserComponent implements OnInit{
   ngOnInit(): void {
     this.loadUsers();
     this.loadWarnings();
+  }
+
+  openHelpModal(): void {
+    this.showHelp = true;
+  }
+
+  // Function to close the help modal
+  closeHelpModal(): void {
+    this.showHelp = false;
   }
 
   loadUsers(): void {
@@ -277,7 +287,7 @@ export class UserComponent implements OnInit{
 
   async createUser(user:user) {
 
-    
+
 
   }
 
@@ -367,7 +377,7 @@ export class UserComponent implements OnInit{
           this.isloading = false;
         }
       });
-        
+
         console.log(warnToInsert);
   }
 

@@ -1,8 +1,4 @@
 <div nz-row [nzJustify]="'center'">
-    <button nz-button (click)="showHelp()">
-  <span nz-icon nzType="question-circle" nzTheme="outline"></span>
-  Get Help
-</button>
     <div nz-col nzSpan="22">
         <nz-tabset nzType="card" (nzSelectedIndexChange)="selectedTabChange($event)" [(nzSelectedIndex)]="selectedTabIndex">
 
@@ -12,7 +8,7 @@
                     <nz-table #unpaidTable [nzData]="unpaid" [nzPageSize]="20">
                         <thead>
                             <tr>
-                                <th colSpan="6">
+                                <th colSpan="8">
                                   <div style="display: flex; justify-content: space-between; align-items: center;">
                                     <nz-input-group [nzSuffix]="suffixIconSearch">
                                       <input type="text" nz-input placeholder="Search Invoices"
@@ -28,6 +24,9 @@
                                 <th>Job Title</th>
                                 <th>invoice Total</th>
                                 <th>Contact Person</th>
+                                <th>Actions</th>
+                                <th> </th>
+
                                 <th></th>
                                 <th></th>
                                 <th>
@@ -139,10 +138,13 @@
             </nz-tab>
 
         </nz-tabset>
+            <button nz-button (click)="showHelp()">
+  <span nz-icon nzType="question-circle" nzTheme="outline"></span>
+  Get Help
+</button>
     </div>
 </div>
 
-<!-- Customer help -->
 <nz-modal
   [nzWidth]="800"
   [(nzVisible)]="showHelpModal"
@@ -152,74 +154,73 @@
   [nzFooter]="null">
 
   <ng-template #helpTitle>
-    <span nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px; color: #17726d;"></span>
-    <b>Help Center</b>
+    <span nz-icon nzType="file-text" nzTheme="outline" style="margin-right: 8px; color: #17726d;"></span>
+    <b>Invoices Help Center</b>
   </ng-template>
 
   <ng-container *nzModalContent>
     <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
       <div nz-col [nzSpan]="24">
         <div class="help-content">
-          <h2>Invoices Help</h2>
-    <p>This page allows you to <strong>view and manage your invoices</strong>, including tracking payment status and uploading proof of payment.</p>
-  </div>
+          <h2>Invoices Management</h2>
+          <p>Track and manage all invoices with payment status monitoring and document submission.</p>
+        </div>
 
-  <div class="help-section">
-    <h3><i class="fas fa-star"></i> Key Features</h3>
+        <div class="help-section">
+          <h3><i nz-icon nzType="appstore" nzTheme="outline" style="margin-right: 8px;"></i> Invoice Statuses</h3>
 
-    <div class="feature">
-      <h4><i class="fas fa-folder-open"></i> 1. Invoice Tabs</h4>
-      <ul>
-        <li><strong>Unpaid Invoices</strong> – View outstanding payments and upload proof of payment.</li>
-        <li><strong>Paid Invoices</strong> – See completed transactions and download receipts.</li>
-      </ul>
-    </div>
+          <div class="feature">
+            <ul>
+              <li><nz-tag [nzColor]="'red'">Unpaid</nz-tag> - Outstanding payments requiring action</li>
+              <li><nz-tag [nzColor]="'green'">Paid</nz-tag> - Completed transactions</li>
+            </ul>
+          </div>
+        </div>
 
-    <div class="feature">
-      <h4><i class="fas fa-search"></i> 2. Search Function</h4>
-      <p>Quickly find invoices by:</p>
-      <ul>
-        <li>Invoice number</li>
-        <li>Job title</li>
-        <li>Customer name</li>
-        <li>Company name</li>
-      </ul>
-    </div>
+        <div class="help-section">
+          <h3><i nz-icon nzType="search" nzTheme="outline" style="margin-right: 8px;"></i> Navigation & Search</h3>
 
-    <div class="feature">
-      <h4><i class="fas fa-cog"></i> 3. Actions</h4>
-      <ul>
-        <li><strong>View Invoice</strong> – Open a PDF copy of the invoice in a new tab.</li>
-        <li><strong>Upload Proof of Payment</strong> – Submit payment confirmation (bank slip, receipt, etc.).</li>
-      </ul>
-    </div>
-  </div>
+          <div class="feature">
+            <ul>
+              <li>Switch between Unpaid and Paid tabs</li>
+              <li>Search by invoice number, job title or contact</li>
+              <li>View counts of unpaid invoices</li>
+            </ul>
+          </div>
+        </div>
 
-  <div class="help-section">
-    <h3><i class="fas fa-question-circle"></i> How to Use</h3>
+        <div class="help-section">
+          <h3><i nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px;"></i> How to Use</h3>
 
-    <div class="usage-step">
-      <h4><i class="fas fa-eye"></i> Viewing an Invoice</h4>
-      <ol>
-        <li>Click the <button class="demo-button">View</button> button next to an invoice.</li>
-        <li>The PDF will open in a new tab for download or printing.</li>
-      </ol>
-    </div>
+          <div class="usage-step">
+            <h4><i nz-icon nzType="eye" nzTheme="outline" style="margin-right: 8px;"></i> Viewing an Invoice</h4>
+            <ol>
+              <li>Click <button nz-button nzType="primary" nzSize="small"><i nz-icon nzType="eye" nzTheme="outline"></i> View</button></li>
+              <li>The invoice PDF will open in a new tab</li>
+              <li>Download or print as needed</li>
+            </ol>
+          </div>
 
-    <div class="usage-step">
-      <h4><i class="fas fa-upload"></i> Uploading Proof of Payment (For Unpaid Invoices)</h4>
-      <ol>
-        <li>Click <button class="demo-button">Upload Proof of Payment</button> on an unpaid invoice.</li>
-        <li>Attach your payment confirmation (PDF, image, or screenshot).</li>
-        <li>Submit to notify the company.</li>
-      </ol>
-    </div>
+          <div class="usage-step">
+            <h4><i nz-icon nzType="upload" nzTheme="outline" style="margin-right: 8px;"></i> Submitting Payment Proof</h4>
+            <ol>
+              <li>Locate the unpaid invoice</li>
+              <li>Click <button nz-button nzType="primary" nzSize="small"><i nz-icon nzType="upload" nzTheme="outline"></i> Upload Proof of Payment</button></li>
+              <li>Attach your payment confirmation</li>
+              <li>Submit for verification</li>
+            </ol>
+          </div>
+        </div>
 
-  </div>
+        <div class="help-section troubleshooting">
+          <h3><i nz-icon nzType="exclamation-circle" nzTheme="outline" style="margin-right: 8px;"></i> Troubleshooting</h3>
+          <div class="warning">
+            <p><strong>Can't view invoice?</strong> Ensure you have PDF reader software</p>
+            <p><strong>Upload not working?</strong> Check file format (PDF/JPEG/PNG)</p>
+            <p><strong>Status not updating?</strong> Allow time for payment verification</p>
+          </div>
+        </div>
       </div>
     </div>
   </ng-container>
 </nz-modal>
-
-
-

@@ -1,8 +1,9 @@
 <div nz-row [nzJustify]="'center'">
     <div nz-col nzSpan="22">
-        <button nz-button nzType="default" routerLink="/home" style="float: start !important;">
-          Back to Dashboard
-        </button>
+      <button nz-button (click)="openHelpModal()" style="margin-left: 10px;">
+        <span nz-icon nzType="question-circle" nzTheme="outline"></span>
+        Get Help
+      </button>
         <br>
         <nz-tabset nzType="card" (nzSelectedIndexChange)="selectedTabChange($event)" [(nzSelectedIndex)]="selectedTabIndex">
             <!-- Pending Tab -->
@@ -203,3 +204,93 @@
 
     </div>
 </div>
+
+
+<nz-modal
+  [nzWidth]="800"
+  [(nzVisible)]="showHelpModal"
+  nzClosable="true"
+  [nzTitle]="helpTitle"
+  (nzOnCancel)="showHelpModal=false"
+  [nzFooter]="null">
+
+  <ng-template #helpTitle>
+    <span nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px; color: #17726d;"></span>
+    <b>Quotations Help</b>
+  </ng-template>
+
+  <ng-container *nzModalContent>
+    <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+      <div nz-col [nzSpan]="24">
+        <div class="help-content">
+          <h2>Quotations Management</h2>
+          <p>Review and manage all price quotations for job requests.</p>
+        </div>
+
+        <div class="help-section">
+          <h3><i nz-icon nzType="appstore" nzTheme="outline" style="margin-right: 8px;"></i> Quotation Statuses</h3>
+
+          <div class="feature">
+            <ul>
+              <li><nz-tag [nzColor]="'yellow'">Pending</nz-tag> - Waiting for your decision</li>
+              <li><nz-tag [nzColor]="'green'">Accepted</nz-tag> - Approved and ready to proceed</li>
+              <li><nz-tag [nzColor]="'red'">Rejected</nz-tag> - Declined (with optional feedback)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="help-section">
+          <h3><i nz-icon nzType="search" nzTheme="outline" style="margin-right: 8px;"></i> Navigation & Search</h3>
+
+          <div class="feature">
+            <ul>
+              <li>Switch between status tabs at the top</li>
+              <li>Search by quotation number, job title, or contact</li>
+              <li>Use the <button nz-button nzType="default" nzSize="small">Back to Dashboard</button> to return</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="help-section">
+          <h3><i nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px;"></i> How to Use</h3>
+
+          <div class="usage-step">
+            <h4><i nz-icon nzType="eye" nzTheme="outline" style="margin-right: 8px;"></i> Viewing a Quotation</h4>
+            <ol>
+              <li>Click <button nz-button nzType="primary" nzSize="small"><i nz-icon nzType="eye" nzTheme="outline"></i> View</button></li>
+              <li>Review all quotation details</li>
+              <li>Check included items and pricing</li>
+            </ol>
+          </div>
+
+          <div class="usage-step">
+            <h4><i nz-icon nzType="check" nzTheme="outline" style="margin-right: 8px;"></i> Accepting a Quotation</h4>
+            <ol>
+              <li>Click <button nz-button nzType="default" nzSize="small" style="background-color: seagreen;color: white;"><i nz-icon nzType="check" nzTheme="outline"></i> Accept</button></li>
+              <li>Confirm your acceptance</li>
+              <li>The job will proceed to the next stage</li>
+            </ol>
+          </div>
+
+          <div class="usage-step">
+            <h4><i nz-icon nzType="close" nzTheme="outline" style="margin-right: 8px;"></i> Rejecting a Quotation</h4>
+            <ol>
+              <li>Click <button nz-button nzType="default" nzSize="small" style="background-color: rgb(252, 61, 61);color: white;"><i nz-icon nzType="close" nzTheme="outline"></i> Reject</button></li>
+              <li>Provide feedback if required</li>
+              <li>The quotation will move to Rejected tab</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="help-section troubleshooting">
+          <h3><i nz-icon nzType="exclamation-circle" nzTheme="outline" style="margin-right: 8px;"></i> Troubleshooting</h3>
+          <div class="warning">
+            <p><strong>Can't view quotation?</strong> Check your internet connection</p>
+            <p><strong>Action buttons not working?</strong> Refresh the page</p>
+            <p><strong>Wrong status shown?</strong> Changes may take a moment to update</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</nz-modal>

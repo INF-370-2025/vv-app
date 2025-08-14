@@ -1,0 +1,208 @@
+<div nz-row [nzJustify]="'center'">
+  <div nz-col [nzSpan]="!showCreateForm ? 22 : 18" style="text-align: start;">
+    <h1 *ngIf="!showCreateForm"><b>Delivery Notes</b></h1>
+    <button *ngIf="showCreateForm" nz-button nzType="default" (click)="handleFormClose()">
+      <span nz-icon nzType="arrow-left" nzTheme="outline"></span>
+      Back to Delivery Notes
+    </button>
+  </div>
+</div>
+
+<!-- Delivery Notes List View -->
+<div nz-row [nzJustify]="'center'" *ngIf="!showCreateForm">
+  <div nz-col nzSpan="16">
+    <nz-tabset nzType="card" [nzTabBarExtraContent]="extraTemplateDeliveryNotes">
+        <nz-spin [nzSpinning]="isLoading">
+          <!-- Error message -->
+          <div *ngIf="errorMessage" class="error-message">
+            <nz-alert nzType="error" [nzMessage]="errorMessage" nzShowIcon></nz-alert>
+            <button nz-button nzType="primary" (click)="loadDeliveryNotes()" style="margin-top: 16px;">
+              <i nz-icon nzType="reload"></i> Retry
+            </button>
+          </div>
+
+          <!-- Empty state -->
+          <div *ngIf="!isLoading && !errorMessage && deliveryNotes.length === 0" class="empty-state">
+            <nz-empty nzNotFoundContent="No delivery notes found"></nz-empty>
+          </div>
+
+          <!-- table -->
+          <nz-table *ngIf="!isLoading && deliveryNotes.length > 0"
+                    #deliveryNotesTable
+                    [nzData]="deliveryNotes"
+                    [nzPageSize]="20"
+                    nzSize="middle">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Job Card ID</th>
+                <th>View</th>
+                <th>Delete</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let note of deliveryNotesTable.data">
+                <td><b>#{{note.delivery_note_id}}</b></td>
+                <td>{{note.job_card_id}}</td>
+                    <td>
+                      <button
+                        nz-button
+                        nzType="primary"
+                        nzSize="small"
+                        (click)="viewDeliveryNote(note)"
+                        [disabled]="!note.delivery_note_url">
+                        <i nz-icon nzType="eye" nzTheme="outline"></i> View
+                      </button>
+                    </td>
+                    <td>
+                      <button
+                        nz-button
+                        nzType="default"
+                        nzDanger
+                        nzSize="small"
+                        (click)="deleteDeliveryNote(note)"
+                        [nzLoading]="isDeleting[note.delivery_note_id]">
+                        <i nz-icon nzType="delete" nzTheme="outline"></i> Delete
+                      </button>
+                    </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </nz-spin>
+    </nz-tabset>
+    <button nz-button (click)="showHelp()">
+      <span nz-icon nzType="question-circle" nzTheme="outline"></span>
+      Get Help
+    </button>
+
+    <ng-template #extraTemplateDeliveryNotes>
+      <button nz-button nzType="primary" (click)="openCreateForm()">
+        Create Delivery Note
+        <span nz-icon nzType="plus" nzTheme="outline"></span>
+      </button>
+    </ng-template>
+  </div>
+</div>
+
+<!-- Create Form Section -->
+<div nz-row [nzJustify]="'center'" *ngIf="showCreateForm">
+  <div nz-col [nzSpan]="18">
+    <nz-card>
+      <app-create-delivery-note
+        (closeForm)="handleFormClose()"
+        (noteCreated)="loadDeliveryNotes()">
+      </app-create-delivery-note>
+    </nz-card>
+  </div>
+</div>
+
+<nz-modal
+  [nzWidth]="800"
+  [(nzVisible)]="showHelpModal"
+  nzClosable="true"
+  [nzTitle]="helpTitle"
+  (nzOnCancel)="showHelpModal=false"
+  [nzFooter]="null">
+
+  <ng-template #helpTitle>
+    <span nz-icon nzType="file-text" nzTheme="outline" style="margin-right: 8px; color: #17726d;"></span>
+    <b>Invoices Help Center</b>
+  </ng-template>
+
+  <ng-container *nzModalContent>
+    <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+      <div nz-col [nzSpan]="24">
+        <div class="help-content">
+          <h2>Invoices Management</h2>
+          <p>Track and manage all customer invoices with payment status monitoring and document management.</p>
+        </div>
+
+        <div class="help-section">
+          <h3><i nz-icon nzType="appstore" nzTheme="outline" style="margin-right: 8px;"></i> Key Features</h3>
+
+          <div class="feature">
+            <h4><i nz-icon nzType="profile" nzTheme="outline" style="margin-right: 8px;"></i> Status Tracking</h4>
+            <ul>
+              <li><nz-tag [nzColor]="'red'">Unpaid</nz-tag> - Outstanding payments</li>
+              <li><nz-tag [nzColor]="'green'">Paid</nz-tag> - Completed transactions</li>
+            </ul>
+          </div>
+
+          <div class="feature">
+            <h4><i nz-icon nzType="search" nzTheme="outline" style="margin-right: 8px;"></i> Search & Filter</h4>
+            <p>Quickly locate invoices by:</p>
+            <ul>
+              <li>Invoice number (e.g. #INV-001)</li>
+              <li>Job title or description</li>
+              <li>Customer contact details</li>
+              <li>Completion date range</li>
+            </ul>
+          </div>
+
+          <div class="feature">
+            <h4><i nz-icon nzType="tool" nzTheme="outline" style="margin-right: 8px;"></i> Invoice Actions</h4>
+            <ul>
+              <li><strong>View Details</strong> - See full invoice information</li>
+              <li><strong>Edit Information</strong> - Update amounts or details</li>
+              <li><strong>Update Status</strong> - Mark as paid when payment received</li>
+              <li><strong>View PDF</strong> - Access the invoice document</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="help-section">
+          <h3><i nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px;"></i> How to Use</h3>
+
+          <div class="usage-step">
+            <h4><i nz-icon nzType="plus" nzTheme="outline" style="margin-right: 8px;"></i> Creating an Invoice</h4>
+            <ol>
+              <li>Click <button nz-button nzType="primary" nzSize="small">Create Invoice</button></li>
+              <li>Select the completed job from the list</li>
+              <li>Verify all items and pricing</li>
+              <li>Upload the final invoice PDF</li>
+              <li>Click <strong>Submit</strong> to generate</li>
+            </ol>
+          </div>
+
+          <div class="usage-step">
+            <h4><i nz-icon nzType="eye" nzTheme="outline" style="margin-right: 8px;"></i> Viewing an Invoice</h4>
+            <ol>
+              <li>Locate the invoice in the list</li>
+              <li>Click <button nz-button nzType="primary" nzSize="small"><i nz-icon nzType="eye" nzTheme="outline"></i> View</button></li>
+              <li>Review all details in the popup</li>
+              <li>Click <strong>View PDF</strong> to see the document</li>
+            </ol>
+          </div>
+
+          <div class="usage-step">
+            <h4><i nz-icon nzType="check-circle" nzTheme="outline" style="margin-right: 8px;"></i> Marking as Paid</h4>
+            <ol>
+              <li>Click <button nz-button nzType="primary" nzSize="small">Update Status</button></li>
+              <li>Select "Paid" from the dropdown</li>
+              <li>Add payment details if required</li>
+              <li>Click <strong>Confirm</strong> to update</li>
+            </ol>
+          </div>
+
+          <div class="usage-step">
+            <h4><i nz-icon nzType="file-pdf" nzTheme="outline" style="margin-right: 8px;"></i> Managing Documents</h4>
+            <ol>
+              <li>Click <button nz-button nzType="primary" nzSize="small">View POP</button> to see payment proof</li>
+              <li>Use <button nz-button nzType="default" nzSize="small"><i nz-icon nzType="download" nzTheme="outline"></i></button> to save copies</li>
+              <li>Re-upload documents if needed via Edit</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="help-section troubleshooting">
+          <h3><i nz-icon nzType="exclamation-circle" nzTheme="outline" style="margin-right: 8px;"></i> Troubleshooting</h3>
+          <div class="warning">
+            <p><strong>Can't view PDF?</strong> Ensure the document was uploaded properly</p>
+            <p><strong>Missing job details?</strong> Verify the job card exists and is complete</p>
+            <p><strong>Edit options disabled?</strong> Check your user permissions</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</nz-modal>

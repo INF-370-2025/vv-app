@@ -165,3 +165,141 @@ td {
 .chart-header .stock-type-select ::ng-deep .ant-select-selection-item {
     color: rgba(0, 0, 0, 0.85) !important;
 }
+
+/* Add to your component's CSS or global styles */
+:root {
+  --primary-color: #17726d;
+  --help-color: #1890ff;
+}
+
+.customer-dashboard {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.dashboard-cards {
+  padding: 15px 0;
+}
+
+.dashboard-card-col {
+  display: flex;
+  justify-content: center;
+}
+
+.dashboard-card {
+  width: 200px;
+  height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 20px;
+  text-align: center;
+}
+
+.card-icon {
+  font-size: 48px;
+  margin-bottom: 15px;
+  color: var(--primary-color);
+}
+
+.card-label {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Distinct styling for help card */
+.help-card .card-icon {
+  color: var(--help-color);
+}
+
+.help-card:hover .card-icon {
+  color: #40a9ff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .dashboard-card {
+    width: 180px;
+    height: 160px;
+  }
+}
+
+@media (max-width: 992px) {
+  .dashboard-card {
+    width: 160px;
+    height: 150px;
+  }
+
+  .card-icon {
+    font-size: 42px;
+  }
+
+  .card-label {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  nz-row {
+    flex-wrap: wrap;
+    justify-content: center !important;
+  }
+
+  .dashboard-card-col {
+    flex: 0 0 33.333%;
+    max-width: 33.333%;
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-card-col {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+
+  .dashboard-card {
+    width: 140px;
+    height: 140px;
+  }
+
+  .card-icon {
+    font-size: 36px;
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 400px) {
+  .dashboard-card-col {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .dashboard-card {
+    width: 180px;
+    height: 140px;
+  }
+}
