@@ -48,7 +48,7 @@ export class StockReportComponent {
             ...item.stock_details,
             stock_id: item.stock_id,
             created_at: item.created_at,
-            value: item.stock_details.price * item.stock_details.stock_level
+            value: item.stock_details.stock_price * item.stock_details.stock_level
           }));
 
           this.processData(stockItems);
@@ -409,8 +409,8 @@ export class StockReportComponent {
             item === material.items[0] ? material.materialName : '',
             item.name,
             item.stock_level.toString(),
-            item.price.toFixed(2),
-            (item.price * item.stock_level).toFixed(2)
+            item.stock_price.toFixed(2),
+            (item.stock_price * item.stock_level).toFixed(2)
           ]);
         }
 

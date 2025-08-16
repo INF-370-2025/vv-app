@@ -9,12 +9,13 @@ import { SupabaseService } from '../../../services/supabase.service';
 import { NzUploadFile, UploadFileStatus } from 'ng-zorro-antd/upload';
 import { customer } from '../../../models/user';
 import { user } from '../../../models/user';
+import { RouterLink } from '@angular/router';
 
 
 @Component({
   selector: 'app-admin-quotations',
   standalone: true,
-  imports: [AppModule],
+  imports: [AppModule, RouterLink],
   templateUrl: './admin-quotations.component.html',
   styleUrl: './admin-quotations.component.less'
 })

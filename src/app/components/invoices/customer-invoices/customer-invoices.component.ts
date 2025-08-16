@@ -52,8 +52,8 @@ export class CustomerInvoicesComponent {
       next: (response) => {
         console.log(response);
         this.invoices = ([...response] as invoice[]).sort((a,b) => b.invoice_id - a.invoice_id);
-        this.paid = this.invoices.filter(x => x.invoice_status?.invoice_status_id === 2);
-        this.unpaid = this.invoices.filter(x => x.invoice_status?.invoice_status_id === 1);
+        this.paid = this.invoices.filter(x => x.invoice_status?.invoice_status_id === 1);
+        this.unpaid = this.invoices.filter(x => x.invoice_status?.invoice_status_id === 2);
         this.isloading = false;
       },
       error: (err) => {
@@ -107,38 +107,56 @@ export class CustomerInvoicesComponent {
     }
   }
 
-  editinvoice(invoice:invoice) {
-    this.viewingInvoice = invoice;
-    this.editInvoiceform.controls['invoice_number'].setValue(this.viewingInvoice.invoice_number);
-    this.editInvoiceform.controls['total'].setValue(this.viewingInvoice.total);
 
-    this.fileList = [];
-    if(this.viewingInvoice.invoice_url){
-      const uploadFile = {
-        uid: String(this.viewingInvoice.invoice_id),
-        name: String(this.viewingInvoice.invoice_url),
-        status: 'done' as UploadFileStatus,
-        url: this.viewingInvoice.invoice_url,
-        thumbUrl: this.viewingInvoice.invoice_url,
-      };
-      this.fileList.push(uploadFile);
-      this.file = this.fileList[0];
+
+  async submitPop() {
+    this.btnloading = true;
+
+    if (this.fileList.length === 0) {
+      this.notification.showError("Please select a file first");
+      this.btnloading = false;
+      return;
     }
-    this.showEditModal = true;
+
+    try {
+      const file = this.fileList[0];
+      const file_url = await this.supabase.uploadFileToStorage(file, "pop");
+
+      this.apiService.update_invoice_pop(
+        this.viewingInvoice.invoice_id,
+        file_url
+      ).subscribe({
+        next: () => {
+          this.notification.showSuccess("Proof of Payment uploaded!");
+          this.showEditModal = false;
+          this.loadInvoices();
+          this.btnloading = false;
+        },
+        error: (err) => {
+          console.error(err);
+          this.notification.showError("Failed to update invoice");
+          this.btnloading = false;
+        }
+      });
+    } catch (error) {
+      this.notification.showError("File upload failed");
+      this.btnloading = false;
+    }
   }
 
-  beforeUpload = (file: NzUploadFile,$event:any): boolean => {
-    this.fileList = this.fileList.concat(file);
-    this.file = this.fileList[0];
+  beforeUpload = (file: NzUploadFile): boolean => {
+    this.fileList = [file];
     return false;
   };
 
-  removeFile() {
-    return (file: NzUploadFile): boolean => {
+  editinvoice(invoice: invoice) {
+    this.viewingInvoice = invoice;
     this.fileList = [];
-    this.file = undefined;
-    return true;
-    }
+    this.showEditModal = true;
+  }
+
+  removeFile() {
+    this.fileList = [];
   }
 
 

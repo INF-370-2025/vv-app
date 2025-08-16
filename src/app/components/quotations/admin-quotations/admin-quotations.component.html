@@ -85,6 +85,7 @@
                                 <th>Job Title</th>
                                 <th>Quote Total</th>
                                 <th>Contact Person</th>
+                                <th> </th>
                                 <th>
                                     <p style="text-align: center;font-weight: 600;">
                                         {{accepted.length}} Requests
@@ -116,6 +117,12 @@
                                                       'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+
                                                       (quote.job_request?.customer?.user?.name || '')"></nz-avatar>
                                     {{ quote.job_request?.customer?.user?.name || '' }} | {{ quote.job_request?.customer?.user?.phone_number || '-' }}
+                                </td>
+                                <td style="text-align: center;">
+                                    <button nz-button nzType="primary" routerLink="/invoices">
+                                  <i nz-icon nzType="plus" nzTheme="outline"></i>
+                                  Create Invoice
+                                </button>
                                 </td>
                                 <td style="text-align: center;">
                                     <button nz-button nzType="primary" (click)="viewQuote(quote)">

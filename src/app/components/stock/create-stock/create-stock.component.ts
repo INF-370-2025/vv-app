@@ -30,7 +30,7 @@ export class CreateStockComponent implements OnInit {
       material_id: [null, Validators.required],
       stock_type_id: [null, Validators.required],
       stock_level: [0, [Validators.required, Validators.min(0)]],
-      price: [0, [Validators.required, Validators.min(0)]]
+      stock_price: [0, [Validators.required, Validators.min(0)]]
     });
   }
 
@@ -86,7 +86,7 @@ export class CreateStockComponent implements OnInit {
         material_id: +this.stockForm.value.material_id,
         stock_type_id: +this.stockForm.value.stock_type_id,
         stock_level: +this.stockForm.value.stock_level,
-        price: +this.stockForm.value.price
+        stock_price: +this.stockForm.value.stock_price
       };
 
       console.log('Submitting payload:', payload);

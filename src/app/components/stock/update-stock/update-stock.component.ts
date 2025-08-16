@@ -36,7 +36,7 @@ export class UpdateStockComponent implements OnInit {
       material_id: [null],
       stock_type_id: [null],
       stock_level: [0, [Validators.required, Validators.min(0)]],
-      price: [0, [Validators.required, Validators.min(0)]]
+      stock_price: [0, [Validators.required, Validators.min(0)]]
     });
   }
 
@@ -79,7 +79,7 @@ export class UpdateStockComponent implements OnInit {
       material_id: materialId,
       stock_type_id: stockTypeId,
       stock_level: this.stockData.stock_level,
-      price: this.stockData.price
+      stock_price: this.stockData.stock_price
     });
   }
 
@@ -102,7 +102,7 @@ export class UpdateStockComponent implements OnInit {
       material_id: formData.material_id,
       stock_type_id: formData.stock_type_id,
       stock_level: formData.stock_level,
-      price: formData.price
+      stock_price: formData.stock_price
     };
 
     this.apiService.update_stock(payload).subscribe({

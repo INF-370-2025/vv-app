@@ -43,10 +43,10 @@ export class AdminInvoicesComponent {
   }
 
   viewPop(invoice: invoice) {
-    if (invoice.invoice_url) {
+    if (invoice.pop) {
         // Create a temporary anchor element to trigger the download
         const link = document.createElement('a');
-        link.href = invoice.invoice_url;
+        link.href = invoice.pop;
         link.target = '_blank';
         link.download = `POP_${invoice.invoice_number || invoice.invoice_id}.pdf`;
         document.body.appendChild(link);

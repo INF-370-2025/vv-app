@@ -83,7 +83,7 @@
                                  </td>
                                  <td style="text-align: center;">
                                   <button nz-button nzType="primary"
-                                          [disabled]="!invoice.invoice_url"
+                                          [disabled]="!invoice.pop"
                                           (click)="viewPop(invoice)">
                                       <i nz-icon nzType="file-pdf" nzTheme="outline"></i>
                                       View POP
@@ -150,7 +150,7 @@
                                 </td>
                                 <td style="text-align: center;">
                                   <button nz-button nzType="primary"
-                                          [disabled]="!invoice.invoice_url"
+                                          [disabled]="!invoice.pop"
                                           (click)="viewPop(invoice)">
                                       <i nz-icon nzType="file-pdf" nzTheme="outline"></i>
                                       View POP

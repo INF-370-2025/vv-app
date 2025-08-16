@@ -12,7 +12,7 @@ export class stock {
   name!: string;
   description!: string;
   stock_level!: number;
-  price!: number;
+  stock_price!: number;
   created_at!: Date;
   stock_category: any;
 }
@@ -34,7 +34,7 @@ export interface CreateStock {
   material_id: number;
   stock_type_id: number;
   stock_level: number;
-  price: number;
+  stock_price: number;
 }
 
 export class stock_category {

@@ -224,3 +224,55 @@
     </div>
   </ng-container>
 </nz-modal>
+
+
+<!-- Add this modal at the end of customer-invoices.component.html -->
+<nz-modal
+  [(nzVisible)]="showEditModal"
+  nzTitle="Upload Proof of Payment"
+  [nzFooter]="null"
+  (nzOnCancel)="showEditModal=false">
+
+  <div *nzModalContent>
+    <div *ngIf="fileList.length > 0" class="file-preview">
+      <div class="file-item">
+        <i nz-icon nzType="file" nzTheme="outline"></i>
+        <span class="file-name">{{ fileList[0].name }}</span>
+        <button
+          nz-button
+          nzType="link"
+          nzDanger
+          (click)="removeFile()">
+          <i nz-icon nzType="delete" nzTheme="outline"></i>
+        </button>
+      </div>
+    </div>
+
+    <nz-upload
+      *ngIf="fileList.length === 0"
+      [nzBeforeUpload]="beforeUpload"
+      [nzShowUploadList]="false">
+      <button nz-button>
+        <i nz-icon nzType="upload"></i> Select File
+      </button>
+    </nz-upload>
+
+    <div style="margin-top: 20px; text-align: right;">
+      <button
+        nz-button
+        nzType="primary"
+        [disabled]="fileList.length === 0"
+        [nzLoading]="btnloading"
+        (click)="submitPop()">
+        Submit Proof
+      </button>
+      <button
+        nz-button
+        nzType="default"
+        style="margin-left: 8px;"
+        (click)="showEditModal = false">
+        Cancel
+      </button>
+    </div>
+  </div>
+</nz-modal>

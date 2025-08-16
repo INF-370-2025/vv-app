@@ -16,13 +16,19 @@
       >
         <div class="panel-content">
           <nz-alert nzType="info" nzMessage="PDF Resources"
-                   nzDescription="Download helpful PDF guides and documentation"
-                   nzShowIcon></nz-alert>
+                    nzDescription="Download helpful PDF guides and documentation"
+                    nzShowIcon></nz-alert>
+          <br>
           <div class="download-section">
-            <button nz-button nzType="primary">
+            <a
+              nz-button
+              nzType="primary"
+              href="assets/AdminHelp.pdf"
+              download="AdminHelp.pdf"
+            >
               <span nz-icon nzType="file-pdf" nzTheme="outline"></span>
               Download User Guide
-            </button>
+            </a>
           </div>
         </div>
         <ng-template #pdfExtra>
@@ -39,11 +45,15 @@
       >
         <div class="panel-content">
           <nz-alert nzType="info" nzMessage="Video Tutorials"
-                   nzDescription="Watch instructional videos to learn how to use the system"
-                   nzShowIcon></nz-alert>
-          <div class="video-placeholder">
-            <span nz-icon nzType="play-circle" nzTheme="outline" style="font-size: 48px;"></span>
-            <p>Video tutorials coming soon</p>
+                    nzDescription="Watch instructional videos to learn how to use the system"
+                    nzShowIcon></nz-alert>
+          <div class="video-container">
+            <iframe
+              src="https://drive.google.com/file/d/1Qk-lwKfsFq0LdYaTzZy1Vu8qMia40lEc/preview"
+              allow="autoplay"
+              frameborder="0"
+              allowfullscreen>
+            </iframe>
           </div>
         </div>
         <ng-template #videoExtra>

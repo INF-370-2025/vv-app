@@ -351,6 +351,13 @@ export class ApiService {
     );
   }
 
+update_invoice_pop(invoice_id: number, pop_url: string) {
+  return this.http.patch<any>(
+    environment.api_url + this.invoices_ep + `/update_invoice_pop/${invoice_id}`,
+    { pop: pop_url }
+  );
+}
+
 
   get_unpaid_invoices() {
     return this.http.get<any>(
@@ -507,7 +514,7 @@ export class ApiService {
 
     delete_pattern(pattern_id: number) {
     return this.http.delete<any>(
-      environment.api_url + this.pattern_ep  + `/delete_delivery_note/${pattern_id}`
+      environment.api_url + this.pattern_ep  + `/delete_pattern/${pattern_id}`
     );
   }
 

@@ -90,15 +90,15 @@
       <nz-form-label nzRequired>Price</nz-form-label>
       <nz-form-control>
         <nz-input-number
-          formControlName="price"
+          formControlName="stock_price"
           [nzMin]="0"
           [nzStep]="1"
           style="width: 100%"
           placeholder="Enter price">
         </nz-input-number>
-        <div *ngIf="stockForm.get('price')?.dirty && stockForm.get('price')?.errors" class="error-message">
-          <span *ngIf="stockForm.get('price')?.hasError('required')">Price is required</span>
-          <span *ngIf="stockForm.get('price')?.hasError('min')">Price must be at least 0</span>
+        <div *ngIf="stockForm.get('stock_price')?.dirty && stockForm.get('stock_price')?.errors" class="error-message">
+          <span *ngIf="stockForm.get('stock_price')?.hasError('required')">Price is required</span>
+          <span *ngIf="stockForm.get('stock_price')?.hasError('min')">Price must be at least 0</span>
         </div>
       </nz-form-control>
     </nz-form-item>

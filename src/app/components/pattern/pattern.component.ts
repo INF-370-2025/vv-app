@@ -21,6 +21,7 @@ export class PatternComponent implements OnInit {
   showCreateForm = false;
   patternTypes: pattern_type[] = [];
   showHelp: boolean = false;
+  isDeleting: { [id: number]: boolean } = {};
 
   constructor(
     private apiService: ApiService,
@@ -113,5 +114,47 @@ export class PatternComponent implements OnInit {
   handlePatternCreated(): void {
     this.loadPatterns();
     this.showCreateForm = false;
+  }
+
+  deletePattern(pattern: pattern): void {
+    // Add null check for pattern_id
+    if (!pattern.pattern_id) {
+      this.notification.showError('Error', 'Invalid pattern: missing ID');
+      return;
+    }
+
+    if (!confirm('Are you sure you want to delete this pattern?')) {
+      return;
+    }
+
+    const patternId = pattern.pattern_id;
+    this.isDeleting[patternId] = true;
+
+    this.apiService.delete_pattern(patternId).subscribe({
+      next: () => {
+        this.notification.showSuccess('Success', 'Pattern deleted successfully');
+        // Remove from local arrays
+        this.allPatterns = this.allPatterns.filter(
+          p => p.pattern_id !== patternId
+        );
+        this.patterns = this.patterns.filter(
+          p => p.pattern_id !== patternId
+        );
+        this.isDeleting[patternId] = false;
+      },
+      error: (err) => {
+        console.error('Error deleting pattern:', err);
+
+        let errorMsg = 'Failed to delete pattern';
+        if (err.status === 404) {
+          errorMsg = 'Delete endpoint not found (404)';
+        } else if (err.error?.detail) {
+          errorMsg = err.error.detail;
+        }
+
+        this.notification.showError('Error', errorMsg);
+        this.isDeleting[patternId] = false;
+      }
+    });
   }
 }

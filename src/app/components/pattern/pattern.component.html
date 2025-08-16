@@ -36,7 +36,7 @@
             <nz-table #patternsTable [nzData]="patterns" [nzPageSize]="20" nzSize="middle">
               <thead>
                 <tr>
-                  <th colSpan="3">
+                  <th colSpan="4"> <!-- Changed colSpan from 3 to 4 -->
                     <nz-input-group [nzSuffix]="suffixIconSearch">
                       <input
                         type="text"
@@ -54,6 +54,7 @@
                   <th>ID</th>
                   <th>Pattern Type</th>
                   <th>Design</th>
+                  <th>Delete</th> <!-- New column added -->
                 </tr>
               </thead>
               <tbody>
@@ -62,6 +63,17 @@
                   <td>{{pattern.pattern_type?.type_name || 'N/A'}}</td>
                   <td>
                     <div class="truncate-cell">{{pattern.design || 'No design available'}}</div>
+                  </td>
+                  <td>
+                    <button
+                      nz-button
+                      nzType="default"
+                      nzDanger
+                      nzSize="small"
+                      (click)="deletePattern(pattern)"
+                      [nzLoading]="pattern.pattern_id !== undefined && isDeleting[pattern.pattern_id]">
+                      <i nz-icon nzType="delete" nzTheme="outline"></i> Delete
+                    </button>
                   </td>
                 </tr>
               </tbody>
@@ -152,15 +164,14 @@
   <div class="help-section">
     <h3><i nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px;"></i> How to Use</h3>
 
-    <div class="usage-step">
-      <h4><i nz-icon nzType="plus" nzTheme="outline" style="margin-right: 8px;"></i> Creating a New Pattern</h4>
-      <ol>
-        <li>Click <button nz-button nzType="primary" nzSize="small"><i nz-icon nzType="plus" nzTheme="outline"></i> Create Pattern</button> in top right</li>
-        <li>Select the appropriate pattern type</li>
-        <li>Enter the design details and specifications</li>
-        <li>Click <strong>Submit</strong> to add to your catalog</li>
-      </ol>
-    </div>
+      <div class="usage-step">
+        <h4><i nz-icon nzType="delete" nzTheme="outline" style="margin-right: 8px;"></i> Deleting Patterns</h4>
+        <ol>
+          <li>Locate the pattern in the table</li>
+          <li>Click <button nz-button nzType="default" nzDanger nzSize="small"><i nz-icon nzType="delete" nzTheme="outline"></i> Delete</button></li>
+          <li>Confirm deletion in the dialog</li>
+        </ol>
+      </div>
 
     <div class="usage-step">
       <h4><i nz-icon nzType="search" nzTheme="outline" style="margin-right: 8px;"></i> Finding Patterns</h4>

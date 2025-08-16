@@ -19,7 +19,7 @@ interface DeliveryNote {
   templateUrl: './admin-delivery-note.component.html',
   styleUrl: './admin-delivery-note.component.less'
 })
-export class AdminDeliveryNoteComponent {
+export class AdminDeliveryNoteComponent implements OnInit {
   deliveryNotes: DeliveryNote[] = [];
   isLoading: boolean = false;
   errorMessage: string | null = null;
@@ -48,6 +48,8 @@ export class AdminDeliveryNoteComponent {
 
     this.apiService.get_delivery_notes().subscribe({
       next: (response: any) => {
+              console.log('Admin delivery notes response:', response);  // Add this
+
         if (Array.isArray(response)) {
           this.deliveryNotes = response;
         } else {

@@ -10,6 +10,7 @@ export class invoice{
     invoice_status?:invoiceStatus;
     invoice_url!:string;
     invoice_number!:string;
+    pop!: string;
 }
 
 export class invoiceStatus{
