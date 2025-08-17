@@ -18,7 +18,7 @@
             [nzShowUploadList]="{ showPreviewIcon: true, showRemoveIcon: true}">
             <nz-avatar
               [nz-tooltip]="'Click to change'"
-              [nzSrc]="(this.image_url || this.auth.user?.image) || 'https://ui-avatars.com/api/?background=random&color=fff&&name='+ auth.user?.name + ' ' + auth.user?.surname"
+              [nzSrc]="user?.user?.image || auth.user?.image || 'https://ui-avatars.com/api/?background=random&color=fff&&name='+ auth.user?.name + ' ' + auth.user?.surname"
               [nzSize]="100">
             </nz-avatar>
           </nz-upload>
@@ -28,14 +28,11 @@
       <nz-divider></nz-divider>
       <br>
 
-      <!-- === Personal & Company Details Form === -->
       <form nz-form [formGroup]="customerForm" *ngIf="auth.user && auth.user?.role_id == 6">
-
-        <!-- Personal Details Section -->
+<!--
         <nz-divider nzText="Personal Details"></nz-divider>
         <div nz-row [nzJustify]="'center'" [nzAlign]="'middle'" [nzGutter]="[24,24]">
 
-          <!-- Name Field -->
           <div nz-col nzXs="22" nzSm="22" nzMd="12" nzLg="12" nzXL="12">
             <nz-form-item>
               <nz-form-label>Name</nz-form-label>
@@ -47,7 +44,6 @@
             </nz-form-item>
           </div>
 
-          <!-- Surname Field -->
           <div nz-col nzXs="22" nzSm="22" nzMd="12" nzLg="12" nzXL="12">
             <nz-form-item>
               <nz-form-label>Surname</nz-form-label>
@@ -61,8 +57,7 @@
         </div>
 
         <div nz-row [nzJustify]="'center'" [nzAlign]="'middle'" [nzGutter]="[24,24]">
-          
-          <!-- Email Field (Read-only) -->
+
           <div nz-col nzXs="22" nzSm="22" nzMd="12" nzLg="12" nzXL="12">
             <nz-form-item>
               <nz-form-label>Email</nz-form-label>
@@ -74,7 +69,6 @@
             </nz-form-item>
           </div>
 
-          <!-- Phone Field (Read-only) -->
           <div nz-col nzXs="22" nzSm="22" nzMd="12" nzLg="12" nzXL="12">
             <nz-form-item>
               <nz-form-label>Phone</nz-form-label>
@@ -87,11 +81,9 @@
           </div>
         </div>
 
-        <!-- Company Details Section -->
         <nz-divider nzText="Company Details"></nz-divider>
         <div nz-row [nzJustify]="'center'" [nzAlign]="'middle'" [nzGutter]="[24,24]">
 
-          <!-- Company Name -->
           <div nz-col nzXs="22" nzSm="22" nzMd="12" nzLg="12" nzXL="12">
             <nz-form-item>
               <nz-form-label>Company Name</nz-form-label>
@@ -103,7 +95,6 @@
             </nz-form-item>
           </div>
 
-          <!-- Company Telephone -->
           <div nz-col nzXs="22" nzSm="22" nzMd="12" nzLg="12" nzXL="12">
             <nz-form-item>
               <nz-form-label>Telephone</nz-form-label>
@@ -115,7 +106,6 @@
             </nz-form-item>
           </div>
 
-          <!-- Registration Number -->
           <div nz-col nzXs="22" nzSm="22" nzMd="12" nzLg="12" nzXL="12">
             <nz-form-item>
               <nz-form-label>Registration No</nz-form-label>
@@ -127,7 +117,6 @@
             </nz-form-item>
           </div>
 
-          <!-- VAT Number -->
           <div nz-col nzXs="22" nzSm="22" nzMd="12" nzLg="12" nzXL="12">
             <nz-form-item>
               <nz-form-label>VAT No</nz-form-label>
@@ -139,7 +128,6 @@
             </nz-form-item>
           </div>
 
-          <!-- Company Address -->
           <div nz-col nzSpan="24">
             <nz-form-item>
               <nz-form-label>Address</nz-form-label>
@@ -150,9 +138,8 @@
               </nz-form-control>
             </nz-form-item>
           </div>
-        </div>
+        </div> -->
 
-        <!-- Submit Button -->
         <button
           [disabled]="!customerForm.valid"
           [nzLoading]="btnLoading"
@@ -167,11 +154,10 @@
 
       <form nz-form [formGroup]="employeeForm" *ngIf="auth.user && auth.user?.role_id != 6">
 
-        <!-- Personal Details Section -->
+        <!-- Personal Details Section
         <nz-divider nzText="Personal Details"></nz-divider>
         <div nz-row [nzJustify]="'center'" [nzAlign]="'middle'" [nzGutter]="[24,24]">
 
-          <!-- Name Field -->
           <div nz-col nzXs="22" nzSm="22" nzMd="12" nzLg="12" nzXL="12">
             <nz-form-item>
               <nz-form-label>Name</nz-form-label>
@@ -183,7 +169,6 @@
             </nz-form-item>
           </div>
 
-          <!-- Surname Field -->
           <div nz-col nzXs="22" nzSm="22" nzMd="12" nzLg="12" nzXL="12">
             <nz-form-item>
               <nz-form-label>Surname</nz-form-label>
@@ -197,8 +182,7 @@
         </div>
 
         <div nz-row [nzJustify]="'center'" [nzAlign]="'middle'" [nzGutter]="[24,24]">
-          
-          <!-- Email Field (Read-only) -->
+
           <div nz-col nzXs="22" nzSm="22" nzMd="12" nzLg="12" nzXL="12">
             <nz-form-item>
               <nz-form-label>Email</nz-form-label>
@@ -210,7 +194,6 @@
             </nz-form-item>
           </div>
 
-          <!-- Phone Field (Read-only) -->
           <div nz-col nzXs="22" nzSm="22" nzMd="12" nzLg="12" nzXL="12">
             <nz-form-item>
               <nz-form-label>Phone</nz-form-label>
@@ -223,12 +206,9 @@
           </div>
         </div>
 
-        <!-- Employee Details Section -->
         <nz-divider nzText="Employee Details"></nz-divider>
         <div nz-row [nzJustify]="'center'" [nzAlign]="'middle'" [nzGutter]="[24,24]">
-
-          <!-- Company Name -->
-          <div nz-col nzXs="22" nzSm="22" nzMd="12" nzLg="12" nzXL="12">
+=          <div nz-col nzXs="22" nzSm="22" nzMd="12" nzLg="12" nzXL="12">
             <nz-form-item>
               <nz-form-label>Emergency Contact</nz-form-label>
               <nz-form-control nzErrorTip="Please input your Emergency Contact Number">
@@ -239,8 +219,7 @@
             </nz-form-item>
           </div>
 
-          <!-- Job Scope Telephone -->
-          <div nz-col nzXs="22" nzSm="22" nzMd="12" nzLg="12" nzXL="12">
+         <div nz-col nzXs="22" nzSm="22" nzMd="12" nzLg="12" nzXL="12">
             <nz-form-item>
               <nz-form-label>Job Scope</nz-form-label>
               <nz-form-control nzErrorTip="Please input your Job Scope">
@@ -264,10 +243,9 @@
           </div>
 
         </div>
-
+ -->
         <!-- Submit Button -->
         <button
-          [disabled]="!employeeForm.valid"
           [nzLoading]="btnLoading"
           nz-button
           class="login-form-button login-form-margin"

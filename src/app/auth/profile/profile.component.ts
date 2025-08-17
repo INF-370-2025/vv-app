@@ -78,7 +78,7 @@ export class ProfileComponent {
               this.isLoading = false;
             }
           });
-    } 
+    }
 
     if(user.role_id !=6){
        this.apiService.get_profile_employee(this.auth.user?.user_id!).subscribe({
@@ -124,14 +124,34 @@ export class ProfileComponent {
     return false;
   };
 
-  async uploadImage() {
+  // async uploadImage() {
+  //   this.isuploading = true;
+  //   const file_url = await this.supabase.uploadFileToStorage(this.file!,"images");
+  //   this.image_url = file_url;
+  //   await this.supabase.update_profile_pic(this.auth.user?.user_id!,this.image_url);
+  //   this.file = undefined;
+  //   this.fileList = [];
+  //    this.isuploading = false;
+  // }
+
+    async uploadImage() {
     this.isuploading = true;
-    const file_url = await this.supabase.uploadFileToStorage(this.file!,"images");
-    this.image_url = file_url;
-    await this.supabase.update_profile_pic(this.auth.user?.user_id!,this.image_url);
+    const file_url = await this.supabase.uploadFileToStorage(this.file!, "images");
+
+    // Update the database
+    await this.supabase.update_profile_pic(this.auth.user?.user_id!, file_url);
+
+    // Update local user objects
+    if (this.auth.user) {
+      this.auth.user.image = file_url;
+    }
+    if (this.user?.user) {
+      this.user.user.image = file_url;
+    }
+
     this.file = undefined;
     this.fileList = [];
-     this.isuploading = false;
+    this.isuploading = false;
   }
 
   submitForm()
