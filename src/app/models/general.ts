@@ -28,3 +28,7 @@ export class email {
     subject!:string
     body!:string
 }
+
+export class logout_timer {
+    time!:number
+}

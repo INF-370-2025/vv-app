@@ -391,6 +391,19 @@ export class ApiService {
       return this.http.get<any>(environment.api_url + this.general_ep + `/get_artisan_stats/${user_id}`)
     }
 
+    get_logout_timer(timer_id: number) {
+      return this.http.get<any>(
+        environment.api_url + this.general_ep + `/get_logout_timer/${timer_id}`
+      );
+    }
+
+    update_logout_timer(timer_id: number, logout_timer: any) {
+    return this.http.put<any>(
+      environment.api_url +  this.general_ep + `/update_logout_timer/${timer_id}`,
+      logout_timer
+    );
+  }
+
   //#endregion
 
   //#region Stock
