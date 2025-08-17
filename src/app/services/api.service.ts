@@ -35,6 +35,10 @@ export class ApiService {
       return this.http.post<any>(environment.api_url + this.customers_ep + '/create_customer', customer);
     }
 
+    update_customer(customer_id:number, customer: any) {
+      return this.http.put<any>(environment.api_url + this.customers_ep + `/update_customer/${customer_id}`, customer);
+    }
+
 
   //#endregion
 
