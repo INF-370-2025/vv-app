@@ -125,19 +125,13 @@ export class ApiService {
       return this.http.get<any>(environment.api_url +  this.employees_ep + `/get_time_logs`)
     }
 
-    // clock_in(employee_id: number) {
-    //   return this.http.get<any>(environment.api_url +  this.employees_ep  + `/clock_in/${employee_id}`)
-    // }
+    clock_in(employee_id: number) {
+      return this.http.get<any>(environment.api_url +  this.employees_ep  + `/clock_in/${employee_id}`)
+    }
 
-    // clock_out(employee_id: number) {
-    //   return this.http.get<any>(environment.api_url + this.employees_ep  + `/clock_out/${employee_id}`)
-    // }
-
-    get_artisans() {
-      return this.http.get<any>(
-      environment.api_url + this.employees_ep + '/get_artisans'
-      );
-   }
+    clock_out(employee_id: number) {
+      return this.http.get<any>(environment.api_url + this.employees_ep  + `/clock_out/${employee_id}`)
+    }
 
   //#endregion
 
@@ -225,37 +219,23 @@ export class ApiService {
     );
   }
 
-  get_job_update_card(job_card_id: number) {
-    return this.http.get<any>(
-      environment.api_url +  this.job_cards_ep + `/get_job_card_update/${job_card_id}`
-    );
-  }
-
-  create_job_card(jobCardData: any) {
+  create_job_card(job_card: any) {
     return this.http.post<any>(
       environment.api_url +  this.job_cards_ep + '/create_job_card',
-      jobCardData
+      job_card
     );
   }
 
   update_job_card(job_card_id: number, job_card: any) {
     return this.http.put<any>(
-      environment.api_url + this.job_cards_ep + `/update_job_card/${job_card_id}`,
+      environment.api_url +  this.job_cards_ep + `/update_job_card/${job_card_id}`,
       job_card
-    );
-  }
-
-  get_job_card_with_materials(job_card_id: number) {
-    return this.http.get<any>(
-      environment.api_url + this.job_cards_ep + `/get_job_card_with_materials/${job_card_id}`
     );
   }
 
   get_completed_job_cards(){
     return this.http.get<any>(environment.api_url + this.job_cards_ep + `/get_completed_job_cards`)
   }
-
-
 
 //#endregion
 
@@ -355,13 +335,6 @@ export class ApiService {
     );
   }
 
-update_invoice_pop(invoice_id: number, pop_url: string) {
-  return this.http.patch<any>(
-    environment.api_url + this.invoices_ep + `/update_invoice_pop/${invoice_id}`,
-    { pop: pop_url }
-  );
-}
-
 
   get_unpaid_invoices() {
     return this.http.get<any>(
@@ -418,14 +391,18 @@ update_invoice_pop(invoice_id: number, pop_url: string) {
       return this.http.get<any>(environment.api_url + this.general_ep + `/get_artisan_stats/${user_id}`)
     }
 
-    // Add to your ApiService
-    get_artisan_stats(job_card_id: number) {
+    get_logout_timer(timer_id: number) {
       return this.http.get<any>(
-        environment.api_url + this.general_ep + `/get_artisan_stats/${job_card_id}`
+        environment.api_url + this.general_ep + `/get_logout_timer/${timer_id}`
       );
     }
 
-
+    update_logout_timer(timer_id: number, logout_timer: any) {
+    return this.http.put<any>(
+      environment.api_url +  this.general_ep + `/update_logout_timer/${timer_id}`,
+      logout_timer
+    );
+  }
 
   //#endregion
 
@@ -454,10 +431,6 @@ update_invoice_pop(invoice_id: number, pop_url: string) {
       return this.http.get<any>(
         environment.api_url + this.stock_ep + `/get_stock/${stock_id}`
       );
-    }
-
-    get_stock_categories() {
-      return this.http.get<any>(environment.api_url + this.stock_ep + `/get_stock_categories`);
     }
 
     create_stock(stock: any) {
@@ -516,12 +489,6 @@ update_invoice_pop(invoice_id: number, pop_url: string) {
       );
     }
 
-    delete_pattern(pattern_id: number) {
-    return this.http.delete<any>(
-      environment.api_url + this.pattern_ep  + `/delete_pattern/${pattern_id}`
-    );
-  }
-
   //#endregion
 
   //#region Material
@@ -545,6 +512,7 @@ update_invoice_pop(invoice_id: number, pop_url: string) {
       );
     }
 
+  // Material Import
     import_material_excel(file: File): Observable<any> {
       const formData = new FormData();
       formData.append('file', file);
@@ -584,45 +552,16 @@ update_invoice_pop(invoice_id: number, pop_url: string) {
     );
   }
 
-  get_delivery_notes_user(user_id:number) {
-    return this.http.get<any>(environment.api_url + this.delivery_note_ep + `/get_devlivery_notes_user/${user_id}`)
-  }
-
   //#endregion
 
   //#region employee time logs
   employee_time_logs_ep = 'employee_time_logs';
 
-  get_monthly_hours_worked(year: number) {
-    return this.http.get<any>(
-      environment.api_url + this.employee_time_logs_ep + `/monthly_hours_worked?year=${year}`
-    );
-  }
-
-
-  generateClockCode(type: 'clock_in' | 'clock_out'): Observable<{ code: number, expires_at: string }> {
-    return this.http.post<{ code: number, expires_at: string }>(
-      environment.api_url + this.employee_time_logs_ep + '/generate-clock-code',
-      { type }
-    );
-  }
-
-
-  clock_in(employee_id: number) {
-    return this.http.get<any>(environment.api_url + this.employee_time_logs_ep + `/clock_in/${employee_id}`);
-  }
-
-  clock_out(employee_id: number) {
-    return this.http.get<any>(environment.api_url + this.employee_time_logs_ep + `/clock_out/${employee_id}`);
-  }
-
-
-  verifyClockCode(employeeId: number, code: number, type: 'clock_in' | 'clock_out'): Observable<{ valid: boolean }> {
-    return this.http.post<{ valid: boolean }>(
-      environment.api_url + this.employee_time_logs_ep + '/verify-clock-code',
-      { employee_id: employeeId, code, type }
-    );
-  }
+get_monthly_hours_worked(year: number) {
+  return this.http.get<any>(
+    environment.api_url + this.employee_time_logs_ep + `/monthly_hours_worked?year=${year}`
+  );
+}
 
   //#endregion
 

@@ -7,6 +7,7 @@ import { AppModule } from './app.module';
 import { SupabaseService } from './services/supabase.service';
 import { RouterModule } from '@angular/router';
 import { AuthService } from './services/auth.service';
+import { ApiService } from './services/api.service';
 import { ContactComponent } from './components/contact/contact.component';
 import { NzDrawerPlacement } from 'ng-zorro-antd/drawer';
 import { NotificationService } from './services/notification.service';
@@ -56,7 +57,7 @@ export class AppComponent {
     private destroy$ = new Subject<void>();
 
   constructor(private theme:ThemeService,public supabase:SupabaseService,private notification:NotificationService,private router:Router,
-  private iconService:IconService,public authService:AuthService,private spinner: NgxSpinnerService) {
+  private iconService:IconService,public authService:AuthService,private spinner: NgxSpinnerService,private ApiService: ApiService) {
     this.supabase.connect_to_sb();
     this.subscribeToSupaAuth();
 
@@ -176,10 +177,22 @@ export class AppComponent {
 
   startLogoutTimer(): void {
     this.clearLogoutTimer();
+
+    let timer = 30;
+
+    // this.ApiService.get_logout_timer(1).subscribe({
+    //     next: res => {
+    //       timer = res.timer;
+    //       console.log(timer);
+    //     },
+    //     error: (error) => {
+    //       this.notification.showError("An Error Occoured while updating");
+    //     }
+    //   });
     this.logoutTimer = setTimeout(() => {
       this.sign_out();
       this.router.navigate(['/login']);
-    }, 900000); // 15 minutes
+    }, (timer * 60 * 1000));
   }
 
   clearLogoutTimer(): void {

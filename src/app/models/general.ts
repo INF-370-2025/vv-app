@@ -29,8 +29,6 @@ export class email {
     body!:string
 }
 
-export class FAQ {
-    faq_id!: number;
-    faq_q!:string;
-    faq_a!:string;
+export class logout_timer {
+    time!:number
 }
