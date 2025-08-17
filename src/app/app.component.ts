@@ -12,6 +12,7 @@ import { NzDrawerPlacement } from 'ng-zorro-antd/drawer';
 import { NotificationService } from './services/notification.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { role } from './models/role';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -50,10 +51,20 @@ export class AppComponent {
 
   year: any = new Date().getFullYear();
 
+  //Timer
+    private logoutTimer: any;
+    private destroy$ = new Subject<void>();
+
   constructor(private theme:ThemeService,public supabase:SupabaseService,private notification:NotificationService,private router:Router,
   private iconService:IconService,public authService:AuthService,private spinner: NgxSpinnerService) {
     this.supabase.connect_to_sb();
     this.subscribeToSupaAuth();
+
+    this.authService.isloggedIn
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(isLoggedIn => {
+        isLoggedIn ? this.startLogoutTimer() : this.clearLogoutTimer();
+      });
   }
 
   ngOnInit(): void {
@@ -64,6 +75,7 @@ export class AppComponent {
       if(this.authService.isLoggedInSubject.value == false) {
         if(this.router.url == '/login' || this.router.url === '/register') {
           console.log("Welcome to VV")
+          // this.startLogoutTimer();
         } else {
           this.router.navigateByUrl('/login');
         };
@@ -105,6 +117,8 @@ export class AppComponent {
     await this.authService.userSubject.next(null);
     this.notification.showSuccess("Goodbye");
     this.router.navigateByUrl('/login');
+
+    // this.clearLogoutTimer();
   }
 
   //#endregion
@@ -154,6 +168,25 @@ export class AppComponent {
 
   ngOnDestroy(): void {
     if(this.supabase.authSubscription) { this.supabase.authSubscription.unsubscribe() };
+
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.clearLogoutTimer();
+  }
+
+  startLogoutTimer(): void {
+    this.clearLogoutTimer();
+    this.logoutTimer = setTimeout(() => {
+      this.sign_out();
+      this.router.navigate(['/login']);
+    }, 900000); // 15 minutes
+  }
+
+  clearLogoutTimer(): void {
+    if (this.logoutTimer) {
+      clearTimeout(this.logoutTimer);
+      this.logoutTimer = null;
+    }
   }
 }
 // import { IconService } from './services/icon.service';

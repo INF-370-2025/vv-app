@@ -122,3 +122,13 @@ export class insertEmployee {
   emergency_contact!:string;
   hourly_rate!:number;
 }
+
+export class insertCustomer{
+  company_name!:string;
+  telephone!:string;
+  registration_number!:string;
+  vat_number!:string;
+  address!:string;
+  //customer_type_id!:number;
+  user_id!:number;
+}

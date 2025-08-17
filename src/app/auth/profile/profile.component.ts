@@ -6,7 +6,7 @@ import { NzUploadFile } from 'ng-zorro-antd/upload';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationService } from '../../services/notification.service';
-import { customer, employee, user } from '../../models/user';
+import { customer, employee, insertCustomer, insertUser, user } from '../../models/user';
 import { SupabaseService } from '../../services/supabase.service';
 
 
@@ -136,31 +136,62 @@ export class ProfileComponent {
 
   submitForm()
   {
-   //   let update_user = new user();
-    //   //update_user.user_id = this.auth.currentUser?.user_id!;
-    //   // update_user.name = this.detailsForm.value.name;
-    //   // update_user.surname = this.detailsForm.value.surname;
-    //   // update_user.email_address = this.detailsForm.value.email;
-    //   // update_user.phone_number = this.detailsForm.value.phone;
-    //   // update_user.company_name = this.detailsForm.value.companyName;
-    //   // update_user.telephone = this.detailsForm.value.telephone;
-    //   this.btnLoading = true;
-    //   // this.apiService.updateUserDetails(update_user).subscribe({
-    //   //   next: res => {
-    //   //     if(!res.error) {
-    //   //       this.notificationService.showSuccess(res.message);
-    //   //       this.loadDetails();
-    //   //       this.auth.check_session().subscribe();
-    //   //     } else {
-    //   //       this.notificationService.showError(res.error);
-    //   //     }
-    //   //       this.btnLoading = false;
-    //   //   },
-    //   //   error: (error) => {
-    //   //     this.notificationService.showError(error);
-    //   //     this.btnLoading = false;
-    //   //   }
-    //   // });
+     let update_user = new insertUser();
+     let update_customer = new insertCustomer();
+     let update_user_id = this.auth.user?.user_id!;
+     let update_customer_id = this.auth.user?.customer?.customer_id!;
+
+
+       update_user.name = this.customerForm.value.name;
+       update_user.surname = this.customerForm.value.surname;
+       update_user.email_address = this.customerForm.value.email;
+       update_user.phone_number = this.customerForm.value.phone;
+       update_user.image = this.auth.user!.image;
+       update_user.is_employee = this.auth.user!.is_employee;
+       update_user.role_id = this.auth.user!.role_id;
+       update_user.title_id = this.auth.user!.title_id;
+       update_user.uuid = this.auth.user!.uuid;
+
+      //  update_customer.company_name = this.customerForm.value.companyName;
+      //  update_customer.telephone = this.customerForm.value.telephone;
+      //  update_customer.address = this.customerForm.value.address;
+      //  update_customer.registration_number = this.customerForm.value.registrationNumber;
+      //  update_customer.vat_number = this.customerForm.value.vatNumber;
+      //  //update_customer.customer_type_id = 1; //this.auth.user?.customer?.customer_type_id!;
+      //  update_customer.user_id = update_user_id;
+
+      this.btnLoading = true;
+
+
+       this.apiService.update_user(update_user_id,update_user).subscribe({
+         next: res => {
+           if(!res.error) {
+             this.notificationService.showSuccess(res.message);
+           } else {
+             this.notificationService.showError(res.error);
+           }
+         },
+         error: (error) => {
+           this.notificationService.showError(error);
+         }
+       });
+
+      //  this.apiService.update_customer(update_customer_id,update_customer).subscribe({
+      //    next: res => {
+      //      if(!res.error) {
+      //        this.notificationService.showSuccess(res.message);
+      //        this.loadDetails();
+      //      } else {
+      //        this.notificationService.showError(res.error);
+      //      }
+      //        this.btnLoading = false;
+      //    },
+      //    error: (error) => {
+      //      this.notificationService.showError(error);
+      //      this.btnLoading = false;
+      //      console.log(update_customer);
+      //    }
+      //  });
 
   }
 }
