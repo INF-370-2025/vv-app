@@ -179,7 +179,7 @@ export class AppComponent {
     this.logoutTimer = setTimeout(() => {
       this.sign_out();
       this.router.navigate(['/login']);
-    }, 900000); // 15 minutes
+    }, 1800000); // 30 minutes
   }
 
   clearLogoutTimer(): void {
