@@ -1,6 +1,7 @@
 import { role, roleClaim, roleClaimLine } from "./role";
 import { title } from "./title";
 
+
 export class user {
   user_id!:number;
   created_at!:Date;

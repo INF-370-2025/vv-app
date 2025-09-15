@@ -59,6 +59,7 @@ import { NgxSpinnerModule } from "ngx-spinner";
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { NzQRCodeModule } from 'ng-zorro-antd/qr-code';
 import { NzStatisticModule } from 'ng-zorro-antd/statistic';
+import { ProfileComponent } from './auth/profile/profile.component';
 
 
 

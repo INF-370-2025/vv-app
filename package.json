@@ -25,7 +25,7 @@
         "@fullcalendar/interaction": "^6.1.18",
         "@fullcalendar/list": "^6.1.18",
         "@fullcalendar/timegrid": "^6.1.18",
-        "@supabase/supabase-js": "^2.49.5",
+        "@supabase/supabase-js": "^2.57.0",
         "@types/file-saver": "^2.0.7",
         "chart.js": "^4.5.0",
         "file-saver": "^2.0.5",

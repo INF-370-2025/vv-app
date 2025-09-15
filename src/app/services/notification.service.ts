@@ -23,5 +23,8 @@ export class NotificationService {
     this.notification.warning(title, message);
   }
 
-
+  public showInfo(message: string, title? : string): void {
+    title = title == undefined ? 'Info' : title;
+    this.notification.info(title, message);
+  }
 }
