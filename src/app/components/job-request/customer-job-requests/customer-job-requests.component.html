@@ -104,8 +104,9 @@
                                         <i nz-icon nzType="search"></i>
                                     </ng-template>
                                 </th>
-                                <th>Company Name</th>
+                                <!-- <th>Company Name</th> -->
                                 <th>Contact Person</th>
+                                <th> </th>
                                 <th>
                                     <p style="text-align: center;font-weight: 600;">
                                         {{accepted.length}} Requests
@@ -125,13 +126,17 @@
                                     <b>Status: </b>
                                     <nz-tag [nzColor]="'green'">Accepted</nz-tag>
                                 </td>
-                                <td>
-                                    {{job.customer?.company_name || '-' }}
-                                </td>
+
                                 <td>
                                     <nz-avatar nzIcon="user" [nzSrc]="job.customer?.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ job.customer?.user?.name"></nz-avatar>
                                     {{job.customer?.user?.name + ' | ' + job.customer?.user?.phone_number || '-'}}
                                 </td>
+                                <td style="text-align: center;">
+                                  <button nz-button nzType="primary" routerLink="/quotations">
+                                    View Quotations
+                                  </button>
+                                </td>
+
                                 <td style="text-align: center;">
                                     <button nz-button nzType="primary" (click)="viewJob(job)">
                                       <i nz-icon nzType="eye" nzTheme="outline"></i>
@@ -315,77 +320,105 @@
 </nz-modal>
 
 
-<nz-modal [nzWidth]="800" [(nzVisible)]="showRequestModal" nzClosable="true" [nzTitle]="title" (nzOnCancel)="showRequestModal=false;" [nzFooter]="null">
+<nz-modal [nzWidth]="800" [(nzVisible)]="showRequestModal" nzClosable="true"
+          [nzTitle]="title" (nzOnCancel)="showRequestModal=false;" [nzFooter]="null">
 
-        <form [formGroup]="jobRequestForm">
-           <nz-spin [nzSpinning]="btnloading">
-            <ng-template #title3>
-                <b>Create Job Request</b>
-            </ng-template>
-            <ng-container *nzModalContent>
-                    <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
-                        <br>
-                        <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="14" [nzLg]="14" [nzXl]="14">
-                            <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
-                                <!--Title & Quantity-->
-                                <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
-                                    <span style="font-size: 15px;"><b>Title & Quantity</b></span>
-                                    <br style="margin-top: 5px;">
-                                    <hr class="hr">
-                                    <nz-input-group nzCompact>
-                                        <input type="text" nz-input placeholder="Enter title" formControlName="title" style="width:50%;" />
-                                        <input type="number" nz-input placeholder="Enter quantity" formControlName="quantity" style="width:50%;" />
-                                    </nz-input-group>
-                                </div>
-                                <!--Description-->
-                                <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
-                                    <span style="font-size: 15px;"><b>Description</b></span>
-                                    <br style="margin-top: 5px;">
-                                    <hr class="hr">
-                                    <nz-input-group nzCompact>
-                                        <input type="text" nz-input placeholder="Enter description" formControlName="description" style="width:100%;" />
-                                    </nz-input-group>
-                                </div>
-                                <!--Finish Date-->
-                                <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
-                                    <span style="font-size: 15px;"><b>Expected Finish Date</b></span> <br>
-                                    <hr class="hr">
-                                    <nz-input-group nzCompact>
-                                        <input type="date" nz-input placeholder="Enter finish date" formControlName="finish_date" style="width:100%;" />
-                                    </nz-input-group>
-                                </div>
-                                <!--Supporting Documents-->
-                                <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
-                                    <span style="font-size: 15px;"><b>Supporting Documents</b></span> <br>
-                                    <hr class="hr">
-                                    <div nz-col nzSpan="24">
-                                        <nz-upload nzType="drag" [nzMultiple]="false" [nzBeforeUpload]="beforeUpload" [(nzFileList)]="fileList" [nzAccept]="'image/*'" [nzMultiple]="true">
-                                            <p class="ant-upload-drag-icon">
-                                                <span nz-icon nzType="inbox"></span>
-                                            </p>
-                                            <p class="ant-upload-text">Click or drag documents to this area to upload</p>
-                                        </nz-upload>
-                                        <br>
-                                    </div>
-                                </div>
-                            </div>
-                            <br />
-                            <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
-                                <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
-                                    <nz-button-group>
-                                        <button [nzLoading]="btnloading" nz-button nzType="default" style="background-color: seagreen;color: white;border: none;width: 100%;" (click)="createJobRequest()">
-                                    Create Job Request
-                                    </button>
-                                    </nz-button-group>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-            </ng-container>
-            </nz-spin>
-        </form>
+  <form nz-form [formGroup]="jobRequestForm">
+    <nz-spin [nzSpinning]="btnloading">
+      <ng-container *nzModalContent>
+        <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
 
+          <!-- Title -->
+          <div nz-col nzSpan="24">
+            <nz-form-item>
+              <nz-form-label [nzRequired]="true" nzFor="title">Title</nz-form-label>
+              <nz-form-control [nzErrorTip]="'Title is required'">
+                <input id="title" type="text" nz-input formControlName="title" placeholder="Enter title" />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <!-- Quantity -->
+          <div nz-col nzSpan="24">
+            <nz-form-item>
+              <nz-form-label [nzRequired]="true" nzFor="quantity">Quantity</nz-form-label>
+              <nz-form-control [nzErrorTip]="jobRequestForm.get('quantity')?.hasError('required') ? 'Quantity is required' : 'Quantity must be greater than 0'">
+                <input id="quantity" type="number" nz-input formControlName="quantity" placeholder="Enter quantity" />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <!-- Description -->
+          <div nz-col nzSpan="24">
+            <nz-form-item>
+              <nz-form-label [nzRequired]="true" nzFor="description">Description</nz-form-label>
+              <nz-form-control [nzErrorTip]="'Description is required'">
+                <input id="description" type="text" nz-input formControlName="description" placeholder="Enter description" />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <!-- Finish Date -->
+          <div nz-col nzSpan="24">
+            <nz-form-item>
+              <nz-form-label [nzRequired]="true" nzFor="finish_date">
+                Expected Finish Date
+                <span nz-tooltip nzTooltipTitle="Date must be at least 7 days from today">
+                  <span nz-icon nzType="question-circle" style="margin-left: 5px;"></span>
+                </span>
+              </nz-form-label>
+              <nz-form-control
+                [nzErrorTip]="jobRequestForm.get('finish_date')?.hasError('minDate') ?
+                'Date must be at least 7 days from today' : 'Finish date is required'">
+                <input
+                  id="finish_date"
+                  type="date"
+                  nz-input
+                  formControlName="finish_date"
+                  [min]="minDate" />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <!-- Supporting Documents -->
+          <div nz-col nzSpan="24">
+            <nz-form-item>
+              <nz-form-label [nzRequired]="true" nzFor="documents">Supporting Documents</nz-form-label>
+              <nz-form-control [nzErrorTip]="'At least one document is required'">
+                <nz-upload
+                  nzType="drag"
+                  [nzMultiple]="false"
+                  [nzBeforeUpload]="beforeUpload"
+                  [(nzFileList)]="fileList"
+                  [nzAccept]="'image/*'"
+                  [nzRemove]="handleRemove.bind(this)">
+                  <p class="ant-upload-drag-icon">
+                    <span nz-icon nzType="inbox"></span>
+                  </p>
+                  <p class="ant-upload-text">Click or drag documents to this area to upload</p>
+                  <p class="ant-upload-hint">Supported formats: images</p>
+                </nz-upload>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <!-- Submit Button -->
+          <div nz-col nzSpan="24">
+            <button
+              [disabled]="jobRequestForm.invalid || fileList.length === 0"
+              [nzLoading]="btnloading"
+              nz-button nzType="primary" style="width: 100%;"
+              (click)="createJobRequest()">
+              Create Job Request
+            </button>
+          </div>
+
+        </div>
+      </ng-container>
+    </nz-spin>
+  </form>
 </nz-modal>
+
 
 <!-- Add Cancel Confirmation Modal at the bottom of your template -->
 <nz-modal

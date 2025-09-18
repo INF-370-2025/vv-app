@@ -1,3 +1,4 @@
+import { PaymentCancelComponent } from './components/invoices/payment-cancel/payment-cancel.component';
 import { LoginComponent } from './auth/login/login.component';
 import { Routes } from '@angular/router';
 import { ProfileComponent } from './auth/profile/profile.component';
@@ -15,6 +16,8 @@ import { StockComponent } from './components/stock/stock.component';
 import { PatternComponent } from './components/pattern/pattern.component';
 import { DeliveryNoteComponent } from './components/delivery-note/delivery-note.component';
 import { HelpComponent } from './components/help/help.component';
+import { PaymentSuccessComponent } from './components/invoices/payment-success/payment-success.component';
+import { AdminDeliveryNoteComponent } from './components/delivery-note/admin-delivery-note/admin-delivery-note.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: '/login' },
@@ -34,5 +37,7 @@ export const routes: Routes = [
   { path: 'pattern', component:PatternComponent},
   { path: 'delivery_note', component:DeliveryNoteComponent},
   {path: 'help', component: HelpComponent},
+  { path: 'payment-success', component: PaymentSuccessComponent },
+  { path: 'payment-cancel', component: PaymentCancelComponent }
 
 ];

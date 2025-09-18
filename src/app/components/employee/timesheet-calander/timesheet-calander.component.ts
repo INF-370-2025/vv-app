@@ -1,4 +1,4 @@
-import { Component, ViewChild, ChangeDetectorRef  } from '@angular/core';
+import { Component, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { AppModule } from '../../../app.module';
 import { CalendarOptions, DateSelectArg, EventClickArg, EventApi, EventInput } from '@fullcalendar/core';
 import { FullCalendarComponent, FullCalendarModule } from '@fullcalendar/angular';
@@ -10,17 +10,18 @@ import { ApiService } from '../../../services/api.service';
 import { NotificationService } from '../../../services/notification.service';
 import { employeTimeLog } from '../../../models/user';
 import { parseISO } from 'date-fns';
-import { AuthService } from '../../../services/auth.service'; // Import AuthService
+import { AuthService } from '../../../services/auth.service';
 import { interval, takeWhile } from 'rxjs';
 import { animate, style, transition, trigger } from '@angular/animations';
+import { FormsModule } from '@angular/forms'; // Add this import
 
 @Component({
   selector: 'app-timesheet-calander',
   standalone: true,
-  imports: [AppModule, FullCalendarModule],
+  imports: [AppModule, FullCalendarModule, FormsModule], // Add FormsModule here
   templateUrl: './timesheet-calander.component.html',
   styleUrl: './timesheet-calander.component.less',
-    animations: [
+  animations: [
     trigger('fadeIn', [
       transition(':enter', [
         style({ opacity: 0 }),
@@ -77,10 +78,13 @@ export class TimesheetCalanderComponent {
   countdownInterval: any;
   showCodeOverlay = false;
 
+  // Configurable timer duration (in minutes)
+  codeExpirationMinutes: number = 5;
+
   constructor(
     private apiService: ApiService,
     private notification: NotificationService,
-    private authService: AuthService, // Inject AuthService
+    private authService: AuthService,
     private cdr: ChangeDetectorRef
   ) {
     // Get current employee ID
@@ -93,7 +97,6 @@ export class TimesheetCalanderComponent {
         this.currentEmployeeId = employee.employee_id;
       }
     });
-
   }
 
   ngOnInit() {
@@ -170,17 +173,18 @@ export class TimesheetCalanderComponent {
     this.clockCode = ''; // Reset previous code
 
     try {
-      const res = await this.apiService.generateClockCode(this.clockAction).toPromise();
+      const res = await this.apiService.generateClockCode(this.clockAction, this.codeExpirationMinutes).toPromise();
 
       if (res && res.code) {
         // Format as 6-digit code with leading zeros
         this.clockCode = res.code.toString().padStart(6, '0');
         this.showCodeOverlay = true; // Show the overlay
-        this.startCountdown();
+        this.startCountdown(this.codeExpirationMinutes * 60); // Convert minutes to seconds
 
         console.log('Generated Code:', this.clockCode,
                    'Type:', this.clockAction,
-                   'Expires:', res.expires_at);
+                   'Expires:', res.expires_at,
+                   'Duration:', this.codeExpirationMinutes + ' minutes');
       } else {
         this.notification.showError('Received invalid response from server');
         console.error('Invalid response:', res);
@@ -193,13 +197,13 @@ export class TimesheetCalanderComponent {
     }
   }
 
-  startCountdown() {
+  startCountdown(durationInSeconds: number) {
     // Clear any existing interval
     if (this.countdownInterval) {
       clearInterval(this.countdownInterval);
     }
 
-    this.countdown = 300; // Reset to 5 minutes
+    this.countdown = durationInSeconds;
 
     this.countdownInterval = setInterval(() => {
       this.countdown--;

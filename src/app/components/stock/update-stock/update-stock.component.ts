@@ -66,7 +66,6 @@ export class UpdateStockComponent implements OnInit {
   }
 
   populateForm(): void {
-    // Get IDs from either direct properties or nested objects
     const materialId = this.stockData.material_id ||
                       (this.stockData.material?.material_id);
 

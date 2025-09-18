@@ -10,11 +10,12 @@ import { UpdateStockComponent } from './update-stock/update-stock.component';
 import { material } from '../../models/stock';
 import { stock_type, stock_category } from '../../models/stock';
 import { saveAs } from 'file-saver';
+import { NzTreeModule } from 'ng-zorro-antd/tree';
 
 @Component({
   selector: 'app-stock',
   standalone: true,
-  imports: [AppModule, StockViewComponent, CreateStockComponent, UpdateStockComponent],
+  imports: [AppModule, StockViewComponent, CreateStockComponent, UpdateStockComponent, NzTreeModule],
   templateUrl: './stock.component.html',
   styleUrls: ['./stock.component.less']
 })
@@ -35,6 +36,25 @@ export class StockComponent implements OnInit {
   importResult: any = null;
   importing = false;
   showHelp: boolean = false;
+  showStructureView: boolean = false;
+  stockStructure: any[] = [];
+  isLoadingStructure: boolean = false;
+  showCategoryModal: boolean = false;
+  showTypeModal: boolean = false;
+  editingCategory: any = null;
+  editingType: any = null;
+  newCategoryName: string = '';
+  newTypeName: string = '';
+  selectedCategoryId: number | null = null;
+  preselectedTypeId: number | null = null;
+  movingType: any = null;
+  movingStock: any = null;
+  showMoveConfirm: boolean = false;
+  moveTarget: any = null;
+  moveAction: 'type' | 'stock' | null = null;
+  isMoving: boolean = false;
+
+
 
   constructor(
     private apiService: ApiService,
@@ -50,10 +70,96 @@ export class StockComponent implements OnInit {
   this.showHelp = true;
 }
 
-// Function to close the help modal
-closeHelpModal(): void {
-  this.showHelp = false;
-}
+  closeHelpModal(): void {
+    this.showHelp = false;
+  }
+
+  loadStockStructure(): void {
+    this.isLoadingStructure = true;
+    this.apiService.get_stock_structure().subscribe({
+      next: (response) => {
+        this.stockStructure = this.transformToTreeData(response);
+        this.isLoadingStructure = false;
+      },
+      error: (err) => {
+        console.error('Error loading stock structure:', err);
+        this.isLoadingStructure = false;
+        this.notification.showError('Failed to load stock structure', 'Error');
+      }
+    });
+  }
+
+  private transformToTreeData(data: any[]): any[] {
+    const categoriesMap = new Map();
+
+    //  category
+    data.forEach(item => {
+      if (!categoriesMap.has(item.stock_category_id)) {
+        categoriesMap.set(item.stock_category_id, {
+          key: `category-${item.stock_category_id}`,
+          title: item.category_name,
+          category: item,
+          children: [],
+          isLeaf: false,
+          expanded: false
+        });
+      }
+
+      const category = categoriesMap.get(item.stock_category_id);
+
+      let typeNode = category.children.find((t: any) => t.key === `type-${item.stock_type_id}`);
+
+      if (item.stock_type_id && !typeNode) {
+        typeNode = {
+          key: `type-${item.stock_type_id}`,
+          title: item.type_name,
+          type: item,
+          children: [],
+          isLeaf: false,
+          expanded: false
+        };
+        category.children.push(typeNode);
+      }
+
+      if (item.stock_id && item.stock_type_id && typeNode) {
+        typeNode.children.push({
+          key: `stock-${item.stock_id}`,
+          title: item.stock_name,
+          stock: item,
+          isLeaf: true
+        });
+      }
+    });
+
+    return Array.from(categoriesMap.values());
+  }
+
+  expandAll(): void {
+    this.stockStructure.forEach((category: any) => {
+      category.expanded = true;
+      category.children.forEach((type: any) => {
+        type.expanded = true;
+      });
+    });
+  }
+
+  collapseAll(): void {
+    this.stockStructure.forEach((category: any) => {
+      category.expanded = false;
+      category.children.forEach((type: any) => {
+        type.expanded = false;
+      });
+    });
+  }
+
+  toggleAll(expand: boolean): void {
+    this.stockStructure.forEach((category: any) => {
+      category.expanded = expand;
+      category.children.forEach((type: any) => {
+        type.expanded = expand;
+      });
+    });
+  }
 
   loadStock(): void {
     this.isLoading = true;
@@ -77,6 +183,18 @@ closeHelpModal(): void {
         this.isLoading = false;
       }
     });
+  }
+
+  showStructure(): void {
+    this.showStructureView = true;
+    this.showStockView = false;
+    this.showCreateView = false;
+    this.showUpdateView = false;
+
+    this.loadStockStructure();
+    this.loadStockTypes();
+    this.loadStockCategories();
+    this.loadMaterials();
   }
 
   searchLowStock(event: any) {
@@ -178,7 +296,9 @@ closeHelpModal(): void {
     this.showCreateView = false;
     this.showStockView = false;
     this.showUpdateView = false;
-    this.loadStock(); // Refresh data
+    this.showStructureView = false;
+    this.preselectedTypeId = null;
+    this.loadStock();
   }
 
   loadMaterials(): void {
@@ -190,6 +310,30 @@ closeHelpModal(): void {
         console.error('Error loading materials:', err);
       }
     });
+  }
+
+viewStockFromStructure(item: stock): void {
+  this.viewStockItem = item;
+  this.showStockView = true;
+  this.showCreateView = false;
+  this.showUpdateView = false;
+  this.showStructureView = false;
+}
+
+openUpdateViewFromStructure(item: stock): void {
+  this.stockToUpdate = item;
+  this.showUpdateView = true;
+  this.showStockView = false;
+  this.showCreateView = false;
+  this.showStructureView = false;
+}
+
+  openCreateViewWithType(type: any): void {
+    this.preselectedTypeId = type.type.stock_type_id;
+    this.showCreateView = true;
+    this.showStockView = false;
+    this.showUpdateView = false;
+    this.showStructureView = false;
   }
 
   loadStockTypes(): void {
@@ -214,7 +358,6 @@ closeHelpModal(): void {
     });
   }
 
-  // Material Export Function
   exportMaterialToExcel(): void {
     this.apiService.export_material_to_excel().subscribe({
       next: (excelBlob: Blob) => {
@@ -230,15 +373,13 @@ closeHelpModal(): void {
     });
   }
 
-  // Material Import Function
   importMaterialExcel(event: any): void {
     const file = event.target.files[0];
     if (!file) return;
 
-    // Reset file input
     event.target.value = '';
 
-    // Validate file type
+    //  file type
     const validTypes = ['.xlsx', '.xls'];
     const fileExt = file.name.toLowerCase().slice(file.name.lastIndexOf('.'));
 
@@ -247,7 +388,6 @@ closeHelpModal(): void {
       return;
     }
 
-    // Reset previous result and start loading
     this.importResult = null;
     this.importing = true;
 
@@ -274,7 +414,6 @@ closeHelpModal(): void {
             'Import Successful'
           );
 
-          // Refresh materials list if needed
           this.loadMaterials();
         }
       },
@@ -291,8 +430,353 @@ closeHelpModal(): void {
     });
   }
 
-  // Close import alert
   closeImportAlert(): void {
     this.importResult = null;
+  }
+
+
+
+  addCategory(): void {
+    this.showCategoryModal = true;
+    this.editingCategory = null;
+    this.newCategoryName = '';
+  }
+
+  editCategory(category: any): void {
+    this.showCategoryModal = true;
+    this.editingCategory = category;
+    this.newCategoryName = category.title;
+  }
+
+  saveCategory(): void {
+    if (this.newCategoryName.trim()) {
+      if (this.editingCategory) {
+        this.apiService.updateStockCategory(this.editingCategory.category.stock_category_id, this.newCategoryName)
+          .subscribe({
+            next: () => {
+              this.notification.showSuccess('Category updated successfully', 'Success');
+              this.loadStockStructure();
+              this.showCategoryModal = false;
+            },
+            error: (err) => {
+              console.error('Error updating category:', err);
+              this.notification.showError('Failed to update category', 'Error');
+            }
+          });
+      } else {
+        // Create new
+        this.apiService.createStockCategory(this.newCategoryName)
+          .subscribe({
+            next: () => {
+              this.notification.showSuccess('Category created successfully', 'Success');
+              this.loadStockStructure();
+              this.showCategoryModal = false;
+            },
+            error: (err) => {
+              console.error('Error creating category:', err);
+              this.notification.showError('Failed to create category', 'Error');
+            }
+          });
+      }
+    }
+  }
+
+  deleteCategory(category: any): void {
+    if (confirm(`Are you sure you want to delete the category "${category.title}"?`)) {
+      this.apiService.deleteStockCategory(category.category.stock_category_id)
+        .subscribe({
+          next: (response: any) => {
+            if (response && response.error) {
+              this.notification.showError(response.error, 'Delete Failed');
+            } else {
+              this.notification.showSuccess('Category deleted successfully', 'Success');
+              this.loadStockStructure();
+            }
+          },
+          error: (err) => {
+            console.error('Error deleting category:', err);
+            if (err.error && err.error.error && err.error.error.includes('foreign key constraint')) {
+              this.notification.showError('Cannot delete category with existing types. Please move or delete types first.', 'Delete Restricted');
+            } else {
+              this.notification.showError('Failed to delete category', 'Error');
+            }
+          }
+        });
+    }
+  }
+
+  addType(category: any): void {
+    this.showTypeModal = true;
+    this.editingType = null;
+    this.newTypeName = '';
+    this.selectedCategoryId = category.category.stock_category_id;
+  }
+
+  editType(type: any): void {
+    this.showTypeModal = true;
+    this.editingType = type;
+    this.newTypeName = type.title;
+    this.selectedCategoryId = type.type.stock_category_id;
+  }
+
+  saveType(): void {
+    if (this.newTypeName.trim() && this.selectedCategoryId) {
+      if (this.editingType) {
+        // Update existing type
+        this.apiService.updateStockType(this.editingType.type.stock_type_id, this.newTypeName, this.selectedCategoryId)
+          .subscribe({
+            next: () => {
+              this.notification.showSuccess('Type updated successfully', 'Success');
+              this.loadStockStructure();
+              this.showTypeModal = false;
+            },
+            error: (err) => {
+              console.error('Error updating type:', err);
+              this.notification.showError('Failed to update type', 'Error');
+            }
+          });
+      } else {
+        // Create new type
+        this.apiService.createStockType(this.newTypeName, this.selectedCategoryId)
+          .subscribe({
+            next: () => {
+              this.notification.showSuccess('Type created successfully', 'Success');
+              this.loadStockStructure();
+              this.showTypeModal = false;
+            },
+            error: (err) => {
+              console.error('Error creating type:', err);
+              this.notification.showError('Failed to create type', 'Error');
+            }
+          });
+      }
+    }
+  }
+
+  deleteType(type: any): void {
+    if (confirm(`Are you sure you want to delete the type "${type.title}"?`)) {
+      this.apiService.deleteStockType(type.type.stock_type_id)
+        .subscribe({
+          next: (response: any) => {
+            // Check if the response indicates a restriction
+            if (response && typeof response === 'object') {
+              // Check for various patterns that might indicate restriction
+              const hasRestriction =
+                (response.error && response.error.includes('restrict')) ||
+                (response.message && response.message.includes('restrict')) ||
+                (response.detail && response.detail.includes('restrict')) ||
+                (response.error && response.error.includes('constraint')) ||
+                (response.message && response.message.includes('constraint')) ||
+                (response.detail && response.detail.includes('constraint')) ||
+                (response.error && response.error.includes('foreign key')) ||
+                (response.message && response.message.includes('foreign key')) ||
+                (response.detail && response.detail.includes('foreign key'));
+
+              if (hasRestriction) {
+                this.notification.showError('Cannot delete type with existing stock items. Please move or delete items first.', 'Delete Restricted');
+              } else {
+                this.notification.showSuccess('Type deleted successfully', 'Success');
+                this.loadStockStructure();
+              }
+            } else {
+              // Assume success for non-object responses
+              this.notification.showSuccess('Type deleted successfully', 'Success');
+              this.loadStockStructure();
+            }
+          },
+          error: (err) => {
+            console.error('Error deleting type:', err);
+
+            // Check for restriction error in the error response
+            const errorMsg = err.error?.error || err.error?.message || err.error?.detail || err.message || '';
+
+            if (errorMsg.includes('restrict') || errorMsg.includes('constraint') || errorMsg.includes('foreign key')) {
+              this.notification.showError('Cannot delete type with existing stock items. Please move or delete items first.', 'Delete Restricted');
+            } else {
+              this.notification.showError('Failed to delete type', 'Error');
+            }
+          }
+        });
+    }
+  }
+
+  deleteStock(stock: any): void {
+    if (confirm(`Are you sure you want to delete the stock item "${stock.title}"?`)) {
+      this.apiService.deleteStock(stock.stock.stock_id)
+        .subscribe({
+          next: () => {
+            this.notification.showSuccess('Stock item deleted successfully', 'Success');
+            this.loadStockStructure();
+          },
+          error: (err) => {
+            console.error('Error deleting stock item:', err);
+            this.notification.showError('Failed to delete stock item', 'Error');
+          }
+        });
+    }
+  }
+
+// Remove the confirmation flow and make moves happen immediately
+moveTypeToCategory(type: any, newCategoryId: any): void {
+  const categoryId = typeof newCategoryId === 'number' ? newCategoryId : parseInt(newCategoryId, 10);
+
+  if (!categoryId) {
+    return; // Don't do anything if no valid selection
+  }
+
+  // Find the target category
+  const targetCategory = this.stockCategories.find(c => c.stock_category_id === categoryId);
+
+  if (!targetCategory) {
+    this.notification.showError('Selected category not found', 'Error');
+    return;
+  }
+
+  // Show a loading indicator
+  this.isLoadingStructure = true;
+
+  this.apiService.moveTypeToCategory(type.type.stock_type_id, categoryId)
+    .subscribe({
+      next: (response) => {
+        this.isLoadingStructure = false;
+        this.notification.showSuccess(`Type moved to ${targetCategory.category_name}`, 'Success');
+        this.loadStockStructure(); // Reload the structure to reflect changes
+      },
+      error: (err) => {
+        this.isLoadingStructure = false;
+        console.error('Error moving type:', err);
+        this.notification.showError('Failed to move type', 'Error');
+
+        // Reset the dropdown selection
+        this.loadStockStructure();
+      }
+    });
+}
+
+  moveStockToType(stock: any, newTypeId: any): void {
+    const typeId = typeof newTypeId === 'number' ? newTypeId : parseInt(newTypeId, 10);
+
+    if (!typeId) {
+      return; // Don't do anything if no valid selection
+    }
+
+    // Find the target type
+    const targetType = this.stockTypes.find(t => t.stock_type_id === typeId);
+
+    if (!targetType) {
+      this.notification.showError('Selected type not found', 'Error');
+      return;
+    }
+
+    // Show a loading indicator
+    this.isLoadingStructure = true;
+
+    this.apiService.moveStockToType(stock.stock.stock_id, typeId)
+      .subscribe({
+        next: (response) => {
+          this.isLoadingStructure = false;
+          this.notification.showSuccess(`Stock item moved to ${targetType.type_name}`, 'Success');
+          this.loadStockStructure(); // Reload the structure to reflect changes
+        },
+        error: (err) => {
+          this.isLoadingStructure = false;
+          console.error('Error moving stock:', err);
+          this.notification.showError('Failed to move stock item', 'Error');
+
+          // Reset the dropdown selection
+          this.loadStockStructure();
+        }
+      });
+  }
+
+  toggleCategory(category: any): void {
+    category.expanded = !category.expanded;
+  }
+
+  toggleType(type: any): void {
+    type.expanded = !type.expanded;
+  }
+
+  initiateMoveType(type: any, newCategoryId: any): void {
+    const categoryId = typeof newCategoryId === 'number' ? newCategoryId : parseInt(newCategoryId, 10);
+
+    if (!categoryId) {
+      this.notification.showError('Please select a valid category', 'Error');
+      return;
+    }
+
+    // Store the move details for confirmation
+    this.movingType = type;
+    this.moveTarget = this.stockCategories.find(c => c.stock_category_id === categoryId);
+    this.moveAction = 'type';
+    this.showMoveConfirm = true;
+  }
+
+  initiateMoveStock(stock: any, newTypeId: any): void {
+    const typeId = typeof newTypeId === 'number' ? newTypeId : parseInt(newTypeId, 10);
+
+    if (!typeId) {
+      this.notification.showError('Please select a valid type', 'Error');
+      return;
+    }
+
+    // Store the move details for confirmation
+    this.movingStock = stock;
+    this.moveTarget = this.stockTypes.find(t => t.stock_type_id === typeId);
+    this.moveAction = 'stock';
+    this.showMoveConfirm = true;
+  }
+
+  // Confirm and execute the move
+  confirmMove(): void {
+    if (this.moveAction === 'type' && this.movingType && this.moveTarget) {
+      this.executeMoveType();
+    } else if (this.moveAction === 'stock' && this.movingStock && this.moveTarget) {
+      this.executeMoveStock();
+    }
+
+    this.cancelMove();
+  }
+
+  // Execute type move
+  executeMoveType(): void {
+    this.isMoving = true;
+    this.apiService.moveTypeToCategory(this.movingType.type.stock_type_id, this.moveTarget.stock_category_id)
+      .subscribe({
+        next: (response) => {
+          this.isMoving = false;
+          this.notification.showSuccess(`Type moved to ${this.moveTarget.category_name}`, 'Success');
+          this.loadStockStructure();
+        },
+        error: (err) => {
+          this.isMoving = false;
+          console.error('Error moving type:', err);
+          this.notification.showError('Failed to move type', 'Error');
+        }
+      });
+  }
+
+  // Execute stock move
+  executeMoveStock(): void {
+    this.apiService.moveStockToType(this.movingStock.stock.stock_id, this.moveTarget.stock_type_id)
+      .subscribe({
+        next: (response) => {
+          this.notification.showSuccess(`Stock item moved to ${this.moveTarget.type_name}`, 'Success');
+          this.loadStockStructure();
+        },
+        error: (err) => {
+          console.error('Error moving stock:', err);
+          this.notification.showError('Failed to move stock item', 'Error');
+        }
+      });
+  }
+
+  // Cancel move operation
+  cancelMove(): void {
+    this.movingType = null;
+    this.movingStock = null;
+    this.moveTarget = null;
+    this.moveAction = null;
+    this.showMoveConfirm = false;
   }
 }

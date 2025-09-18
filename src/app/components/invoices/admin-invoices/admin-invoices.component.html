@@ -14,166 +14,186 @@
     <nz-tabset nzType="card" [nzTabBarExtraContent]="extraTemplateInvoices"
                (nzSelectedIndexChange)="selectedTabChange($event)"
                [(nzSelectedIndex)]="selectedTabIndex">
-            <!-- Unpaid-->
-            <nz-tab [nzTitle]="'Unpaid'">
-                <nz-spin [nzSpinning]="isloading">
-                    <nz-table #unpaidTable [nzData]="unpaid" [nzPageSize]="20">
-                        <thead>
-                            <tr>
-                                <th colSpan="3">
-                                    <nz-input-group [nzSuffix]="suffixIconSearch">
-                                        <input type="text" nz-input placeholder="Search Here" (keyup)="searchUnpaid($event)" />
-                                    </nz-input-group>
-                                    <ng-template #suffixIconSearch>
-                                        <i nz-icon nzType="search"></i>
-                                    </ng-template>
-                                </th>
-                                <th>Job Title</th>
-                                <th>invoice Total</th>
-                                <th>Contact Person</th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                                <th>
-                                    <p style="text-align: center;font-weight: 600;">
-                                        {{unpaid.length}} Unpaid
-                                    </p>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="table-body">
-                            <tr *ngFor="let invoice of unpaidTable.data">
-                                <td>
-                                    <b>#{{invoice.invoice_number | titlecase}}</b>
-                                </td>
-                                <td>
-                                    <b>Job Completed on  : </b> {{invoice.job_card?.completed_at | date:"medium"}}
-                                </td>
-                                <td>
-                                    <b>Status: </b>
-                                    <nz-tag [nzColor]="'red'">Outstanding payment</nz-tag>
-                                </td>
-                                <td>
-                                    <b>{{invoice.job_card?.quotation?.job_request?.title| titlecase}}</b>
-                                </td>
-                                <td>
-                                    {{invoice.total | currency:'R':'symbol' }}
-                                </td>
-                                <td>
-                                    <nz-avatar nzIcon="user" [nzSrc]="invoice.job_card?.quotation?.job_request?.customer?.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ invoice.job_card?.quotation?.job_request?.customer?.user?.name"></nz-avatar>
-                                    {{invoice.job_card?.quotation?.job_request?.customer?.user?.name + ' | ' + invoice.job_card?.quotation?.job_request?.customer?.user?.phone_number || '-'}}
-                                </td>
-                                <td style="text-align: center;">
-                                    <button nz-button nzType="primary" (click)="viewinvoice(invoice)">
-                                <i nz-icon nzType="eye" nzTheme="outline"></i>
-                                View
-                              </button>
-                                </td>
-                                 <td style="text-align: center;">
-                                    <button style="margin-left: 5px;" nz-button nzType="primary" (click)="editinvoice(invoice)">
-                                <i nz-icon nzType="edit" nzTheme="outline"></i>
-                                Edit
-                              </button>
-                                 </td>
-                                 <td>
-                                    <button style="margin-left: 5px;" nz-button nzType="primary" (click)="updateInvoiceStatus(invoice)">
-                                <i nz-icon nzType="edit" nzTheme="outline"></i>
-                                Update Status
-                              </button>
-                                 </td>
-                                 <td style="text-align: center;">
-                                  <button nz-button nzType="primary"
+          <!-- In your invoices component HTML -->
+          <!-- Unpaid Tab -->
+          <nz-tab [nzTitle]="'Unpaid'">
+              <nz-spin [nzSpinning]="isloading">
+                  <nz-table #unpaidTable [nzData]="unpaid" [nzPageSize]="20">
+                      <thead>
+                          <tr>
+                              <th>Invoice #</th>
+                              <th>Status</th>
+                              <th>Job Title & Description</th>
+                              <th>Invoice Total</th>
+                              <th>Contact Person</th>
+                              <th>Actions</th>
+                          </tr>
+                          <tr>
+                              <th colSpan="6">
+                                  <nz-input-group [nzSuffix]="suffixIconSearch">
+                                      <input type="text" nz-input placeholder="Search Here" (keyup)="searchUnpaid($event)" />
+                                  </nz-input-group>
+                                  <ng-template #suffixIconSearch>
+                                      <i nz-icon nzType="search"></i>
+                                  </ng-template>
+                              </th>
+                          </tr>
+                      </thead>
+                      <tbody class="table-body">
+                          <tr *ngFor="let invoice of unpaidTable.data">
+                              <td>
+                                  <b>#{{invoice.invoice_number | titlecase}}</b>
+                              </td>
+                              <td>
+                                  <nz-tag [nzColor]="'red'">Outstanding payment</nz-tag>
+                              </td>
+                              <td>
+                                  <b>{{ (invoice.job_card?.quotation?.job_request?.title ||
+                                        'Invoice #' + (invoice.invoice_number || '')) | titlecase }}</b>
+                                  <div *ngIf="invoice.job_card?.quotation?.job_request?.description"
+                                      class="description-text"
+                                      [nz-tooltip]="invoice.job_card?.quotation?.job_request?.description || 'No description available'">
+                                      {{ (invoice.job_card?.quotation?.job_request?.description | slice:0:50) || 'No description' }}
+                                      {{ ((invoice.job_card?.quotation?.job_request?.description || '').length > 50) ? '...' : '' }}
+                                  </div>
+                              </td>
+                              <td>
+                                  {{invoice.total | currency:'R':'symbol' }}
+                              </td>
+                              <td>
+                                  <nz-avatar nzIcon="user"
+                                      [nzSrc]="(invoice.job_card?.quotation?.job_request?.customer?.user?.image ||
+                                              invoice.direct_customer?.user?.image ||
+                                              'https://ui-avatars.com/api/?background=17726d&color=fff&&name=' +
+                                              (invoice.job_card?.quotation?.job_request?.customer?.user?.name ||
+                                                invoice.direct_customer?.user?.name || ''))">
+                                  </nz-avatar>
+                                  {{ (invoice.job_card?.quotation?.job_request?.customer?.user?.name ||
+                                      invoice.direct_customer?.user?.name || '') + ' | ' +
+                                    (invoice.job_card?.quotation?.job_request?.customer?.user?.phone_number ||
+                                      invoice.direct_customer?.user?.phone_number || '-') }}
+                              </td>
+                              <td style="text-align: center;">
+                                  <button nz-button nzType="primary" (click)="viewinvoice(invoice)">
+                                      <i nz-icon nzType="eye" nzTheme="outline"></i>
+                                      View
+                                  </button>
+                                  <button style="margin-left: 5px;" nz-button nzType="primary" (click)="editinvoice(invoice)">
+                                      <i nz-icon nzType="edit" nzTheme="outline"></i>
+                                      Edit
+                                  </button>
+                                  <button style="margin-left: 5px;" nz-button nzType="primary" (click)="updateInvoiceStatus(invoice)">
+                                      <i nz-icon nzType="check" nzTheme="outline"></i>
+                                      Mark Paid
+                                  </button>
+                                  <button nz-button nzType="primary" style="margin-left: 5px;"
                                           [disabled]="!invoice.pop"
                                           (click)="viewPop(invoice)">
                                       <i nz-icon nzType="file-pdf" nzTheme="outline"></i>
-                                      View POP
+                                      POP
                                   </button>
                               </td>
-                            </tr>
-                        </tbody>
-                    </nz-table>
-                </nz-spin>
-            </nz-tab>
+                          </tr>
+                      </tbody>
+                  </nz-table>
+              </nz-spin>
+          </nz-tab>
 
-            <!-- Paid -->
-            <nz-tab [nzTitle]="'Paid'">
-                <nz-spin [nzSpinning]="isloading">
-                    <nz-table #paidTable [nzData]="paid" [nzPageSize]="20">
-                        <thead>
-                            <tr>
-                                <th colSpan="3">
-                                    <nz-input-group [nzSuffix]="suffixIconSearch">
-                                        <input type="text" nz-input placeholder="Search Here" (keyup)="searchUnpaid($event)" />
-                                    </nz-input-group>
-                                    <ng-template #suffixIconSearch>
-                                        <i nz-icon nzType="search"></i>
-                                    </ng-template>
-                                </th>
-                                <th>Job Title</th>
-                                <th>invoice Total</th>
-                                <th>Contact Person</th>
-                                <th>POP</th>
-                                <th>
-                                    <p style="text-align: center;font-weight: 600;">
-                                        {{paid.length}} Paid
-                                    </p>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="table-body">
-                            <tr *ngFor="let invoice of paidTable.data">
-                                <td>
-                                    <b>#{{invoice.invoice_number | titlecase}}</b>
-                                </td>
-                                <td>
-                                    <b>Job Completed on  : </b> {{invoice.job_card?.completed_at | date:"medium"}}
-                                </td>
-                                <td>
-                                    <b>Status: </b>
-                                    <nz-tag [nzColor]="'green'">Paid</nz-tag>
-                                </td>
-                                <td>
-                                    <b>{{invoice.job_card?.quotation?.job_request?.title| titlecase}}</b>
-                                </td>
-                                <td>
-                                    {{invoice.total | currency:'R':'symbol' }}
-                                </td>
-                                <td>
-                                    <nz-avatar nzIcon="user" [nzSrc]="invoice.job_card?.quotation?.job_request?.customer?.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ invoice.job_card?.quotation?.job_request?.customer?.user?.name"></nz-avatar>
-                                    {{invoice.job_card?.quotation?.job_request?.customer?.user?.name + ' | ' + invoice.job_card?.quotation?.job_request?.customer?.user?.phone_number || '-'}}
-                                </td>
-                                <td style="text-align: center;">
-                                    <button nz-button nzType="primary" (click)="viewinvoice(invoice)">
-                                <i nz-icon nzType="eye" nzTheme="outline"></i>
-                                View
-                              </button>
-                                </td>
-                                <td style="text-align: center;">
-                                  <button nz-button nzType="primary"
-                                          [disabled]="!invoice.pop"
-                                          (click)="viewPop(invoice)">
-                                      <i nz-icon nzType="file-pdf" nzTheme="outline"></i>
-                                      View POP
+          <!-- Paid Tab -->
+          <nz-tab [nzTitle]="'Paid'">
+              <nz-spin [nzSpinning]="isloading">
+                  <nz-table #paidTable [nzData]="paid" [nzPageSize]="20">
+                      <thead>
+                          <tr>
+                              <th>Invoice #</th>
+                              <th>Completed Date</th>
+                              <th>Status</th>
+                              <th>Job Title & Description</th>
+                              <th>Invoice Total</th>
+                              <th>Contact Person</th>
+                              <th>Actions</th>
+                          </tr>
+                          <tr>
+                              <th colSpan="7">
+                                  <nz-input-group [nzSuffix]="suffixIconSearch">
+                                      <input type="text" nz-input placeholder="Search Here" (keyup)="searchPaid($event)" />
+                                  </nz-input-group>
+                                  <ng-template #suffixIconSearch>
+                                      <i nz-icon nzType="search"></i>
+                                  </ng-template>
+                              </th>
+                          </tr>
+                      </thead>
+                      <tbody class="table-body">
+                          <tr *ngFor="let invoice of paidTable.data">
+                              <td>
+                                  <b>#{{invoice.invoice_number | titlecase}}</b>
+                              </td>
+                              <td>
+                                  {{ (invoice.job_card?.completed_at || invoice.invoice_created_at) | date:"mediumDate" }}
+                              </td>
+                              <td>
+                                  <nz-tag [nzColor]="'green'">Paid</nz-tag>
+                              </td>
+                              <td>
+                                  <b>{{ (invoice.job_card?.quotation?.job_request?.title ||
+                                        'Invoice #' + (invoice.invoice_number || '')) | titlecase }}</b>
+                                  <div *ngIf="invoice.job_card?.quotation?.job_request?.description"
+                                      class="description-text"
+                                      [nz-tooltip]="invoice.job_card?.quotation?.job_request?.description || 'No description available'">
+                                      {{ (invoice.job_card?.quotation?.job_request?.description | slice:0:50) || 'No description' }}
+                                      {{ ((invoice.job_card?.quotation?.job_request?.description || '').length > 50) ? '...' : '' }}
+                                  </div>
+                              </td>
+                              <td>
+                                  {{invoice.total | currency:'R':'symbol' }}
+                              </td>
+                              <td>
+                                  <nz-avatar nzIcon="user"
+                                      [nzSrc]="(invoice.job_card?.quotation?.job_request?.customer?.user?.image ||
+                                              invoice.direct_customer?.user?.image ||
+                                              'https://ui-avatars.com/api/?background=17726d&color=fff&&name=' +
+                                              (invoice.job_card?.quotation?.job_request?.customer?.user?.name ||
+                                                invoice.direct_customer?.user?.name || ''))">
+                                  </nz-avatar>
+                                  {{ (invoice.job_card?.quotation?.job_request?.customer?.user?.name ||
+                                      invoice.direct_customer?.user?.name || '') + ' | ' +
+                                    (invoice.job_card?.quotation?.job_request?.customer?.user?.phone_number ||
+                                      invoice.direct_customer?.user?.phone_number || '-') }}
+                              </td>
+                              <td style="text-align: center;">
+                                  <button nz-button nzType="primary" (click)="viewinvoice(invoice)">
+                                      <i nz-icon nzType="eye" nzTheme="outline"></i>
+                                      View
+                                  </button>
+                                  <!-- Create Job Card Button - Only show if no job card exists -->
+                                  <button *ngIf="!invoice.job_card_id"
+                                          nz-button nzType="default"
+                                          style="margin-left: 5px;"
+                                          (click)="createJobCard(invoice)"
+                                          nz-tooltip="Create Job Card for this invoice">
+                                      <i nz-icon nzType="vv:engineering" style="font-size: 16px !important;"></i>
+                                      Create Job Card
                                   </button>
                               </td>
-                            </tr>
-                        </tbody>
-                    </nz-table>
-                </nz-spin>
-            </nz-tab>
+                          </tr>
+                      </tbody>
+                  </nz-table>
+              </nz-spin>
+          </nz-tab>
 
         </nz-tabset>
-            <ng-template #extraTemplateInvoices>
-      <button nz-button nzType="primary" (click)="openCreateForm()">
-        Create Invoice
-        <span nz-icon nzType="plus" nzTheme="outline"></span>
-      </button>
-      <button nz-button (click)="showHelpModal()">
-        <span nz-icon nzType="question-circle" nzTheme="outline"></span>
-        Get Help
-      </button>
-    </ng-template>
-  </div>
+        <ng-template #extraTemplateInvoices>
+            <button nz-button nzType="primary" (click)="openCreateForm()">
+                Create Invoice
+                <span nz-icon nzType="plus" nzTheme="outline"></span>
+            </button>
+            <button nz-button (click)="showHelpModal()">
+                <span nz-icon nzType="question-circle" nzTheme="outline"></span>
+                Get Help
+            </button>
+        </ng-template>
+    </div>
 </div>
 
 
@@ -239,11 +259,12 @@
     </ng-container>
 </nz-modal>
 
-<!-- Create Form Section - Should replace the list view when active -->
 <div nz-row [nzJustify]="'center'" *ngIf="showCreateForm">
   <div nz-col [nzSpan]="18">
     <nz-card>
       <app-create-invoice
+        [quoteId]="quoteIdForChild"
+        [totalAmount]="totalAmountForChild"
         (closeForm)="handleFormClose()"
         (invoiceCreated)="loadInvoices()">
       </app-create-invoice>

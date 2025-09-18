@@ -7,6 +7,9 @@ import { GalleryItem, ImageItem } from 'ng-gallery';
 import { JobCardViewComponent } from './job-card-view/job-card-view.component';
 import { UpdateJobCardComponent } from './update-job-card/update-job-card.component';
 import { CreateJobCardComponent } from './create-job-card/create-job-card.component';
+import { NzModalService } from 'ng-zorro-antd/modal';
+import { ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-job-cards',
@@ -39,16 +42,27 @@ export class JobCardsComponent implements OnInit {
 
   constructor(
     private apiService: ApiService,
-    private notification: NotificationService
+    private notification: NotificationService,
+    private modal: NzModalService,
+    private route: ActivatedRoute,
+    private router: Router
+
+
   ) {}
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      if (params['quotationId'] && params['invoiceId']) {
+        this.openCreateForm();
+        // Pass these params to the create component
+      }
+    });
     this.loadJobCardStatuses();
     this.loadJobCards();
     this.loadPatterns();
     this.loadQuotations();
-    this.loadAllMaterials(); // Add this
-    this.loadAllArtisans();  // Add this
+    this.loadAllMaterials();
+    this.loadAllArtisans();
   }
 
   showHelpModal(){
@@ -208,30 +222,133 @@ resetViews(): void {
   this.showDesigns = false;
 }
 
-// Update your view methods to use this:
-openUpdateForm(jobCard: jobCard): void {
-  this.resetViews();
-  this.jobCardToUpdate = jobCard;
-  this.showUpdateForm = true;
-}
+  openUpdateForm(jobCard: jobCard): void {
+    this.resetViews();
+    this.jobCardToUpdate = jobCard;
+    this.showUpdateForm = true;
+  }
 
-viewJobCard(viewJob: jobCard): void {
-  this.resetViews();
-  this.viewJob = viewJob;
-  this.showjobCard = true;
-}
+  viewJobCard(viewJob: jobCard): void {
+    this.resetViews();
+    this.viewJob = viewJob;
+    this.showjobCard = true;
+  }
 
-openCreateForm(): void {
-  this.resetViews();
-  this.showCreateForm = true;
-}
+  openCreateForm(): void {
+    this.resetViews();
+    this.showCreateForm = true;
+  }
 
-closeJobcard(): void {
-  this.resetViews();
-  this.viewJob = undefined;
-}
+  closeJobcard(): void {
+    this.resetViews();
+    this.viewJob = undefined;
+  }
 
-closeUpdateForm(): void {
-  this.resetViews();
-}
+  closeUpdateForm(): void {
+    this.resetViews();
+  }
+
+
+  setJobCardInProgress(job: jobCard): void {
+    this.modal.confirm({
+      nzTitle: 'Set Job Card to In Progress',
+      nzContent: 'Are you sure you want to mark this job as in progress?',
+      nzOnOk: () => {
+        this.isloading = true;
+        this.apiService.update_job_card(job.job_card_id, {
+          job_card_status_id: 1
+        }).subscribe({
+          next: (response) => {
+            this.notification.showSuccess('Success', 'Job card status updated to In Progress');
+            this.loadJobCards(); // Reload the job cards to reflect the change
+          },
+          error: (err) => {
+            console.error('Error updating job card status:', err);
+            this.notification.showError('Error', 'Failed to update job card status');
+            this.isloading = false;
+          }
+        });
+      }
+    });
+  }
+
+  // Cancel job card (status ID 3)
+  cancelJobCard(job: jobCard): void {
+    this.modal.confirm({
+      nzTitle: 'Cancel Job Card',
+      nzContent: 'Are you sure you want to cancel this job card? This action cannot be undone.',
+      nzOkText: 'Yes, Cancel',
+      nzOkType: 'primary',
+      nzOkDanger: true,
+      nzOnOk: () => {
+        this.isloading = true;
+        this.apiService.update_job_card(job.job_card_id, {
+          job_card_status_id: 3
+        }).subscribe({
+          next: (response) => {
+            this.notification.showSuccess('Cancelled', 'Job card has been cancelled');
+            this.loadJobCards(); // Reload the job cards to reflect the change
+          },
+          error: (err) => {
+            console.error('Error cancelling job card:', err);
+            this.notification.showError('Error', 'Failed to cancel job card');
+            this.isloading = false;
+          }
+        });
+      }
+    });
+  }
+
+  setJobCardCompleted(job: jobCard): void {
+    this.modal.confirm({
+      nzTitle: 'Mark Job Card as Completed',
+      nzContent: 'Are you sure you want to mark this job as completed? This will notify the customer.',
+      nzOnOk: () => {
+        this.isloading = true;
+
+        // Prepare update data with current date for completion
+        const updateData = {
+          job_card_status_id: 2,
+          completed_at: new Date().toISOString()
+        };
+
+        // Update job card status
+        this.apiService.update_job_card(job.job_card_id, updateData).subscribe({
+          next: (response) => {
+            // Send email notification
+            const emailData = {
+              to_email: job.quotation?.job_request?.customer?.user?.email_address,
+              subject: "Order Ready For Collection",
+              body: "Good day valued customer, this email is to notify you that your order is completed and ready for collection"
+            };
+
+            this.apiService.send_email(emailData).subscribe({
+              next: (emailRes) => {
+                this.notification.showSuccess('Completed', 'Job card marked as completed and customer notified');
+                this.loadJobCards(); // Reload the job cards to reflect the change
+              },
+              error: (emailErr) => {
+                console.error('Error sending email:', emailErr);
+                this.notification.showWarning('Completed', 'Job card marked as completed but failed to send email notification');
+                this.loadJobCards(); // Still reload the job cards
+              }
+            });
+          },
+          error: (err) => {
+            console.error('Error updating job card status:', err);
+            this.notification.showError('Error', 'Failed to update job card status');
+            this.isloading = false;
+          }
+        });
+      }
+    });
+  }
+
+  createDeliveryNote(job: any): void {
+    this.router.navigate(['/delivery_note'], {
+      queryParams: {
+        jobCardId: job.job_card_id
+      }
+    });
+  }
 }

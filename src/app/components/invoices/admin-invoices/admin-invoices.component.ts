@@ -8,6 +8,8 @@ import { ApiService } from '../../../services/api.service';
 import { NotificationService } from '../../../services/notification.service';
 import { SupabaseService } from '../../../services/supabase.service';
 import { CreateInvoiceComponent } from '../create-invoice/create-invoice.component';
+import { ActivatedRoute, Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-admin-invoices',
@@ -27,6 +29,11 @@ export class AdminInvoicesComponent {
   showCreateForm = false;
   showHelp:boolean = false;
 
+  passedQuoteId: number | null = null;
+  passedTotal: number | null = null;
+
+
+
   viewingInvoice:invoice = new invoice();
   showEditModal:boolean = false;
   editInvoiceform:FormGroup = new FormGroup({
@@ -36,10 +43,33 @@ export class AdminInvoicesComponent {
   file!: NzUploadFile | undefined;
   fileList :any[] = [];
 
-  constructor(private apiService: ApiService,private notification:NotificationService,private supabase:SupabaseService) {}
+  constructor(private apiService: ApiService,private notification:NotificationService,private supabase:SupabaseService, private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      if (params['quoteId']) {
+        this.passedQuoteId = +params['quoteId'];
+        this.passedTotal = +params['total'];
+        this.openCreateForm();
+      }
+    });
     this.loadInvoices();
+  }
+
+
+  get quoteIdForChild(): number | undefined {
+    return this.passedQuoteId !== null ? this.passedQuoteId : undefined;
+  }
+
+  get totalAmountForChild(): number | undefined {
+    return this.passedTotal !== null ? this.passedTotal : undefined;
+  }
+
+  openCreateForm(quoteId?: number): void {
+    this.showCreateForm = true;
+    if (quoteId) {
+      this.passedQuoteId = quoteId;
+    }
   }
 
   viewPop(invoice: invoice) {
@@ -62,12 +92,16 @@ export class AdminInvoicesComponent {
     this.showHelp = true;
   }
 
-  openCreateForm(): void {
-    this.showCreateForm = true;
-  }
 
   handleFormClose(): void {
     this.showCreateForm = false;
+    this.passedQuoteId = null;
+
+    // Clear query parameters
+    this.router.navigate([], {
+      queryParams: {},
+      replaceUrl: true
+    });
   }
 
   loadInvoices(): void {
@@ -95,37 +129,54 @@ export class AdminInvoicesComponent {
     if ($event.target.value == "") {
       this.paid = this.invoices.filter(x => x.invoice_status?.invoice_status_id === 1);
     } else {
+      const searchTerm = $event.target.value.toLowerCase();
       this.paid = this.paid.filter(x =>
-        (x.job_card?.job_card_id && x.job_card?.job_card_id == $event.target.value) ||
-        (x.invoice_number && x.invoice_number.toLowerCase().includes($event.target.value.toLowerCase())) ||
-        (x.invoice_id && x.invoice_id == $event.target.value) ||
-        (x.job_card?.quotation?.job_request?.title && x.job_card?.quotation?.job_request?.title.toLowerCase().includes($event.target.value.toLowerCase())) ||
-        (x.job_card?.quotation?.job_request?.customer?.user?.name && x.job_card?.quotation?.job_request?.customer?.user?.name.toLowerCase().includes($event.target.value.toLowerCase())) ||
-        (x.job_card?.quotation?.job_request?.customer?.user?.surname && x.job_card?.quotation?.job_request?.customer?.user?.surname.toLowerCase().includes($event.target.value.toLowerCase())) ||
-        (x.job_card?.quotation?.job_request?.customer?.company_name && x.job_card?.quotation?.job_request?.customer?.company_name.toLowerCase().includes($event.target.value.toLowerCase()))
+        (x.job_card?.job_card_id && x.job_card.job_card_id.toString().includes(searchTerm)) ||
+        (x.invoice_number && x.invoice_number.toLowerCase().includes(searchTerm)) ||
+        (x.invoice_id && x.invoice_id.toString().includes(searchTerm)) ||
+        // Search through job card path
+        (x.job_card?.quotation?.job_request?.title && x.job_card.quotation.job_request.title.toLowerCase().includes(searchTerm)) ||
+        (x.job_card?.quotation?.job_request?.description && x.job_card.quotation.job_request.description.toLowerCase().includes(searchTerm)) || // Added description
+        (x.job_card?.quotation?.job_request?.customer?.user?.name && x.job_card.quotation.job_request.customer.user.name.toLowerCase().includes(searchTerm)) ||
+        (x.job_card?.quotation?.job_request?.customer?.user?.surname && x.job_card.quotation.job_request.customer.user.surname.toLowerCase().includes(searchTerm)) ||
+        (x.job_card?.quotation?.job_request?.customer?.company_name && x.job_card.quotation.job_request.customer.company_name.toLowerCase().includes(searchTerm)) ||
+        // Search through direct customer path
+        (x.direct_customer?.user?.name && x.direct_customer.user.name.toLowerCase().includes(searchTerm)) ||
+        (x.direct_customer?.user?.surname && x.direct_customer.user.surname.toLowerCase().includes(searchTerm)) ||
+        (x.direct_customer?.company_name && x.direct_customer.company_name.toLowerCase().includes(searchTerm))
       );
     }
   }
 
   searchUnpaid($event: any) {
     if ($event.target.value == "") {
-     this.unpaid = this.invoices.filter(x => x.invoice_status?.invoice_status_id === 2);
+      this.unpaid = this.invoices.filter(x => x.invoice_status?.invoice_status_id === 2);
     } else {
+      const searchTerm = $event.target.value.toLowerCase();
       this.unpaid = this.unpaid.filter(x =>
-        (x.job_card?.job_card_id && x.job_card?.job_card_id == $event.target.value) ||
-        (x.invoice_number && x.invoice_number.toLowerCase().includes($event.target.value.toLowerCase())) ||
-        (x.invoice_id && x.invoice_id == $event.target.value) ||
-        (x.job_card?.quotation?.job_request?.title && x.job_card?.quotation?.job_request?.title.toLowerCase().includes($event.target.value.toLowerCase())) ||
-        (x.job_card?.quotation?.job_request?.customer?.user?.name && x.job_card?.quotation?.job_request?.customer?.user?.name.toLowerCase().includes($event.target.value.toLowerCase())) ||
-        (x.job_card?.quotation?.job_request?.customer?.user?.surname && x.job_card?.quotation?.job_request?.customer?.user?.surname.toLowerCase().includes($event.target.value.toLowerCase())) ||
-        (x.job_card?.quotation?.job_request?.customer?.company_name && x.job_card?.quotation?.job_request?.customer?.company_name.toLowerCase().includes($event.target.value.toLowerCase()))
+        (x.job_card?.job_card_id && x.job_card.job_card_id.toString().includes(searchTerm)) ||
+        (x.invoice_number && x.invoice_number.toLowerCase().includes(searchTerm)) ||
+        (x.invoice_id && x.invoice_id.toString().includes(searchTerm)) ||
+        // Search through job card path
+        (x.job_card?.quotation?.job_request?.title && x.job_card.quotation.job_request.title.toLowerCase().includes(searchTerm)) ||
+        (x.job_card?.quotation?.job_request?.description && x.job_card.quotation.job_request.description.toLowerCase().includes(searchTerm)) || // Added description
+        (x.job_card?.quotation?.job_request?.customer?.user?.name && x.job_card.quotation.job_request.customer.user.name.toLowerCase().includes(searchTerm)) ||
+        (x.job_card?.quotation?.job_request?.customer?.user?.surname && x.job_card.quotation.job_request.customer.user.surname.toLowerCase().includes(searchTerm)) ||
+        (x.job_card?.quotation?.job_request?.customer?.company_name && x.job_card.quotation.job_request.customer.company_name.toLowerCase().includes(searchTerm)) ||
+        // Search through direct customer path
+        (x.direct_customer?.user?.name && x.direct_customer.user.name.toLowerCase().includes(searchTerm)) ||
+        (x.direct_customer?.user?.surname && x.direct_customer.user.surname.toLowerCase().includes(searchTerm)) ||
+        (x.direct_customer?.company_name && x.direct_customer.company_name.toLowerCase().includes(searchTerm))
       );
     }
   }
 
-  viewinvoice(invoice:invoice) {
-    if (invoice.invoice_url) {
-      window.open(invoice.invoice_url, '_blank');
+  viewinvoice(invoice: invoice) {
+    const invoiceUrl = invoice.invoice_url ||
+                      (invoice.job_card?.quotation?.quotation_url); // fallback to quote URL if needed
+
+    if (invoiceUrl) {
+      window.open(invoiceUrl, '_blank');
     } else {
       this.notification.showError("PDF link is not available.");
     }
@@ -214,4 +265,18 @@ export class AdminInvoicesComponent {
       }
     });
   }
+
+  createJobCard(invoice: any): void {
+    if (invoice.quote_id) {
+      this.router.navigate(['/job-cards'], {
+        queryParams: {
+          quotationId: invoice.quote_id,
+          invoiceId: invoice.invoice_id
+        }
+      });
+    } else {
+      this.notification.showError('Cannot create job card: No quotation associated with this invoice');
+    }
+  }
+
 }

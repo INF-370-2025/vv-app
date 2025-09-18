@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AppModule } from '../../../app.module';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { NzUploadFile } from 'ng-zorro-antd/upload';
 import { quotation } from '../../../models/quotation';
 import { ApiService } from '../../../services/api.service';
@@ -11,7 +11,7 @@ import { AuthService } from '../../../services/auth.service';
 @Component({
   selector: 'app-customer-quotations',
   standalone: true,
-  imports: [AppModule,RouterLink],
+  imports: [AppModule, RouterLink],
   templateUrl: './customer-quotations.component.html',
   styleUrl: './customer-quotations.component.less'
 })
@@ -22,92 +22,108 @@ export class CustomerQuotationsComponent implements OnInit {
   btnloading:boolean = false;
   showHelpModal = false;
 
-
-  quotations: quotation[] = [];
-  accepted: quotation[] = [];
-  pending: quotation[] = [];
-  rejected: quotation[] = [];
+  quotations: any[] = []; // Change to any[] to handle the additional property
+  accepted: any[] = [];
+  pending: any[] = [];
+  rejected: any[] = [];
 
   viewingQuotation:quotation = new quotation();
   file!: NzUploadFile | undefined;
   fileList :any[] = [];
 
-  constructor(private apiService: ApiService,private notification:NotificationService,private supabase:SupabaseService,private auth:AuthService) {}
+  constructor(
+    private apiService: ApiService,
+    private notification:NotificationService,
+    private supabase:SupabaseService,
+    private auth:AuthService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.loadQuotations();
   }
 
-
-    openHelpModal(): void {
+  openHelpModal(): void {
     this.showHelpModal = true;
   }
 
-loadQuotations(): void {
-  this.isloading = true;
-  this.apiService.get_quotations_user(this.auth.user?.user_id!).subscribe({
-    next: (response) => {
-      if (Array.isArray(response)) {
-        this.quotations = response.map(item => ({
-          ...item,
-          quotation_status: item.quotation_status,
-          job_request: item.job_request_details
-        }));
+  loadQuotations(): void {
+    this.isloading = true;
+    this.apiService.get_quotations_user(this.auth.user?.user_id!).subscribe({
+      next: (response) => {
+        // Map the response to include has_invoice
+        if (Array.isArray(response)) {
+          this.quotations = response.map(item => ({
+            ...item,
+            quotation_status: item.quotation_status,
+            job_request: item.job_request_details,
+            has_invoice: item.has_invoice
+          }));
+        }
+        else if (response && Array.isArray(response.data)) {
+          this.quotations = response.data.map((item: any) => ({
+            ...item,
+            quotation_status: item.quotation_status,
+            job_request: item.job_request_details,
+            has_invoice: item.has_invoice
+          }));
+        }
+        else {
+          console.error('Unexpected response format:', response);
+          this.quotations = [];
+        }
+
+        // Sort and filter
+        this.quotations.sort((a, b) => b.quotation_id - a.quotation_id);
+        this.pending = this.quotations.filter(x => x.quotation_status?.quotation_status_id === 1);
+        this.accepted = this.quotations.filter(x => x.quotation_status?.quotation_status_id === 2);
+        this.rejected = this.quotations.filter(x => x.quotation_status?.quotation_status_id === 3);
+
+        this.isloading = false;
+      },
+      error: (err) => {
+        console.error('Error loading quotations:', err);
+        this.isloading = false;
       }
-      else if (response && Array.isArray(response.data)) {
-        this.quotations = response.data.map((item: { quotation_status: any; job_request_details: any; }) => ({
-          ...item,
-          quotation_status: item.quotation_status,
-          job_request: item.job_request_details
-        }));
-      }
-      else {
-        console.error('Unexpected response format:', response);
-        this.quotations = [];
-      }
-
-      // Sort and filter
-      this.quotations.sort((a, b) => b.quotation_id - a.quotation_id);
-      this.pending = this.quotations.filter(x => x.quotation_status?.quotation_status_id === 1);
-      this.accepted = this.quotations.filter(x => x.quotation_status?.quotation_status_id === 2);
-      this.rejected = this.quotations.filter(x => x.quotation_status?.quotation_status_id === 3);
-
-      this.isloading = false;
-    },
-    error: (err) => {
-      console.error('Error loading quotations:', err);
-      this.isloading = false;
-    }
-  });
-}
-
-getContactInfo(quote: quotation): string {
-  try {
-    // Safely navigate through the nested structure
-    const user = quote.job_request?.customer?.user;
-        console.error(quote.job_request?.customer?.user);
-
-
-    if (!user) return '-';
-
-    const name = user.name ? user.name.trim() : '';
-    const surname = user.surname ? user.surname.trim() : '';
-    const phone = user.phone_number ? user.phone_number.trim() : '';
-
-    // Combine name and surname if both exist
-    const fullName = [name, surname].filter(Boolean).join(' ');
-
-    // Return formatted contact info
-    if (fullName && phone) return `${fullName} | ${phone}`;
-    if (fullName) return fullName;
-    if (phone) return phone;
-
-    return '-';
-  } catch (e) {
-    console.error('Error getting contact info:', e);
-    return '-';
+    });
   }
-}
+
+  // Add viewInvoice method
+  viewInvoice(quote: any): void {
+    this.router.navigate(['/invoices'], {
+      queryParams: {
+        quoteId: quote.quotation_id
+      }
+    });
+  }
+
+  getContactInfo(quote: quotation): string {
+    try {
+      // Safely navigate through the nested structure
+      const user = quote.job_request?.customer?.user;
+          console.error(quote.job_request?.customer?.user);
+
+
+      if (!user) return '-';
+
+      const name = user.name ? user.name.trim() : '';
+      const surname = user.surname ? user.surname.trim() : '';
+      const phone = user.phone_number ? user.phone_number.trim() : '';
+
+      // Combine name and surname if both exist
+      const fullName = [name, surname].filter(Boolean).join(' ');
+
+      // Return formatted contact info
+      if (fullName && phone) return `${fullName} | ${phone}`;
+      if (fullName) return fullName;
+      if (phone) return phone;
+
+      return '-';
+    } catch (e) {
+      console.error('Error getting contact info:', e);
+      return '-';
+    }
+  }
 
   selectedTabChange(index:number) {
     this.selectedTabIndex = index;

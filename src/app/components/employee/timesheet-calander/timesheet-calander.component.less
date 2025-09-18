@@ -1,197 +1,394 @@
-/* timesheet-calander.component.less */
-.code-display {
-  h1 {
-    color: #000 !important;
-    font-weight: bold;
-  }
+// /* timesheet-calander.component.less */
+// .code-display {
+//   h1 {
+//     color: #000 !important;
+//     font-weight: bold;
+//   }
 
-  p {
-    color: #000 !important;
+//   p {
+//     color: #000 !important;
+//   }
+// }
+
+// /* Force modal content to be visible */
+// .ant-modal-body {
+//   color: #000 !important;
+// }
+
+
+// /* timesheet-calander.component.less */
+// @primary-color: #17726d;
+// @primary-light: #1f9c96;
+// @text-color: #333;
+// @background-light: #f8fafb;
+
+// .overlay {
+//   position: fixed;
+//   top: 0;
+//   left: 0;
+//   width: 100%;
+//   height: 100%;
+//   background: rgba(0, 0, 0, 0.7); /* Darker semi-transparent background */
+//   z-index: 1000;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   backdrop-filter: blur(4px);
+// }
+
+// .overlay-content {
+//   max-width: 90%;
+//   width: 600px;
+//   text-align: center;
+// }
+
+// .code-container {
+//   background: @background-light;
+//   border-radius: 12px;
+//   padding: 40px 30px;
+//   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+//   border: 1px solid #e1e8ed;
+// }
+
+// .code-header {
+//   margin-bottom: 25px;
+
+//   h2 {
+//     font-size: 1.8rem;
+//     font-weight: 600;
+//     color: @primary-color;
+//     margin-bottom: 8px;
+//   }
+
+//   p {
+//     color: #666;
+//     font-size: 1.1rem;
+//   }
+// }
+
+// .clock-code {
+//   font-size: 3.5rem;
+//   font-weight: 700;
+//   letter-spacing: 8px;
+//   color: @primary-color;
+//   background: white;
+//   padding: 25px 40px;
+//   border-radius: 10px;
+//   border: 2px solid #e1e8ed;
+//   display: inline-block;
+//   margin: 15px 0;
+//   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+//   font-family: 'Courier New', monospace;
+// }
+
+// .countdown-container {
+//   margin: 25px 0;
+//   background: rgba(23, 114, 109, 0.05);
+//   padding: 15px;
+//   border-radius: 8px;
+
+//   nz-statistic {
+//     ::ng-deep .ant-statistic-title {
+//       color: #666;
+//       font-size: 1rem;
+//       font-weight: 500;
+//       text-transform: uppercase;
+//       letter-spacing: 1px;
+//     }
+
+//     ::ng-deep .ant-statistic-content {
+//       font-size: 1.8rem !important;
+//       color: @primary-color;
+//       font-weight: 600;
+//     }
+//   }
+// }
+
+// .instructions {
+//   color: #555;
+//   font-size: 1.1rem;
+//   margin: 25px 0;
+//   font-weight: 400;
+//   line-height: 1.6;
+
+//   strong {
+//     color: @primary-color;
+//     font-weight: 600;
+//   }
+// }
+
+// .button-group {
+//   display: flex;
+//   justify-content: center;
+//   gap: 15px;
+//   margin-top: 20px;
+
+//   button {
+//     border-radius: 8px;
+//     height: 46px;
+//     font-size: 1.1rem;
+//     font-weight: 500;
+//     padding: 0 25px;
+//     transition: all 0.2s ease;
+
+//     span[nz-icon] {
+//       margin-right: 8px;
+//       vertical-align: middle;
+//     }
+//   }
+// }
+
+// .close-button {
+//   background: #fff;
+//   color: @primary-color;
+//   border: 1px solid @primary-color;
+
+//   &:hover {
+//     background: rgba(23, 114, 109, 0.05);
+//     border-color: @primary-light;
+//     color: @primary-light;
+//   }
+// }
+
+// .copy-button {
+//   background: @primary-color;
+//   color: white;
+//   border: 1px solid @primary-color;
+
+//   &:hover {
+//     background: @primary-light;
+//     border-color: @primary-light;
+//   }
+// }
+
+// /* Animation for the code display */
+// @keyframes subtlePulse {
+//   0% { transform: scale(1); }
+//   50% { transform: scale(1.02); }
+//   100% { transform: scale(1); }
+// }
+
+// .clock-code {
+//   animation: subtlePulse 2s infinite ease-in-out;
+// }
+
+// /* timesheet-calander.component.less */
+// .countdown-container {
+//   margin: 25px 0;
+//   background: rgba(23, 114, 109, 0.05);
+//   padding: 15px;
+//   border-radius: 8px;
+
+//   nz-statistic {
+//     ::ng-deep .ant-statistic-title {
+//       color: #666;
+//       font-size: 1rem;
+//       font-weight: 500;
+//       text-transform: uppercase;
+//       letter-spacing: 1px;
+//     }
+
+//     ::ng-deep .ant-statistic-content {
+//       font-size: 1.8rem !important;
+//       color: #000 !important; /* Force black text */
+//       font-weight: 600;
+//     }
+//   }
+// }
+
+/* timesheet-calander.component.less */
+.controls-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+
+  ::ng-deep .ant-card-body {
+    padding: 16px;
   }
 }
 
-/* Force modal content to be visible */
-.ant-modal-body {
-  color: #000 !important;
+.controls-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
+.button-group {
+  display: flex;
+}
 
-/* timesheet-calander.component.less */
-@primary-color: #17726d;
-@primary-light: #1f9c96;
-@text-color: #333;
-@background-light: #f8fafb;
+.action-button {
+  border-radius: 6px;
+  height: 40px;
+  padding: 0 16px;
+  font-weight: 500;
+}
 
+.timer-config-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.divider {
+  height: 24px;
+  margin: 0;
+}
+
+.timer-config {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.timer-label {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  font-weight: 500;
+  color: #595959;
+}
+
+.timer-icon {
+  margin-right: 6px;
+  color: #1890ff;
+}
+
+.timer-input {
+  width: 70px;
+
+  ::ng-deep .ant-input-number-handler-wrap {
+    opacity: 1;
+  }
+}
+
+.timer-unit {
+  color: #8c8c8c;
+  font-size: 14px;
+}
+
+/* Overlay Styles */
 .overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.7); /* Darker semi-transparent background */
-  z-index: 1000;
+  background-color: rgba(0, 0, 0, 0.75);
   display: flex;
   justify-content: center;
   align-items: center;
-  backdrop-filter: blur(4px);
+  z-index: 1000;
 }
 
 .overlay-content {
-  max-width: 90%;
-  width: 600px;
-  text-align: center;
+  width: 100%;
+  max-width: 420px;
+  padding: 20px;
+}
+
+.code-card {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+
+  ::ng-deep .ant-card-body {
+    padding: 0;
+  }
 }
 
 .code-container {
-  background: @background-light;
-  border-radius: 12px;
-  padding: 40px 30px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-  border: 1px solid #e1e8ed;
+  padding: 32px;
+  text-align: center;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
 
 .code-header {
-  margin-bottom: 25px;
+  margin-bottom: 24px;
+}
 
-  h2 {
-    font-size: 1.8rem;
-    font-weight: 600;
-    color: @primary-color;
-    margin-bottom: 8px;
-  }
+.code-title {
+  margin: 0 0 16px 0;
+  color: #262626;
+  font-size: 18px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
 
-  p {
-    color: #666;
-    font-size: 1.1rem;
-  }
+.code-timer {
+  margin-bottom: 8px;
+}
+
+.code-display {
+  margin: 24px 0;
+  padding: 24px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .clock-code {
-  font-size: 3.5rem;
+  margin: 0;
+  font-size: 48px;
   font-weight: 700;
   letter-spacing: 8px;
-  color: @primary-color;
-  background: white;
-  padding: 25px 40px;
-  border-radius: 10px;
-  border: 2px solid #e1e8ed;
-  display: inline-block;
-  margin: 15px 0;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  color: #1890ff;
   font-family: 'Courier New', monospace;
 }
 
-.countdown-container {
-  margin: 25px 0;
-  background: rgba(23, 114, 109, 0.05);
-  padding: 15px;
-  border-radius: 8px;
+.code-instructions {
+  margin: 20px 0;
 
-  nz-statistic {
-    ::ng-deep .ant-statistic-title {
-      color: #666;
-      font-size: 1rem;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    ::ng-deep .ant-statistic-content {
-      font-size: 1.8rem !important;
-      color: @primary-color;
-      font-weight: 600;
-    }
+  p {
+    margin: 8px 0;
+    color: #595959;
   }
 }
 
-.instructions {
-  color: #555;
-  font-size: 1.1rem;
-  margin: 25px 0;
-  font-weight: 400;
-  line-height: 1.6;
-
-  strong {
-    color: @primary-color;
-    font-weight: 600;
-  }
+.expiry-note {
+  font-size: 14px;
+  color: #8c8c8c;
 }
 
-.button-group {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin-top: 20px;
-
-  button {
-    border-radius: 8px;
-    height: 46px;
-    font-size: 1.1rem;
-    font-weight: 500;
-    padding: 0 25px;
-    transition: all 0.2s ease;
-
-    span[nz-icon] {
-      margin-right: 8px;
-      vertical-align: middle;
-    }
-  }
+.code-actions {
+  margin-top: 24px;
 }
 
 .close-button {
-  background: #fff;
-  color: @primary-color;
-  border: 1px solid @primary-color;
+  border-radius: 24px;
+  padding: 0 24px;
+  height: 40px;
+  font-weight: 500;
+}
 
-  &:hover {
-    background: rgba(23, 114, 109, 0.05);
-    border-color: @primary-light;
-    color: @primary-light;
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .controls-container {
+    flex-direction: column;
+    align-items: flex-start;
   }
-}
 
-.copy-button {
-  background: @primary-color;
-  color: white;
-  border: 1px solid @primary-color;
-
-  &:hover {
-    background: @primary-light;
-    border-color: @primary-light;
+  .timer-config-container {
+    width: 100%;
+    justify-content: space-between;
   }
-}
 
-/* Animation for the code display */
-@keyframes subtlePulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.02); }
-  100% { transform: scale(1); }
-}
+  .divider {
+    display: none;
+  }
 
-.clock-code {
-  animation: subtlePulse 2s infinite ease-in-out;
-}
+  .overlay-content {
+    padding: 16px;
+  }
 
-/* timesheet-calander.component.less */
-.countdown-container {
-  margin: 25px 0;
-  background: rgba(23, 114, 109, 0.05);
-  padding: 15px;
-  border-radius: 8px;
+  .code-container {
+    padding: 24px 16px;
+  }
 
-  nz-statistic {
-    ::ng-deep .ant-statistic-title {
-      color: #666;
-      font-size: 1rem;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    ::ng-deep .ant-statistic-content {
-      font-size: 1.8rem !important;
-      color: #000 !important; /* Force black text */
-      font-weight: 600;
-    }
+  .clock-code {
+    font-size: 36px;
+    letter-spacing: 6px;
   }
 }

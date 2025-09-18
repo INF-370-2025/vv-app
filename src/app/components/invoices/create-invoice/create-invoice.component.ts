@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+// In create-invoice.component.ts
+import { Component, EventEmitter, Output, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NzUploadFile } from 'ng-zorro-antd/upload';
 import { ApiService } from '../../../services/api.service';
@@ -7,12 +8,11 @@ import { SupabaseService } from '../../../services/supabase.service';
 import { AppModule } from '../../../app.module';
 
 interface InvoicePayload {
-  invoice_id: number;
-  job_card_id: number;
   invoice_number: string;
   total: number;
   invoice_url: string;
   invoice_status_id: number;
+  quote_id?: number;
 }
 
 @Component({
@@ -22,15 +22,14 @@ interface InvoicePayload {
   standalone: true,
   styleUrls: ['./create-invoice.component.less']
 })
-
-export class CreateInvoiceComponent {
+export class CreateInvoiceComponent implements OnInit {
+  @Input() quoteId?: number;
+  @Input() totalAmount?: number;
   @Output() closeForm = new EventEmitter<void>();
   @Output() invoiceCreated = new EventEmitter<void>();
 
   invoiceForm: FormGroup;
   isSubmitting = false;
-  isLoadingJobCards = false;
-  jobCards: any[] = [];
 
   // File upload
   file!: NzUploadFile | undefined;
@@ -43,30 +42,18 @@ export class CreateInvoiceComponent {
     private supabase: SupabaseService
   ) {
     this.invoiceForm = this.fb.group({
-      job_card_id: [null, [Validators.required]],
-      invoice_number: [null, [Validators.required]],
-      total: [null, [Validators.required, Validators.min(0.01)]]
+      invoice_number: [null, [Validators.required, Validators.pattern(/^INV-\d+$/)]],
+      total: [null, [Validators.required, Validators.min(10)]]
     });
   }
 
   ngOnInit(): void {
-    this.loadJobCards();
-  }
-
-  // Load all job cards
-  loadJobCards(): void {
-    this.isLoadingJobCards = true;
-    this.apiService.get_job_cards().subscribe({
-      next: (jobCards) => {
-        this.jobCards = jobCards || [];
-        this.isLoadingJobCards = false;
-      },
-      error: (err) => {
-        console.error('Error loading job cards:', err);
-        this.notification.showError('Error', 'Failed to load job cards');
-        this.isLoadingJobCards = false;
-      }
-    });
+    // Set the total amount if provided
+    if (this.totalAmount) {
+      this.invoiceForm.patchValue({
+        total: this.totalAmount
+      });
+    }
   }
 
   beforeUpload = (file: NzUploadFile): boolean => {
@@ -104,12 +91,11 @@ export class CreateInvoiceComponent {
       }
 
       const payload: InvoicePayload = {
-        invoice_id: 0, // Required by backend, set to 0 for creation
-        job_card_id: +this.invoiceForm.value.job_card_id,
         invoice_number: this.invoiceForm.value.invoice_number,
         total: +this.invoiceForm.value.total,
         invoice_url: file_url,
-        invoice_status_id: 1 // Default to unpaid
+        invoice_status_id: 2, // Default to unpaid
+        quote_id: this.quoteId // Add the quote ID
       };
 
       this.apiService.create_invoice(payload).subscribe({

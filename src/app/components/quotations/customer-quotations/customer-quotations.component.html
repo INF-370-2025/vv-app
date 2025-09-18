@@ -90,9 +90,10 @@
                                 <th>Job Title</th>
                                 <th>Quote Total</th>
                                 <th>Contact Person</th>
+                                <th>Invoice Status</th> <!-- New column -->
                                 <th>
                                     <p style="text-align: center;font-weight: 600;">
-                                        {{pending.length}} Requests
+                                        {{accepted.length}} Requests
                                     </p>
                                 </th>
                             </tr>
@@ -115,26 +116,34 @@
                                 <td>
                                     {{quote.total_cost | currency:'R':'symbol' }}
                                 </td>
-                             <td>
-  <nz-avatar nzIcon="user"
-             [nzSrc]="quote.job_request?.customer?.user?.image ||
-                     'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+
-                     (quote.job_request?.customer?.user?.name || '')">
-  </nz-avatar>
-
-  <ng-container *ngIf="quote.job_request?.customer?.user as user; else noContact">
-    {{ user.name || '' }} {{ user.surname || '' }}
-    <span *ngIf="(user.name || user.surname) && user.phone_number"> | </span>
-    {{ user.phone_number || '' }}
-  </ng-container>
-
-  <ng-template #noContact>-</ng-template>
-</td>
+                                <td>
+                                    <nz-avatar nzIcon="user"
+                                              [nzSrc]="quote.job_request?.customer?.user?.image ||
+                                                      'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+
+                                                      (quote.job_request?.customer?.user?.name || '')">
+                                    </nz-avatar>
+                                    {{ quote.job_request?.customer?.user?.name || '' }} {{ quote.job_request?.customer?.user?.surname || '' }}
+                                    <div>{{ quote.job_request?.customer?.user?.phone_number || '-' }}</div>
+                                </td>
+                                <!-- Invoice Status Column -->
+                                <td>
+                                    <nz-tag *ngIf="quote.has_invoice" [nzColor]="'blue'">Invoice Created</nz-tag>
+                                    <nz-tag *ngIf="!quote.has_invoice" [nzColor]="'default'">No Invoice Created Yet</nz-tag>
+                                </td>
                                 <td style="text-align: center;">
-                                    <button nz-button nzType="primary" (click)="viewQuote(quote)">
-                                  <i nz-icon nzType="eye" nzTheme="outline"></i>
-                                  View
-                                </button>
+                                  <button nz-button nzType="primary" (click)="viewQuote(quote)" style="margin-bottom: 6px;">
+                                    <i nz-icon nzType="eye" nzTheme="outline"></i>
+                                    View
+                                  </button>
+
+                                  <!-- View Invoice Button (only show if invoice exists) -->
+                                  <button *ngIf="quote.has_invoice"
+                                          nz-button nzType="default"
+                                          (click)="viewInvoice(quote)"
+                                          nz-tooltip="View Invoice">
+                                    <i nz-icon nzType="file-text" nzTheme="outline"></i>
+                                    View Invoice
+                                  </button>
                                 </td>
                             </tr>
                         </tbody>
