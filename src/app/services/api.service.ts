@@ -105,11 +105,26 @@ export class ApiService {
     return this.http.get<any>(environment.api_url + this.roles_ep + `/get_roles`);
   }
 
+  get_role(role_id: number) {
+    return this.http.get<any>(environment.api_url + this.roles_ep + `/get_role/${role_id}`);
+  }
+
   create_role(role: any) {
     return this.http.post<any>(
       environment.api_url + this.roles_ep + '/create_role',
       role
     );
+  }
+
+  update_role(role_id: number, role: any) {
+    return this.http.put<any>(
+      environment.api_url + this.roles_ep + `/update_role/${role_id}`,
+      role
+    );
+  }
+
+  delete_role(role_id: number) {
+    return this.http.delete<any>(environment.api_url + this.roles_ep + `/delete_role/${role_id}`);
   }
 
   get_role_claims() {
@@ -318,8 +333,17 @@ export class ApiService {
     );
   }
 
-  get_completed_job_cards() {
-    return this.http.get<any>(environment.api_url + this.job_cards_ep + `/get_completed_job_cards`);
+  update_invoice_job_card(invoiceId: number, jobCardId: number): Observable<any> {
+    return this.http.put<any>(
+      environment.api_url + this.invoices_ep + `/update_invoice_job_card/${invoiceId}/${jobCardId}`,
+      {}
+    );
+  }
+
+
+
+  get_completed_job_cards(){
+    return this.http.get<any>(environment.api_url + this.job_cards_ep + `/get_completed_job_cards`)
   }
 
   //#endregion
@@ -429,6 +453,12 @@ export class ApiService {
     );
   }
 
+  // In your api.service.ts
+  confirmPayFastPayment(invoiceId: number) {
+    return this.http.post(
+      environment.api_url +  this.invoices_ep +`/payfast-confirm/${invoiceId}`, {});
+  }
+
   //#endregion
 
   //#region Receipts
@@ -507,18 +537,79 @@ export class ApiService {
     );
   }
 
-  get_all_stock() {
-    return this.http.get<any>(environment.api_url + this.stock_ep + `/get_all_stock`);
-  }
 
-  get_stock(stock_id: number) {
-    return this.http.get<any>(
-      environment.api_url + this.stock_ep + `/get_stock/${stock_id}`
+    get_stock_structure() {
+      return this.http.get<any>(environment.api_url + this.stock_ep + `/get_stock_structure`);
+    }
+
+  createStockCategory(categoryName: string) {
+    return this.http.post<any>(
+      environment.api_url + this.stock_ep + '/create_stock_category',
+      { category_name: categoryName }
     );
   }
 
+  updateStockCategory(categoryId: number, categoryName: string) {
+    return this.http.put<any>(
+      environment.api_url + this.stock_ep + `/update_stock_category/${categoryId}`,
+      { category_name: categoryName }
+    );
+  }
+
+  deleteStockCategory(categoryId: number) {
+    return this.http.delete<any>(
+      environment.api_url + this.stock_ep + `/delete_stock_category/${categoryId}`
+    );
+  }
+
+  // Stock Types
+  createStockType(typeName: string, categoryId: number) {
+    return this.http.post<any>(
+      environment.api_url + this.stock_ep + '/create_stock_type',
+      { type_name: typeName, stock_category_id: categoryId }
+    );
+  }
+
+  updateStockType(typeId: number, typeName: string, categoryId: number) {
+    return this.http.put<any>(
+      environment.api_url + this.stock_ep + `/update_stock_type/${typeId}`,
+      { type_name: typeName, stock_category_id: categoryId }
+    );
+  }
+
+  deleteStockType(typeId: number) {
+    return this.http.delete<any>(
+      environment.api_url + this.stock_ep + `/delete_stock_type/${typeId}`
+    );
+  }
+
+  // Move operations
+  moveStockToType(stockId: number, newTypeId: number) {
+    return this.http.post<any>(
+      environment.api_url + this.stock_ep + `/move_stock/${stockId}`,
+      { new_type_id: newTypeId }
+    );
+  }
+
+  moveTypeToCategory(typeId: number, newCategoryId: number) {
+    return this.http.post<any>(
+      environment.api_url + this.stock_ep + `/move_type/${typeId}`,
+      { new_category_id: newCategoryId }
+    );
+  }
+
+  // Delete stock item
+  deleteStock(stockId: number) {
+    return this.http.delete<any>(
+      environment.api_url + this.stock_ep + `/delete_stock/${stockId}`
+    );
+  }
+
+    get_all_stock() {
+      return this.http.get<any>(environment.api_url + this.stock_ep + `/get_all_stock`);
+    }
+
   get_stock_categories() {
-    return this.http.get<any>(environment.api_url + this.stock_ep + `/get_stock_categories`);
   }
 
     create_stock(stock: any) {
@@ -660,10 +751,11 @@ export class ApiService {
     );
   }
 
-  generateClockCode(type: 'clock_in' | 'clock_out'): Observable<{ code: number, expires_at: string }> {
+
+  generateClockCode(type: 'clock_in' | 'clock_out', expiresIn: number = 5): Observable<{ code: number, expires_at: string }> {
     return this.http.post<{ code: number, expires_at: string }>(
       environment.api_url + this.employee_time_logs_ep + '/generate-clock-code',
-      { type }
+      { type, expires_in: expiresIn }
     );
   }
 

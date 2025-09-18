@@ -1,8 +1,6 @@
 <div nz-row [nzJustify]="'center'">
-
-<!-- Delivery Notes List View -->
-  <div nz-col nzSpan="16">
-    <nz-tabset nzType="card" >
+  <div nz-col nzSpan="22">
+    <nz-tabset nzType="card">
       <nz-tab [nzTitle]="'Delivery Notes'">
         <nz-spin [nzSpinning]="isLoading">
           <!-- Error message -->
@@ -19,43 +17,67 @@
           </div>
 
           <!-- table -->
-          <nz-table *ngIf="!isLoading && deliveryNotes.length > 0"
-                    #deliveryNotesTable
-                    [nzData]="deliveryNotes"
-                    [nzPageSize]="20"
-                    nzSize="middle">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Job Card ID</th>
-                <th>View</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let note of deliveryNotesTable.data">
-                <td><b>#{{note.delivery_note_id}}</b></td>
-                <td>{{note.job_card_id}}</td>
-                    <td>
-                      <button
-                        nz-button
-                        nzType="primary"
-                        nzSize="small"
-                        (click)="viewDeliveryNote(note)"
-                        [disabled]="!note.delivery_note_url">
-                        <i nz-icon nzType="eye" nzTheme="outline"></i> View
-                      </button>
-                    </td>
-              </tr>
-            </tbody>
-          </nz-table>
+          <div *ngIf="!isLoading && deliveryNotes.length > 0">
+            <nz-table #deliveryNotesTable [nzData]="deliveryNotes" [nzPageSize]="20" nzSize="middle">
+              <thead>
+                <tr>
+                  <th colSpan="5">
+                    <nz-input-group [nzSuffix]="suffixIconSearch">
+                      <input
+                        type="text"
+                        nz-input
+                        placeholder="Search delivery notes..."
+                        (keyup)="searchDeliveryNotes($event)"
+                      />
+                    </nz-input-group>
+                    <ng-template #suffixIconSearch>
+                      <i nz-icon nzType="search"></i>
+                    </ng-template>
+                  </th>
+                </tr>
+                <tr>
+                  <th>ID</th>
+                  <th>Job Title</th>
+                  <th>Description</th>
+                  <th>Completed Date</th>
+                  <th>View</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let note of deliveryNotesTable.data">
+                  <td><b>#{{note.delivery_note_id}}</b></td>
+                  <td>{{getJobTitle(note)}}</td>
+                  <td>
+                    <div class="truncate-cell" [nz-tooltip]="getJobDescription(note)">
+                      {{ (getJobDescription(note) | slice:0:50) }}
+                      {{ (getJobDescription(note).length > 50) ? '...' : '' }}
+                    </div>
+                  </td>
+                  <td>{{getCompletedDate(note.completed_at)}}</td>
+                  <td>
+                    <button
+                      nz-button
+                      nzType="primary"
+                      nzSize="small"
+                      (click)="viewDeliveryNote(note)"
+                      [disabled]="!note.delivery_note_url">
+                      <i nz-icon nzType="eye" nzTheme="outline"></i> View
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </nz-table>
+          </div>
         </nz-spin>
       </nz-tab>
     </nz-tabset>
-    <button nz-button (click)="showHelp()">
+
+    <button nz-button (click)="showHelp()" style="margin-top: 16px;">
       <span nz-icon nzType="question-circle" nzTheme="outline"></span>
       Get Help
     </button>
-
+  </div>
+</div>
 
 
 <nz-modal

@@ -5,134 +5,160 @@
             <!-- Pending Tab -->
             <nz-tab [nzTitle]="'Pending'">
                 <nz-spin [nzSpinning]="isloading">
-                    <nz-table #pendingTable [nzData]="pending" [nzPageSize]="20">
+                    <nz-table #pendingTable [nzData]="pending" [nzPageSize]="20" nzShowSizeChanger>
                         <thead>
                             <tr>
-                                <th colSpan="3">
-                                    <nz-input-group [nzSuffix]="suffixIconSearch">
-                                        <input type="text" nz-input placeholder="Search Here" (keyup)="searchPending($event)" />
+                                <th>Quote #</th>
+                                <th>Request Date</th>
+                                <th>Status</th>
+                                <th>Job Title</th>
+                                <th>Description</th>
+                                <th>Quote Total</th>
+                                <th>Contact Person</th>
+                                <th>Actions</th>
+                            </tr>
+                            <tr>
+                                <th colSpan="8">
+                                    <nz-input-group nzSearch [nzSuffix]="suffixIconSearch">
+                                        <input type="text" nz-input placeholder="Search pending quotations..." (input)="searchPending($event)" />
                                     </nz-input-group>
                                     <ng-template #suffixIconSearch>
                                         <i nz-icon nzType="search"></i>
                                     </ng-template>
-                                </th>
-                                <th>Job Title</th>
-                                <th>Quote Total</th>
-                                <th>Contact Person</th>
-                                <th>
-                                    <p style="text-align: center;font-weight: 600;">
-                                        {{pending.length}} Requests
-                                    </p>
                                 </th>
                             </tr>
                         </thead>
                         <tbody class="table-body">
                             <tr *ngFor="let quote of pendingTable.data">
                                 <td>
-                                    <b>#{{quote.quotation_number | titlecase}}</b>
+                                    <b>#{{quote.quotation_number || 'N/A'}}</b>
                                 </td>
                                 <td>
-                                    <b>Job Requested on  : </b> {{quote.job_request?.created_at || '-'}}
+                                    <b>Requested: </b> {{(quote.job_request_details?.created_at | date:'medium') || '-'}}
                                 </td>
                                 <td>
-                                    <b>Status: </b>
                                     <nz-tag [nzColor]="'yellow'">Pending</nz-tag>
                                 </td>
                                 <td>
-                                    <b>{{quote.job_request?.title | titlecase}}</b>
+                                    <b>{{quote.job_request_details?.title | titlecase}}</b>
+                                </td>
+                                <td>
+                                    <div class="description-text" [nz-tooltip]="quote.job_request_details?.description || 'No description available'">
+                                        {{ (quote.job_request_details?.description | slice:0:50) || 'No description' }}{{ quote.job_request_details?.description && quote.job_request_details?.description.length > 50 ? '...' : '' }}
+                                    </div>
                                 </td>
                                 <td>
                                     {{quote.total_cost | currency:'R':'symbol' }}
                                 </td>
                                 <td>
                                     <nz-avatar nzIcon="user"
-                                              [nzSrc]="quote.job_request?.customer?.user?.image ||
+                                              [nzSrc]="quote.job_request_details?.customer?.user?.image ||
                                                       'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+
-                                                      (quote.job_request?.customer?.user?.name || '')"></nz-avatar>
-                                    {{ quote.job_request?.customer?.user?.name || '' }} | {{ quote.job_request?.customer?.user?.phone_number || '-' }}
+                                                      (quote.job_request_details?.customer?.user?.name || '')"></nz-avatar>
+                                    {{ quote.job_request_details?.customer?.user?.name || '' }} {{ quote.job_request_details?.customer?.user?.surname || '' }}
+                                    <div>{{ quote.job_request_details?.customer?.user?.phone_number || '-' }}</div>
                                 </td>
                                 <td style="text-align: center;">
-                                    <button nz-button nzType="primary" (click)="viewQuote(quote)">
-                                  <i nz-icon nzType="eye" nzTheme="outline"></i>
-                                  View
-                                </button>
-                                    <button style="margin-left: 5px;" nz-button nzType="primary" (click)="editQuote(quote)">
-                                  <i nz-icon nzType="edit" nzTheme="outline"></i>
-                                  Edit
-                                </button>
+                                    <button nz-button nzType="primary" (click)="viewQuote(quote)" nzTooltip="View Quotation">
+                                        <i nz-icon nzType="eye" nzTheme="outline"></i>
+                                    </button>
+                                    <button style="margin-left: 5px;" nz-button nzType="default" (click)="editQuote(quote)" nzTooltip="Edit Quotation">
+                                        <i nz-icon nzType="edit" nzTheme="outline"></i>
+                                    </button>
                                 </td>
                             </tr>
                         </tbody>
                     </nz-table>
+                    <div *ngIf="pending.length === 0 && !isloading" class="no-data">
+                        <i nz-icon nzType="file-search" nzTheme="outline"></i>
+                        <p>No pending quotations found</p>
+                    </div>
                 </nz-spin>
             </nz-tab>
-
 
             <!-- Accepted Tab -->
             <nz-tab [nzTitle]="'Accepted'">
                 <nz-spin [nzSpinning]="isloading">
-                    <nz-table #acceptedTable [nzData]="accepted" [nzPageSize]="20">
+                    <!-- Filter Section -->
+                    <div nz-row nzAlign="middle" nzJustify="space-between" style="margin-bottom: 16px; gap: 16px;">
+                        <div nz-col nzFlex="auto">
+                            <nz-radio-group [(ngModel)]="invoiceFilter" (ngModelChange)="filterAcceptedQuotations()" style="display: flex; gap: 12px;">
+                                <label nz-radio nzValue="all">All</label>
+                                <label nz-radio nzValue="withInvoice">With Invoices</label>
+                                <label nz-radio nzValue="withoutInvoice">Without Invoices</label>
+                            </nz-radio-group>
+                        </div>
+                        <div nz-col style="text-align: right;">
+                            <p style="font-weight: 600; margin: 0;">
+                                {{filteredAccepted.length}} Requests
+                            </p>
+                        </div>
+                    </div>
+
+                    <nz-table #acceptedTable [nzData]="filteredAccepted" [nzPageSize]="20" nzShowSizeChanger>
                         <thead>
                             <tr>
-                                <th colSpan="3">
-                                    <nz-input-group [nzSuffix]="suffixIconSearch">
-                                        <input type="text" nz-input placeholder="Search Here" (keyup)="searchAccepted($event)" />
+                                <th>Quote #</th>
+                                <th>Request Date</th>
+                                <th>Job Title</th>
+                                <th>Description</th>
+                                <th>Quote Total</th>
+                                <th>Contact Person</th>
+                                <th>Invoice Status</th>
+                                <th>Actions</th>
+                            </tr>
+                            <tr>
+                                <th colSpan="8">
+                                    <nz-input-group nzSearch [nzSuffix]="suffixIconSearch">
+                                        <input type="text" nz-input placeholder="Search accepted quotations..." (input)="searchAccepted($event)" />
                                     </nz-input-group>
                                     <ng-template #suffixIconSearch>
                                         <i nz-icon nzType="search"></i>
                                     </ng-template>
                                 </th>
-                                <th>Job Title</th>
-                                <th>Quote Total</th>
-                                <th>Contact Person</th>
-                                <th> </th>
-                                <th>
-                                    <p style="text-align: center;font-weight: 600;">
-                                        {{accepted.length}} Requests
-                                    </p>
-                                </th>
                             </tr>
                         </thead>
                         <tbody class="table-body">
                             <tr *ngFor="let quote of acceptedTable.data">
+                                <td><b>#{{quote.quotation_number || 'N/A'}}</b></td>
+                                <td><b>Requested: </b>{{(quote.job_request_details?.created_at | date:'medium') || '-'}}</td>
+                                <td><b>{{quote.job_request_details?.title | titlecase}}</b></td>
                                 <td>
-                                    <b>#{{quote.quotation_number | titlecase}}</b>
+                                    <div class="description-text" [nz-tooltip]="quote.job_request_details?.description || 'No description available'">
+                                        {{ (quote.job_request_details?.description | slice:0:50) || 'No description' }}{{ quote.job_request_details?.description && quote.job_request_details?.description.length > 50 ? '...' : '' }}
+                                    </div>
                                 </td>
-                                <td>
-                                    <b>Job Requested on  : </b> {{quote.job_request?.created_at| date:"medium"}}
-                                </td>
-                                <td>
-                                    <b>Status: </b>
-                                    <nz-tag [nzColor]="'green'">Accepted</nz-tag>
-                                </td>
-                                <td>
-                                    <b>{{quote.job_request?.title | titlecase}}</b>
-                                </td>
-                                <td>
-                                    {{quote.total_cost | currency:'R':'symbol' }}
-                                </td>
+                                <td>{{quote.total_cost | currency:'R':'symbol' }}</td>
                                 <td>
                                     <nz-avatar nzIcon="user"
-                                              [nzSrc]="quote.job_request?.customer?.user?.image ||
-                                                      'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+
-                                                      (quote.job_request?.customer?.user?.name || '')"></nz-avatar>
-                                    {{ quote.job_request?.customer?.user?.name || '' }} | {{ quote.job_request?.customer?.user?.phone_number || '-' }}
+                                              [nzSrc]="quote.job_request_details?.customer?.user?.image ||
+                                                      'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ (quote.job_request_details?.customer?.user?.name || '')">
+                                    </nz-avatar>
+                                    {{ quote.job_request_details?.customer?.user?.name || '' }} {{ quote.job_request_details?.customer?.user?.surname || '' }}
+                                    <div>{{ quote.job_request_details?.customer?.user?.phone_number || '-' }}</div>
+                                </td>
+                                <td>
+                                    <nz-tag *ngIf="quote.has_invoice" [nzColor]="'blue'">Invoice Created</nz-tag>
+                                    <nz-tag *ngIf="!quote.has_invoice" [nzColor]="'default'">No Invoice</nz-tag>
                                 </td>
                                 <td style="text-align: center;">
-                                    <button nz-button nzType="primary" routerLink="/invoices">
-                                  <i nz-icon nzType="plus" nzTheme="outline"></i>
-                                  Create Invoice
-                                </button>
-                                </td>
-                                <td style="text-align: center;">
-                                    <button nz-button nzType="primary" (click)="viewQuote(quote)">
-                                  <i nz-icon nzType="eye" nzTheme="outline"></i>
-                                  View
-                                </button>
+                                    <button nz-button nzType="primary" (click)="viewQuote(quote)" nzTooltip="View Quotation" style="margin-bottom: 5px;">
+                                        <i nz-icon nzType="eye" nzTheme="outline"></i>
+                                    </button>
+                                    <button nz-button nzType="default"
+                                            (click)="createInvoice(quote)"
+                                            [disabled]="quote.has_invoice"
+                                            [nz-tooltip]="quote.has_invoice ? 'Invoice already created for this quotation' : ''">
+                                        <i nz-icon [nzType]="quote.has_invoice ? 'file-done' : 'file-add'" nzTheme="outline"></i>
+                                    </button>
                                 </td>
                             </tr>
                         </tbody>
                     </nz-table>
+                    <div *ngIf="accepted.length === 0 && !isloading" class="no-data">
+                        <i nz-icon nzType="file-search" nzTheme="outline"></i>
+                        <p>No accepted quotations found</p>
+                    </div>
                 </nz-spin>
             </nz-tab>
 
@@ -140,259 +166,135 @@
             <!-- Rejected Tab -->
             <nz-tab [nzTitle]="'Rejected'">
                 <nz-spin [nzSpinning]="isloading">
-                    <nz-table #rejectedTable [nzData]="rejected" [nzPageSize]="20">
+                    <nz-table #rejectedTable [nzData]="rejected" [nzPageSize]="20" nzShowSizeChanger>
                         <thead>
                             <tr>
-                                <th colSpan="3">
-                                    <nz-input-group [nzSuffix]="suffixIconSearch">
-                                        <input type="text" nz-input placeholder="Search Here" (keyup)="searchAccepted($event)" />
+                                <th>Quote #</th>
+                                <th>Request Date</th>
+                                <th>Status</th>
+                                <th>Job Title</th>
+                                <th>Description</th>
+                                <th>Quote Total</th>
+                                <th>Contact Person</th>
+                                <th>Actions</th>
+                            </tr>
+                            <tr>
+                                <th colSpan="8">
+                                    <nz-input-group nzSearch [nzSuffix]="suffixIconSearch">
+                                        <input type="text" nz-input placeholder="Search rejected quotations..." (input)="searchRejected($event)" />
                                     </nz-input-group>
                                     <ng-template #suffixIconSearch>
                                         <i nz-icon nzType="search"></i>
                                     </ng-template>
-                                </th>
-                                <th>Job Title</th>
-                                <th>Quote Total</th>
-                                <th>Contact Person</th>
-                                <th>
-                                    <p style="text-align: center;font-weight: 600;">
-                                        {{rejected.length}} Requests
-                                    </p>
                                 </th>
                             </tr>
                         </thead>
                         <tbody class="table-body">
                             <tr *ngFor="let quote of rejectedTable.data">
                                 <td>
-                                    <b>#{{quote.quotation_number | titlecase}}</b>
+                                    <b>#{{quote.quotation_number || 'N/A'}}</b>
                                 </td>
                                 <td>
-                                    <b>Job Requested on  : </b> {{quote.job_request?.created_at| date:"medium"}}
+                                    <b>Requested: </b> {{(quote.job_request_details?.created_at | date:'medium') || '-'}}
                                 </td>
                                 <td>
-                                    <b>Status: </b>
                                     <nz-tag [nzColor]="'red'">Rejected</nz-tag>
                                 </td>
                                 <td>
-                                    <b>{{quote.job_request?.title | titlecase}}</b>
+                                    <b>{{quote.job_request_details?.title | titlecase}}</b>
+                                </td>
+                                <td>
+                                    <div class="description-text" [nz-tooltip]="quote.job_request_details?.description || 'No description available'">
+                                        {{ (quote.job_request_details?.description | slice:0:50) || 'No description' }}{{ quote.job_request_details?.description && quote.job_request_details?.description.length > 50 ? '...' : '' }}
+                                    </div>
                                 </td>
                                 <td>
                                     {{quote.total_cost | currency:'R':'symbol' }}
                                 </td>
                                 <td>
                                     <nz-avatar nzIcon="user"
-                                              [nzSrc]="quote.job_request?.customer?.user?.image ||
+                                              [nzSrc]="quote.job_request_details?.customer?.user?.image ||
                                                       'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+
-                                                      (quote.job_request?.customer?.user?.name || '')"></nz-avatar>
-                                    {{ quote.job_request?.customer?.user?.name || '' }} | {{ quote.job_request?.customer?.user?.phone_number || '-' }}
+                                                      (quote.job_request_details?.customer?.user?.name || '')"></nz-avatar>
+                                    {{ quote.job_request_details?.customer?.user?.name || '' }} {{ quote.job_request_details?.customer?.user?.surname || '' }}
+                                    <div>{{ quote.job_request_details?.customer?.user?.phone_number || '-' }}</div>
                                 </td>
                                 <td style="text-align: center;">
-                                    <button nz-button nzType="primary" (click)="viewQuote(quote)">
-                                  <i nz-icon nzType="eye" nzTheme="outline"></i>
-                                  View
-                                </button>
+                                    <button nz-button nzType="primary" (click)="viewQuote(quote)" nzTooltip="View Quotation">
+                                        <i nz-icon nzType="eye" nzTheme="outline"></i>
+                                    </button>
                                 </td>
                             </tr>
                         </tbody>
                     </nz-table>
+                    <div *ngIf="rejected.length === 0 && !isloading" class="no-data">
+                        <i nz-icon nzType="file-search" nzTheme="outline"></i>
+                        <p>No rejected quotations found</p>
+                    </div>
                 </nz-spin>
             </nz-tab>
 
-
         </nz-tabset>
-        <button nz-button nzType="default" (click)="openHelpModal()" style="float: right; margin-right: 16px;">
-          <i nz-icon nzType="question-circle" nzTheme="outline"></i> Help
+
+        <button nz-button nzType="default" (click)="openHelpModal()" style="margin-top: 16px;">
+            <i nz-icon nzType="question-circle" nzTheme="outline"></i> Help
         </button>
     </div>
 </div>
 
-
-<!--Modal-->
-<nz-modal [nzWidth]="800" [(nzVisible)]="showEditModal" nzClosable="true" [nzTitle]="title_request" (nzOnCancel)="showEditModal=false;" [nzFooter]="null">
-    <ng-template #title_request>
-        <b> Quotation #{{viewingQuotation.quotation_number}}</b>
-    </ng-template>
-    <ng-container *nzModalContent>
-        <nz-spin [nzSpinning]="isloading">
-            <form [formGroup]="editQuoteform">
-
-                <div nz-row [nzJustify]="'start'" [nzGutter]="[24,24]" [nzAlign]="'middle'">
-                    <div nz-col nzSpan="12">
-                        <h1>Edit Quotation</h1>
-                    </div>
-                    <div nz-col nzSpan="12">
-                        <nz-form-item>
-                            <nz-form-control nzErrorTip="Number Required">
-                                <input style="float: inline-end;" nz-input formControlName="quotation_number" placeholder="Q001">
-                            </nz-form-control>
-                        </nz-form-item>
-                    </div>
-                </div>
-
-                <hr class="hr">
-                <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
-                                  <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
-                    <div nz-col nzSpan="24">
-                        <nz-form-item>
-                            <nz-form-control nzErrorTip="Status Required">
-                                <nz-form-label>Status</nz-form-label>
-                                <nz-select formControlName="quotation_status_id" nzPlaceHolder="Select status">
-                                    <nz-option
-                                        *ngFor="let status of quotationStatuses"
-                                        [nzValue]="status.quotation_status_id"
-                                        [nzLabel]="status.status">
-                                    </nz-option>
-                                </nz-select>
-                            </nz-form-control>
-                        </nz-form-item>
-                    </div>
-                </div>
-                    <div nz-col nzSpan="12">
-                        <nz-form-item>
-                            <nz-form-control nzErrorTip="Deposit Required">
-                                <nz-form-label>Deposit Value</nz-form-label>
-                                  <input nz-input formControlName="deposit" placeholder="50000.00" type="number">
-                            </nz-form-control>
-                        </nz-form-item>
-                    </div>
-                    <div nz-col nzSpan="12">
-                        <nz-form-item>
-                            <nz-form-control nzErrorTip="Required">
-                                <nz-form-label>Total</nz-form-label>
-                                <input nz-input formControlName="total_cost" placeholder="50000.00" type="number">
-                            </nz-form-control>
-                        </nz-form-item>
-                    </div>
-                </div>
-
-                <div nz-row [nzJustify]="'center'" [nzGutter]="5">
-                    <div nz-col nzSpan="24">
-                        <label><b>Quotation</b></label>
-                        <nz-upload *ngIf="fileList.length == 0" nzType="drag" [nzMultiple]="false" [nzBeforeUpload]="beforeUpload" [(nzFileList)]="fileList" nzAccept=".pdf">
-                            <p class="ant-upload-drag-icon">
-                                <span nz-icon nzType="inbox"></span>
-                            </p>
-                            <p class="ant-upload-text">Click or drag quotation to this area to upload</p>
-                        </nz-upload>
-                        <nz-upload *ngIf="fileList.length > 0" [nzRemove]="removeFile()" [nzBeforeUpload]="beforeUpload" [(nzFileList)]="fileList" [nzListType]="'picture'" nzAccept=".pdf">
-                            <button nz-button *ngIf="this.fileList.length == 0">
-                            <span nz-icon nzType="upload" ></span>Upload Image
-                          </button>
-                        </nz-upload>
-                    </div>
-                </div>
-                <br><br>
-
-                <button [nzLoading]="btnloading" (click)="submitEditQuote()" nz-button nzType="primary" style="width: 100%;" [disabled]="!editQuoteform.valid" [nz-tooltip]="!editQuoteform.valid ? 'Please ensure all fields are complete and quote pdf is attached':null">
-                  Update Quotation
-                </button>
-
-            </form>
-        </nz-spin>
-    </ng-container>
+<!-- Help Modal -->
+<nz-modal [(nzVisible)]="showHelp" nzTitle="Quotations Help" (nzOnCancel)="closeHelpModal()" (nzOnOk)="closeHelpModal()">
+    <div nz-typography>
+        <h3>How to manage quotations</h3>
+        <p>This page allows you to view and manage all quotations in the system.</p>
+        <ul>
+            <li><strong>Pending:</strong> Quotations that have been created but not yet accepted or rejected by the customer</li>
+            <li><strong>Accepted:</strong> Quotations that have been accepted by the customer</li>
+            <li><strong>Rejected:</strong> Quotations that have been rejected by the customer</li>
+        </ul>
+        <p>You can use the search box to filter quotations by any field including quotation number, job title, or customer name.</p>
+        <p>For accepted quotations, you can create an invoice unless one has already been created (indicated by the blue tag).</p>
+    </div>
 </nz-modal>
 
-
-<!-- Quotations Help Modal -->
-<nz-modal
-  [nzWidth]="800"
-  [(nzVisible)]="showHelp"
-  nzClosable="true"
-  [nzTitle]="helpTitle"
-  (nzOnCancel)="showHelp=false"
-  [nzFooter]="null">
-
-  <ng-template #helpTitle>
-    <span nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px; color: #17726d;"></span>
-    <b>Quotations Help Center</b>
-  </ng-template>
-
-  <ng-container *nzModalContent>
-    <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
-      <div nz-col [nzSpan]="24">
-        <div class="help-content">
-          <h2>Quotations Management</h2>
-          <p>This page allows you to manage all quotations sent to customers, track their status, and make updates as needed.</p>
-        </div>
-
-        <div class="help-section">
-          <h3><i nz-icon nzType="appstore" nzTheme="outline" style="margin-right: 8px;"></i> Key Features</h3>
-
-          <div class="feature">
-            <h4><i nz-icon nzType="profile" nzTheme="outline" style="margin-right: 8px;"></i> Status Tracking</h4>
-            <ul>
-              <li><nz-tag [nzColor]="'yellow'">Pending</nz-tag> - Quotations awaiting customer response</li>
-              <li><nz-tag [nzColor]="'green'">Accepted</nz-tag> - Quotations approved by customer</li>
-              <li><nz-tag [nzColor]="'red'">Rejected</nz-tag> - Quotations declined by customer</li>
-            </ul>
-          </div>
-
-          <div class="feature">
-            <h4><i nz-icon nzType="search" nzTheme="outline" style="margin-right: 8px;"></i> Search & Filter</h4>
-            <p>Quickly find quotations by:</p>
-            <ul>
-              <li>Quotation number</li>
-              <li>Job title</li>
-              <li>Customer name</li>
-              <li>Status</li>
-            </ul>
-          </div>
-
-          <div class="feature">
-            <h4><i nz-icon nzType="tool" nzTheme="outline" style="margin-right: 8px;"></i> Quotation Management</h4>
-            <ul>
-              <li><strong>View Details</strong> - See full quotation information</li>
-              <li><strong>Edit Quotations</strong> - Update pricing and details</li>
-              <li><strong>Track Status</strong> - Monitor customer responses</li>
-              <li><strong>View PDFs</strong> - Access generated quotation documents</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="help-section">
-          <h3><i nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px;"></i> How to Use</h3>
-
-          <div class="usage-step">
-            <h4><i nz-icon nzType="eye" nzTheme="outline" style="margin-right: 8px;"></i> Viewing Quotation Details</h4>
-            <ol>
-              <li>Click the <button nz-button nzType="primary" nzSize="small"><i nz-icon nzType="eye" nzTheme="outline"></i> View</button> button</li>
-              <li>The full quotation view will open with all details</li>
-              <li>Review pricing, job details, and customer information</li>
-              <li>Click <strong>Close</strong> to return to the list</li>
-            </ol>
-          </div>
-
-          <div class="usage-step">
-            <h4><i nz-icon nzType="edit" nzTheme="outline" style="margin-right: 8px;"></i> Editing a Quotation</h4>
-            <ol>
-              <li>Click the <button nz-button nzType="primary" nzSize="small"><i nz-icon nzType="edit" nzTheme="outline"></i> Edit</button> button</li>
-              <li>Update the required fields (total cost, deposit, status)</li>
-              <li>Upload a new quotation PDF if needed</li>
-              <li>Click <strong>Update Quotation</strong> to save changes</li>
-            </ol>
-          </div>
-
-          <div class="usage-step">
-            <h4><i nz-icon nzType="file-pdf" nzTheme="outline" style="margin-right: 8px;"></i> Managing Quotation PDFs</h4>
-            <ol>
-              <li>In edit mode, drag and drop your PDF file</li>
-              <li>Or click to browse and select the file</li>
-              <li>The system only accepts PDF files</li>
-              <li>Remove existing files by clicking the delete icon</li>
-            </ol>
-          </div>
-        </div>
-
-        <div class="help-section troubleshooting">
-          <h3><i nz-icon nzType="exclamation-circle" nzTheme="outline" style="margin-right: 8px;"></i> Troubleshooting</h3>
-          <div class="warning">
-            <p><strong>Can't edit quotation?</strong> Ensure you have the proper permissions</p>
-            <p><strong>PDF not uploading?</strong> Verify the file is PDF format and under 5MB</p>
-            <p><strong>Status not updating?</strong> Check all required fields are completed</p>
-          </div>
-          <p>For further assistance, contact your system administrator.</p>
-        </div>
-      </div>
-    </div>
-  </ng-container>
+<!-- Edit Modal -->
+<nz-modal [(nzVisible)]="showEditModal" nzTitle="Edit Quotation" (nzOnCancel)="showEditModal = false" [nzFooter]="null">
+    <form nz-form [formGroup]="editQuoteform">
+        <nz-form-item>
+            <nz-form-label [nzSpan]="6">Quotation Number</nz-form-label>
+            <nz-form-control [nzSpan]="14">
+                <input nz-input formControlName="quotation_number" />
+            </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+            <nz-form-label [nzSpan]="6">Total Cost</nz-form-label>
+            <nz-form-control [nzSpan]="14">
+                <input nz-input type="number" formControlName="total_cost" />
+            </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+            <nz-form-label [nzSpan]="6">Status</nz-form-label>
+            <nz-form-control [nzSpan]="14">
+                <nz-select formControlName="quotation_status_id">
+                    <nz-option *ngFor="let status of quotationStatuses" [nzValue]="status.quotation_status_id" [nzLabel]="status.status"></nz-option>
+                </nz-select>
+            </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+            <nz-form-label [nzSpan]="6">Quotation File</nz-form-label>
+            <nz-form-control [nzSpan]="14">
+                <nz-upload [(nzFileList)]="fileList" [nzBeforeUpload]="beforeUpload" [nzRemove]="removeFile()">
+                    <button nz-button>
+                        <i nz-icon nzType="upload"></i>
+                        Upload File
+                    </button>
+                </nz-upload>
+            </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+            <nz-form-control [nzOffset]="6" [nzSpan]="14">
+                <button nz-button nzType="primary" (click)="submitEditQuote()" [nzLoading]="btnloading">Update Quotation</button>
+            </nz-form-control>
+        </nz-form-item>
+    </form>
 </nz-modal>

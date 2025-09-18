@@ -207,10 +207,10 @@
                         <span nz-icon nzType="vv:company" nzTheme="outline" class="color"></span> {{viewingJob.customer?.company_name || 'N/A'}} |
                         <span nz-icon nzType="vv:phone-talk" nzTheme="outline" class="color"></span> {{viewingJob.customer?.telephone }}
                         <br><br>
-                        <p><b>Customer Type</b></p>
+                        <!-- <p><b>Customer Type</b></p>
                         <nz-select [autofocus]="true" [(ngModel)]="viewingRequestCustomerType" nzPlaceHolder="Select Customer Type" style="float: inline-end;color: black;width: 100%;">
                             <nz-option *ngFor="let type of customer_types" [nzValue]="type.customer_type_id" [nzLabel]="type.type_name"></nz-option>
-                        </nz-select>
+                        </nz-select> -->
                     </div>
                     <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
                         <h3><b>{{viewingJob.title}}</b></h3>
@@ -225,7 +225,7 @@
                               <span nz-icon nzType="printer" nzTheme="outline"></span>
                               Print Files
                             </button>
-                            <button (click)="openQuotation()" *ngIf="selectedTabIndex == 0" nz-button nzType="default" style="background-color: seagreen;color: white;border: none;" [disabled]="viewingRequestCustomerType== null" [nz-tooltip]="viewingRequestCustomerType == null ? 'First Select Customer Classification':null">
+                            <button (click)="openQuotation()" *ngIf="selectedTabIndex == 0" nz-button nzType="default" style="background-color: seagreen;color: white;border: none;"  >
                               <span nz-icon nzType="check" nzTheme="outline"></span>
                               Accept
                             </button>

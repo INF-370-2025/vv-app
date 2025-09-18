@@ -1,43 +1,104 @@
 <!-- timesheet-calander.component.html -->
 <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
-    <div nz-col nzSpan="24">
-        <nz-button-group>
-            <button nz-button (click)="generateClockInCode()" [nzLoading]="isGeneratingCode">
-                <span nz-icon nzType="clock-circle" nzTheme="outline"></span>
-                Generate Clock-In Code
+  <div nz-col nzSpan="24">
+    <nz-card nzSize="small" class="controls-card">
+      <div class="controls-container">
+        <div class="button-group">
+          <nz-button-group>
+            <button
+              nz-button
+              nzType="primary"
+              (click)="generateClockInCode()"
+              [nzLoading]="isGeneratingCode"
+              class="action-button"
+            >
+              <span nz-icon nzType="clock-circle" nzTheme="outline"></span>
+              Generate Clock-In Code
             </button>
-            <button nz-button (click)="generateClockOutCode()" [nzLoading]="isGeneratingCode">
-                <span nz-icon nzType="field-time" nzTheme="outline"></span>
-                Generate Clock-Out Code
+            <button
+              nz-button
+              nzType="default"
+              (click)="generateClockOutCode()"
+              [nzLoading]="isGeneratingCode"
+              class="action-button"
+            >
+              <span nz-icon nzType="field-time" nzTheme="outline"></span>
+              Generate Clock-Out Code
             </button>
-        </nz-button-group>
-    </div>
+          </nz-button-group>
+        </div>
+
+        <div class="timer-config-container">
+          <nz-divider nzType="vertical" class="divider"></nz-divider>
+
+          <div class="timer-config">
+            <label class="timer-label">
+              <span nz-icon nzType="hourglass" nzTheme="outline" class="timer-icon"></span>
+              Code Expiration:
+            </label>
+            <nz-input-number
+              [(ngModel)]="codeExpirationMinutes"
+              [nzMin]="1"
+              [nzMax]="60"
+              [nzStep]="1"
+              nzSize="small"
+              class="timer-input"
+            ></nz-input-number>
+            <span class="timer-unit">minutes</span>
+          </div>
+        </div>
+      </div>
+    </nz-card>
+  </div>
 </div>
+
 <br>
 
 <!-- Custom Fullscreen Overlay -->
 <div *ngIf="showCodeOverlay" class="overlay" @fadeIn>
-    <div class="overlay-content">
-        <div class="code-container">
-            <h1 class="clock-code">{{ clockCode }}</h1>
-<!-- timesheet-calander.component.html -->
-            <div class="countdown-container">
-              <nz-statistic
-                [nzValue]="formattedCountdown"
-                nzTitle="EXPIRES IN">
-              </nz-statistic>
-            </div>
-            <div class="instructions">
-                <p>Share this code with employees for {{ clockAction === 'clock_in' ? 'CLOCKING IN' : 'CLOCKING OUT' }}</p>
-            </div>
-            <button nz-button nzType="primary" nzSize="large" (click)="closeOverlay()" class="close-button">
-                <span nz-icon nzType="close" nzTheme="outline"></span>
-                CLOSE
-            </button>
+  <div class="overlay-content">
+    <nz-card class="code-card" [nzBordered]="false">
+      <div class="code-container">
+        <div class="code-header">
+          <h3 class="code-title">
+            {{ clockAction === 'clock_in' ? 'CLOCK-IN CODE' : 'CLOCK-OUT CODE' }}
+          </h3>
+          <div class="code-timer">
+            <nz-statistic
+              [nzValue]="formattedCountdown"
+              nzTitle="EXPIRES IN"
+              [nzValueStyle]="{ color: countdown < 60 ? '#ff4d4f' : '#52c41a' }"
+            ></nz-statistic>
+          </div>
         </div>
-    </div>
+
+        <div class="code-display">
+          <h1 class="clock-code">{{ clockCode }}</h1>
+        </div>
+
+        <div class="code-instructions">
+          <p>Share this code with employees for {{ clockAction === 'clock_in' ? 'clocking in' : 'clocking out' }}</p>
+          <p class="expiry-note">This code will expire in {{ codeExpirationMinutes }} minute{{ codeExpirationMinutes !== 1 ? 's' : '' }}</p>
+        </div>
+
+        <div class="code-actions">
+          <button
+            nz-button
+            nzType="primary"
+            nzSize="large"
+            (click)="closeOverlay()"
+            class="close-button"
+            nzShape="round"
+          >
+            <span nz-icon nzType="close" nzTheme="outline"></span>
+            Close
+          </button>
+        </div>
+      </div>
+    </nz-card>
+  </div>
 </div>
 
 <nz-spin [nzSpinning]="isloading">
-    <full-calendar #calendar [options]="calendarOptions" [deepChangeDetection]="true"></full-calendar>
+  <full-calendar #calendar [options]="calendarOptions" [deepChangeDetection]="true"></full-calendar>
 </nz-spin>

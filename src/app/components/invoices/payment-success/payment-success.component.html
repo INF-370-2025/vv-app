@@ -1,0 +1,19 @@
+<div nz-row [nzJustify]="'center'" style="margin-top: 50px; padding: 20px;">
+  <div nz-col nzSpan="12">
+    <nz-card>
+      <div style="text-align: center;">
+        <i nz-icon nzType="check-circle" nzTheme="outline" style="font-size: 48px; color: #52c41a;"></i>
+        <h2>Payment Successful!</h2>
+        <p>Your payment has been processed successfully. Thank you for your business.</p>
+
+        <div style="margin: 20px 0;">
+          <p>Invoice #{{invoiceId}}</p>
+        </div>
+
+        <button nz-button nzType="primary" (click)="goToInvoices()">
+          Return to Invoices
+        </button>
+      </div>
+    </nz-card>
+  </div>
+</div>

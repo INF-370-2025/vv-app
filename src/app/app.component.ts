@@ -14,6 +14,7 @@ import { NotificationService } from './services/notification.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { role } from './models/role';
 import { Subject, takeUntil } from 'rxjs';
+import { ApiService } from './services/api.service';
 
 @Component({
   selector: 'app-root',
@@ -200,6 +201,17 @@ export class AppComponent {
       clearTimeout(this.logoutTimer);
       this.logoutTimer = null;
     }
+  }
+
+  refreshRoles() {
+    this.apiService.get_roles().subscribe({
+      next: (response) => {
+        this.roles = response;
+      },
+      error: (err) => {
+        console.error('Error refreshing roles:', err);
+      }
+    });
   }
 }
 // import { IconService } from './services/icon.service';

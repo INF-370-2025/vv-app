@@ -1,7 +1,7 @@
 <div nz-row [nzJustify]="'center'">
     <div nz-col [nzSpan]="!(showjobCard || showUpdateForm) ? 22 : 18" style="text-align: start;">
         <h1 *ngIf="!(showjobCard || showUpdateForm)"><b>Job Cards</b></h1>
-        <button nz-button nzType="default" *ngIf="showjobCard || showUpdateForm"
+        <button nz-button nzType="primary" *ngIf="showjobCard || showUpdateForm"
                 (click)="closeJobcard(); closeUpdateForm()">
           <span nz-icon nzType="arrow-left" nzTheme="outline"></span>
           Back to Jobs
@@ -67,18 +67,20 @@
                                         <i nz-icon nzType="search"></i>
                                     </ng-template>
                                 </th>
-                                <th>Company Details</th>
-                                <th>Files</th>
-                                <th>Quote</th>
-                                <th>View</th>
-                                <th>Update</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody class="table-body">
                             <tr *ngFor="let job of pendingTable.data">
                                 <td><b>#{{job.job_card_id}}</b></td>
                                 <td>
-                                    <b>Started:</b> {{job.created_at | date:"medium"}}<br>
+                                    <!-- <b>Started:</b> {{job.created_at | date:"medium"}}<br> -->
                                     <b>Expected:</b> {{job.quotation?.job_request?.finish_date| date:"dd MMM YYYY"}}
                                 </td>
                                 <td>
@@ -86,8 +88,8 @@
                                     <b>Description:</b> {{job.quotation?.job_request?.description | slice:0:50}}...
                                 </td>
                                 <td>
-                                    <b>Company:</b> {{job.quotation?.job_request?.customer?.company_name}}<br>
-                                    <b>Contact:</b>
+                                    <b>Company: </b> {{job.quotation?.job_request?.customer?.company_name}}<br>
+                                    <b>Contact: </b>
                                     <nz-avatar nzIcon="user"
                                               [nzSrc]="job.quotation?.job_request?.customer?.user?.image ||
                                                        'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+
@@ -96,28 +98,45 @@
                                     {{job.quotation?.job_request?.customer?.user?.surname || ''}} |
                                     {{job.quotation?.job_request?.customer?.user?.phone_number || '-'}}
                                 </td>
-                                <td>
+                                <!-- <td>
                                   <button nz-button nzType="primary" (click)="viewDesigns(job)"
                                           [disabled]="!job.quotation?.job_request?.job_request_items?.length">
                                       <i nz-icon nzType="file-jpg" nzTheme="outline"></i> Designs
                                   </button>
-                                </td>
-                                <td>
+                                </td> -->
+                                <!-- <td>
                                   <button nz-button nzType="primary" (click)="viewQuotation(job)"
                                           [disabled]="!job.quotation?.quotation_url">
                                       <i nz-icon nzType="file-pdf" nzTheme="outline"></i> Quotation
                                   </button>
-                                </td>
+                                </td> -->
                                 <td>
                                   <button nz-button nzType="primary" (click)="viewJobCard(job)"
                                           nzTooltipTitle="View Details">
-                                      <i nz-icon nzType="eye" nzTheme="outline"></i>
+                                      <i nz-icon nzType="eye" nzTheme="outline"></i> View
                                   </button>
                                 </td>
                                 <td>
-                                  <button nz-button nzType="default" (click)="openUpdateForm(job)"
-                                          nzTooltipTitle="Edit Job Card" style="margin-left: 8px;">
+                                  <button nz-button nzType="primary" (click)="openUpdateForm(job)"
+                                          nzTooltipTitle="Edit Job Card" style="margin-left: 8px;"> Update
                                       <i nz-icon nzType="edit" nzTheme="outline"></i>
+                                  </button>
+                                </td>
+                                <td>
+                                  <button nz-button nzType="primary"
+                                          (click)="setJobCardInProgress(job)"
+                                          nzTooltipTitle="Set In Progress" style="margin-left: 8px;">
+                                    Set In Progress
+                                    <i nz-icon nzType="play-circle" nzTheme="outline"></i>
+                                  </button>
+                                </td>
+                                <td>
+                                  <button nz-button nzType="primary"
+                                          (click)="cancelJobCard(job)"
+                                          nzTooltipTitle="Cancel Job Card"
+                                          nzDanger style="margin-left: 8px;">
+                                    Cancel
+                                    <i nz-icon nzType="close-circle" nzTheme="outline"></i>
                                   </button>
                                 </td>
                             </tr>
@@ -141,41 +160,62 @@
                                         <i nz-icon nzType="search"></i>
                                     </ng-template>
                                 </th>
-                                <th>Company Name</th>
-                                <th>Registration</th>
-                                <th>Contact</th>
-                                <th>View</th>
-                                <th>Update</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody class="table-body">
                             <tr *ngFor="let job of progressTable.data">
                                 <td><b>#{{job.job_card_id}}</b></td>
                                 <td>
-                                    <b>Started:</b> {{job.created_at | date:"medium"}}
+                                    <b>Started:</b> {{job.created_at | date:"medium"}}<br>
+                                    <b>Expected:</b> {{job.quotation?.job_request?.finish_date| date:"dd MMM YYYY"}}
                                 </td>
                                 <td>
-                                    <b>Status:</b>
-                                    <nz-tag [nzColor]="'orange'">Processing</nz-tag>
+                                    <b>Title:</b> {{job.quotation?.job_request?.title}}<br>
+                                    <b>Description:</b> {{job.quotation?.job_request?.description | slice:0:50}}...
                                 </td>
-                                <td>{{job.quotation?.job_request?.customer?.company_name || '-' }}</td>
-                                <td>{{job.quotation?.job_request?.customer?.registration_number || '-'}}</td>
                                 <td>
+                                    <b>Company: </b> {{job.quotation?.job_request?.customer?.company_name}}<br>
+                                    <b>Contact: </b>
+                                    <nz-avatar nzIcon="user"
+                                              [nzSrc]="job.quotation?.job_request?.customer?.user?.image ||
+                                                       'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+
+                                                       job.quotation?.job_request?.customer?.user?.name"></nz-avatar>
                                     {{job.quotation?.job_request?.customer?.user?.name || ''}}
                                     {{job.quotation?.job_request?.customer?.user?.surname || ''}} |
                                     {{job.quotation?.job_request?.customer?.user?.phone_number || '-'}}
                                 </td>
                                 <td>
-                                <td>
                                   <button nz-button nzType="primary" (click)="viewJobCard(job)"
-                                          nzTooltipTitle="View Details">
+                                          nzTooltipTitle="View Details"> View
                                       <i nz-icon nzType="eye" nzTheme="outline"></i>
                                   </button>
                                 </td>
                                 <td>
-                                  <button nz-button nzType="default" (click)="openUpdateForm(job)"
-                                          nzTooltipTitle="Edit Job Card" style="margin-left: 8px;">
+                                  <button nz-button nzType="primary" (click)="openUpdateForm(job)"
+                                          nzTooltipTitle="Edit Job Card" style="margin-left: 8px;"> Update
                                       <i nz-icon nzType="edit" nzTheme="outline"></i>
+                                  </button>
+                                </td>
+                                <td>
+                                  <button nz-button nzType="primary"
+                                          (click)="setJobCardCompleted(job)"
+                                          nzTooltipTitle="Set Completed" style="margin-left: 8px;">
+                                    Set Completed
+                                    <i nz-icon nzType="check-circle" nzTheme="outline"></i>
+                                  </button>
+                                </td>
+                                <td>
+                                  <button nz-button nzType="primary"
+                                          (click)="cancelJobCard(job)"
+                                          nzTooltipTitle="Cancel Job Card"
+                                          nzDanger style="margin-left: 8px;">
+                                    Cancel
+                                    <i nz-icon nzType="close-circle" nzTheme="outline"></i>
                                   </button>
                                 </td>
                             </tr>
@@ -199,34 +239,70 @@
                                         <i nz-icon nzType="search"></i>
                                     </ng-template>
                                 </th>
-                                <th>Company Name</th>
-                                <th>Registration</th>
-                                <th>Contact</th>
-                                <th>View</th>
-                                <th> </th>
+                                <th></th>
+                               <th> </th>
+                               <th> </th>
+                               <th>  </th>
+
                             </tr>
                         </thead>
                         <tbody class="table-body">
                             <tr *ngFor="let job of completedTable.data">
                                 <td><b>#{{job.job_card_id}}</b></td>
-                                <td>
+                                <!-- <td>
                                     <b>Started:</b> {{job.created_at | date:"medium"}}
+                                </td> -->
+                                <td>
+                                    <b>Title:</b> {{job.quotation?.job_request?.title}}<br>
+                                    <b>Description:</b> {{job.quotation?.job_request?.description | slice:0:50}}...
                                 </td>
                                 <td>
+                                    <b>Started:</b> {{job.created_at | date:"medium"}}<br>
+                                    <b>Completed:</b> {{job.completed_at}}
+                                </td>
+                                <!-- <td>
                                     <b>Status:</b>
                                     <nz-tag [nzColor]="'green'">Completed</nz-tag>
-                                </td>
-                                <td>{{job.quotation?.job_request?.customer?.company_name || '-' }}</td>
-                                <td>{{job.quotation?.job_request?.customer?.registration_number || '-'}}</td>
+                                </td> -->
+                                <!-- <td>
+                                  {{job.quotation?.job_request?.customer?.company_name || '-' }}
+                                </td> -->
+                                <!-- <td>
+                                    {{job.quotation?.job_request?.customer?.user?.name || ''}}
+                                    {{job.quotation?.job_request?.customer?.user?.surname || ''}} |
+                                    {{job.quotation?.job_request?.customer?.user?.phone_number || '-'}}
+                                </td> -->
                                 <td>
+                                    <b>Company: </b> {{job.quotation?.job_request?.customer?.company_name}}<br>
+                                    <b>Contact: </b>
+                                    <nz-avatar nzIcon="user"
+                                              [nzSrc]="job.quotation?.job_request?.customer?.user?.image ||
+                                                       'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+
+                                                       job.quotation?.job_request?.customer?.user?.name"></nz-avatar>
                                     {{job.quotation?.job_request?.customer?.user?.name || ''}}
                                     {{job.quotation?.job_request?.customer?.user?.surname || ''}} |
                                     {{job.quotation?.job_request?.customer?.user?.phone_number || '-'}}
                                 </td>
                                 <td>
+                                  <div class="action-buttons" (click)="createDeliveryNote(job)">
+                                    <button nz-button nzType="primary"
+                                      nzTooltipTitle="Delivery Note"> Create Delivery Note
+                                        <i nz-icon nzType="car" nzTheme="outline"></i>
+                                    </button>
+                                  </div>
+                                </td>
+                                <!-- <td>
+                                    <div class="action-buttons">
+                                        <button nz-button nzType="primary"
+                                                nzTooltipTitle="Create Invoice"> View Invoice
+                                            <i nz-icon nzType="file-pdf" nzTheme="outline"></i>
+                                        </button>
+                                    </div>
+                                </td> -->
+                                <td>
                                     <div class="action-buttons">
                                         <button nz-button nzType="primary" (click)="viewJobCard(job)"
-                                                nzTooltipTitle="View Details">
+                                                nzTooltipTitle="View Details"> View Job Card
                                             <i nz-icon nzType="eye" nzTheme="outline"></i>
                                         </button>
                                     </div>
@@ -252,40 +328,60 @@
                                         <i nz-icon nzType="search"></i>
                                     </ng-template>
                                 </th>
-                                <th>Company Name</th>
-                                <th>Registration</th>
-                                <th>Contact</th>
-                                <th>View</th>
-                                <th>Update</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody class="table-body">
                             <tr *ngFor="let job of cancelledTable.data">
                                 <td><b>#{{job.job_card_id}}</b></td>
                                 <td>
-                                    <b>Started:</b> {{job.created_at | date:"medium"}}
+                                    <b>Started:</b> {{job.created_at | date:"medium"}}<br>
+                                    <b>Expected:</b> {{job.quotation?.job_request?.finish_date| date:"dd MMM YYYY"}}
                                 </td>
                                 <td>
+                                    <b>Title:</b> {{job.quotation?.job_request?.title}}<br>
+                                    <b>Description:</b> {{job.quotation?.job_request?.description | slice:0:50}}...
+                                </td>
+                                <td>
+                                    <b>Company: </b> {{job.quotation?.job_request?.customer?.company_name}}<br>
+                                    <b>Contact: </b>
+                                    <nz-avatar nzIcon="user"
+                                              [nzSrc]="job.quotation?.job_request?.customer?.user?.image ||
+                                                       'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+
+                                                       job.quotation?.job_request?.customer?.user?.name"></nz-avatar>
+                                    {{job.quotation?.job_request?.customer?.user?.name || ''}}
+                                    {{job.quotation?.job_request?.customer?.user?.surname || ''}} |
+                                    {{job.quotation?.job_request?.customer?.user?.phone_number || '-'}}
+                                </td>
+                                <td>
+                                    <b>Started:</b> {{job.created_at | date:"medium"}}
+                                </td>
+                                <!-- <td>
                                     <b>Status:</b>
                                     <nz-tag [nzColor]="'red'">Cancelled</nz-tag>
-                                </td>
-                                <td>{{job.quotation?.job_request?.customer?.company_name || '-' }}</td>
+                                </td> -->
+                                <!-- <td>{{job.quotation?.job_request?.customer?.company_name || '-' }}</td>
                                 <td>{{job.quotation?.job_request?.customer?.registration_number || '-'}}</td>
                                 <td>
                                     {{job.quotation?.job_request?.customer?.user?.name || ''}}
                                     {{job.quotation?.job_request?.customer?.user?.surname || ''}} |
                                     {{job.quotation?.job_request?.customer?.user?.phone_number || '-'}}
                                 </td>
+
+                                <td>
+                                  <button nz-button nzType="primary" (click)="openUpdateForm(job)"
+                                          nzTooltipTitle="Edit Job Card" style="margin-left: 8px;">
+                                      <i nz-icon nzType="edit" nzTheme="outline"></i>
+                                  </button>
+                                </td> -->
                                 <td>
                                   <button nz-button nzType="primary" (click)="viewJobCard(job)"
                                           nzTooltipTitle="View Details">
-                                      <i nz-icon nzType="eye" nzTheme="outline"></i>
-                                  </button>
-                                </td>
-                                <td>
-                                  <button nz-button nzType="default" (click)="openUpdateForm(job)"
-                                          nzTooltipTitle="Edit Job Card" style="margin-left: 8px;">
-                                      <i nz-icon nzType="edit" nzTheme="outline"></i>
+                                      <i nz-icon nzType="eye" nzTheme="outline"></i> View
                                   </button>
                                 </td>
                             </tr>
@@ -365,7 +461,7 @@
     <div class="feature">
       <h4><i nz-icon nzType="profile" nzTheme="outline" style="margin-right: 8px;"></i> Status Tracking</h4>
       <ul>
-        <li><nz-tag [nzColor]="'default'">Pending</nz-tag> - Jobs awaiting processing</li>
+        <li><nz-tag [nzColor]="'primary'">Pending</nz-tag> - Jobs awaiting processing</li>
         <li><nz-tag [nzColor]="'orange'">In Progress</nz-tag> - Active jobs being worked on</li>
         <li><nz-tag [nzColor]="'green'">Completed</nz-tag> - Successfully finished jobs</li>
         <li><nz-tag [nzColor]="'red'">Cancelled</nz-tag> - Jobs that were cancelled</li>
@@ -421,7 +517,7 @@
     <div class="usage-step">
       <h4><i nz-icon nzType="edit" nzTheme="outline" style="margin-right: 8px;"></i> Updating Job Status</h4>
       <ol>
-        <li>Click the <button nz-button nzType="default" nzSize="small"><i nz-icon nzType="edit" nzTheme="outline"></i></button> action button</li>
+        <li>Click the <button nz-button nzType="primary" nzSize="small"><i nz-icon nzType="edit" nzTheme="outline"></i></button> action button</li>
         <li>Select the new status from the dropdown</li>
         <li>Add any relevant notes about the status change</li>
         <li>Click <strong>Update</strong> to save changes</li>

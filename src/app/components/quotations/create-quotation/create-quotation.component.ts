@@ -21,11 +21,17 @@ export class CreateQuotationComponent {
   @Output() createdQuote = new EventEmitter<number>();
   isloading = false;
   btnLoading:boolean = false;
-  quoteForm:FormGroup = new FormGroup({
-    quotation_number: new FormControl(null, [Validators.required]),
-    deposit: new FormControl(null, [Validators.required]),
-    total_cost: new FormControl(null, [Validators.required]),
+  quoteForm: FormGroup = new FormGroup({
+    quotation_number: new FormControl(null, [
+      Validators.required,
+      Validators.pattern(/^Q\d+$/)
+    ]),
+    total_cost: new FormControl(null, [
+      Validators.required,
+      Validators.min(0.01)
+    ]),
   });
+
 
   file!: NzUploadFile | undefined;
   fileList :any[] = [];
@@ -56,7 +62,6 @@ export class CreateQuotationComponent {
     } else {
       let quoteToInsert = new upsertQuotation();
       quoteToInsert.job_request_id = this.job_request.job_request_id;
-      quoteToInsert.deposit = this.quoteForm.value.deposit;
       quoteToInsert.total_cost = this.quoteForm.value.total_cost;
       quoteToInsert.quotation_url = file_url;
       quoteToInsert.quotation_number = this.quoteForm.value.quotation_number;

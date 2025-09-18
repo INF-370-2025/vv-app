@@ -4,6 +4,7 @@ import { pattern, quotation, jobCardStatus } from '../../../models/jobCard';
 import { ApiService } from '../../../services/api.service';
 import { NotificationService } from '../../../services/notification.service';
 import { AppModule } from '../../../app.module';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   standalone: true,
@@ -18,7 +19,8 @@ export class CreateJobCardComponent implements OnInit {
   @Input() jobCardStatuses: jobCardStatus[] = [];
   @Input() allMaterials: any[] = [];
   @Input() allArtisans: any[] = [];
-  @Output() closeForm = new EventEmitter<void>();
+  @Input() invoiceId?: number;
+  @Input() quotationId?: number;  @Output() closeForm = new EventEmitter<void>();
   @Output() createSuccess = new EventEmitter<any>();
 
   jobCardForm: FormGroup;
@@ -31,17 +33,33 @@ export class CreateJobCardComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private apiService: ApiService,
-    private notification: NotificationService
+    private notification: NotificationService,
+    private route: ActivatedRoute // Add this
   ) {
     this.jobCardForm = this.fb.group({
-      pattern_id: [null, [Validators.required]],
-      quotation_id: [null, [Validators.required]],
-      job_card_status_id: [5, [Validators.required]],
+      pattern_id: [null],
+      // quotation_id: [null, [Validators.required]],
+      // job_card_status_id: [5, [Validators.required]],
       special_instructions: [''],
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.jobCardForm = this.fb.group({
+      pattern_id: [null], // Optional
+      special_instructions: [''], // Optional
+    });
+
+    // Check for quotation ID in query params
+    this.route.queryParams.subscribe(params => {
+      if (params['quotationId']) {
+        this.quotationId = +params['quotationId'];
+      }
+      if (params['invoiceId']) {
+        this.invoiceId = +params['invoiceId'];
+      }
+    });
+  }
 
   futureDateValidator(control: AbstractControl): { [key: string]: any } | null {
     if (!control.value) return null;
@@ -92,46 +110,72 @@ export class CreateJobCardComponent implements OnInit {
     this.artisans = this.artisans.filter(a => a.employee_id !== employee_id);
   }
 
-submitForm(): void {
-  if (this.jobCardForm.valid) {
-    this.isSubmitting = true;
+  submitForm(): void {
+    if (this.jobCardForm.valid) {
+      this.isSubmitting = true;
 
-    const formValue = this.jobCardForm.value;
+      const formValue = this.jobCardForm.value;
 
-    const payload = {
-      pattern_id: Number(formValue.pattern_id),
-      quotation_id: Number(formValue.quotation_id),
-      job_card_status_id: Number(formValue.job_card_status_id),
-      special_instructions: formValue.special_instructions || null,
-      materials: this.materials.map(m => m.material_id),
-      artisans: this.artisans.map(a => a.employee_id)
-    };
+      const payload = {
+        pattern_id: formValue.pattern_id ? Number(formValue.pattern_id) : null,
+        quotation_id: this.quotationId, // From query params
+        special_instructions: formValue.special_instructions || null,
+        materials: this.materials.map(m => m.material_id),
+        artisans: this.artisans.map(a => a.employee_id)
+      };
 
-    console.log('Create job card payload:', payload);
+      this.apiService.create_job_card(payload).subscribe({
+        next: (newJobCard) => {
+          // If we have an invoice ID, update the invoice with the job card ID
+          if (this.invoiceId && newJobCard.job_card_id) {
+            this.apiService.update_invoice_job_card(this.invoiceId, newJobCard.job_card_id).subscribe({
+              next: () => {
+                this.notification.showSuccess('Success', 'Job card created and invoice updated successfully');
+                this.createSuccess.emit();
+                this.isSubmitting = false;
+                this.closeForm.emit();
+              },
+              error: (err) => {
+                console.error('Error updating invoice:', err);
+                this.notification.showError('Error', 'Job card created but failed to update invoice');
+                this.createSuccess.emit();
+                this.isSubmitting = false;
+                this.closeForm.emit();
+              }
+            });
+          } else {
+            this.createSuccess.emit(newJobCard);
+            this.isSubmitting = false;
+            this.closeForm.emit();
+          }
+        },
+        error: (err) => {
+          console.error('Error creating job card:', err);
+          this.notification.showError('Error', 'Failed to create job card');
+          this.isSubmitting = false;
+        }
+      });
+    }
+  }
 
-    this.apiService.create_job_card(payload).subscribe({
-      next: (newJobCard) => {
-        this.notification.showSuccess('Success', 'Job card created successfully');
-        this.createSuccess.emit(newJobCard);
+
+  updateInvoiceWithJobCard(invoiceId: number, jobCardId: number): void {
+    this.apiService.update_invoice_job_card(invoiceId, jobCardId).subscribe({
+      next: () => {
+        this.notification.showSuccess('Success', 'Invoice updated with job card reference');
+        this.createSuccess.emit();
         this.isSubmitting = false;
         this.closeForm.emit();
       },
       error: (err) => {
-        console.error('Error creating job card:', err);
-        console.error('Error details:', err.error);
-
-        if (err.error?.detail) {
-          const errorMessage = err.error.detail.map((d: any) => d.msg).join(', ');
-          this.notification.showError('Validation Error', errorMessage);
-        } else {
-          this.notification.showError('Error', 'Failed to create job card');
-        }
-
+        console.error('Error updating invoice:', err);
+        this.notification.showError('Error', 'Job card created but failed to update invoice');
+        this.createSuccess.emit();
         this.isSubmitting = false;
+        this.closeForm.emit();
       }
     });
   }
-}
 
   cancel(): void {
     this.closeForm.emit();

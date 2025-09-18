@@ -1,35 +1,37 @@
+<!-- create-delivery-note.component.html -->
 <div class="form-container">
-  <h2>Create New Delivery Note</h2>
+  <h2>Create Delivery Note</h2>
+    <nz-spin [nzSpinning]="isLoadingJobCardDetails || isSubmitting">
+
+
+  <!-- Display Job Card Information -->
+  <nz-card *ngIf="jobCardDetails" style="margin-bottom: 16px;">
+    <div nz-row>
+      <div nz-col nzSpan="24">
+        <h3>Job Card Details</h3>
+      </div>
+    </div>
+    <div nz-row [nzGutter]="16">
+      <div nz-col nzSpan="12">
+        <p><strong>Job Card ID:</strong> #{{ jobCardDetails.job_card_id }}</p>
+        <p><strong>Title:</strong> {{ jobCardDetails.quotation?.job_request?.title }}</p>
+        <p><strong>Description:</strong> {{ jobCardDetails.quotation?.job_request?.description }}</p>
+      </div>
+      <div nz-col nzSpan="12">
+        <p><strong>Status:</strong>
+          <nz-tag [nzColor]="'green'">Completed</nz-tag>
+        </p>
+        <p><strong>Completed Date:</strong> {{ jobCardDetails.completed_at | date:'mediumDate' }}</p>
+        <p><strong>Company:</strong> {{ jobCardDetails.quotation?.job_request?.customer?.company_name }}</p>
+      </div>
+    </div>
+  </nz-card>
 
   <form nz-form [formGroup]="deliveryNoteForm" nzLayout="vertical">
-    <!-- Job Card ID Field - CHANGED TO SELECT -->
-    <nz-form-item>
-      <nz-form-label nzRequired>Job Card</nz-form-label>
-      <nz-form-control>
-        <nz-select
-          formControlName="job_card_id"
-          nzShowSearch
-          nzPlaceHolder="Select a job card"
-          [nzLoading]="isLoadingJobCards"
-        >
-          <nz-option
-            *ngFor="let jobCard of completedJobCards"
-            [nzValue]="jobCard.job_card_id"
-            [nzLabel]="'Job Card #' + jobCard.job_card_id"
-          >
-            Job Card #{{ jobCard.job_card_id }}
-            <span *ngIf="jobCard.quotation?.job_request?.title">
-              - {{ jobCard.quotation.job_request.title }}
-            </span>
-          </nz-option>
-        </nz-select>
-        <div *ngIf="deliveryNoteForm.get('job_card_id')?.dirty && deliveryNoteForm.get('job_card_id')?.errors" class="error-message">
-          <span *ngIf="deliveryNoteForm.get('job_card_id')?.hasError('required')">Job card selection is required</span>
-        </div>
-      </nz-form-control>
-    </nz-form-item>
+    <!-- Hidden job card ID field -->
+    <input type="hidden" formControlName="job_card_id">
 
-    <!-- PDF Upload Field -->
+    <!-- PDF Upload -->
     <nz-form-item>
       <nz-form-label nzRequired>Delivery Note PDF</nz-form-label>
       <nz-form-control>
@@ -42,7 +44,7 @@
           nzMaxSize="5242880"
           [nzShowUploadList]="true">
           <p class="ant-upload-drag-icon">
-            <span nz-icon nzType="inbox"></span>
+            <span nz-icon nzType="file-pdf"></span>
           </p>
           <p class="ant-upload-text">Click or drag PDF to this area to upload</p>
           <p class="ant-upload-hint">Max file size: 5MB. Only PDF files accepted.</p>
@@ -62,8 +64,9 @@
         (click)="submitForm()"
         [nzLoading]="isSubmitting"
         [disabled]="deliveryNoteForm.invalid || fileList.length === 0">
-        Create
+        Create Delivery Note
       </button>
     </div>
-   </form>
-    </div>
+  </form>
+  </nz-spin>
+</div>

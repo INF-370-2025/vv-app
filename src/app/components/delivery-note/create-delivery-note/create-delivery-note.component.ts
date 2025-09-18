@@ -1,10 +1,12 @@
-import { Component, EventEmitter, Output } from '@angular/core';
-import { ApiService } from '../../../services/api.service';
-import { AppModule } from '../../../app.module';
-import { NotificationService } from '../../../services/notification.service';
+// create-delivery-note.component.ts
+import { Component, EventEmitter, Output, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NzUploadFile } from 'ng-zorro-antd/upload';
+import { ApiService } from '../../../services/api.service';
+import { NotificationService } from '../../../services/notification.service';
 import { SupabaseService } from '../../../services/supabase.service';
+import { AppModule } from '../../../app.module';
+import { ActivatedRoute } from '@angular/router';
 
 interface DeliveryNotePayload {
   delivery_note_id?: number;
@@ -19,45 +21,61 @@ interface DeliveryNotePayload {
   templateUrl: './create-delivery-note.component.html',
   styleUrls: ['./create-delivery-note.component.less']
 })
-export class CreateDeliveryNoteComponent {
+export class CreateDeliveryNoteComponent implements OnInit {
+  @Input() jobCardId?: number;
   @Output() closeForm = new EventEmitter<void>();
   @Output() noteCreated = new EventEmitter<void>();
+
   deliveryNoteForm: FormGroup;
   isSubmitting = false;
-  isLoadingJobCards = false; // Add loading state
-  completedJobCards: any[] = []; // Store completed job cards
+  jobCardDetails: any = null;
 
   // File upload variables
   file!: NzUploadFile | undefined;
   fileList: any[] = [];
+  isLoadingJobCardDetails: boolean = false;
+
 
   constructor(
     private fb: FormBuilder,
     private apiService: ApiService,
     private notification: NotificationService,
-    private supabase: SupabaseService
+    private supabase: SupabaseService,
+    private route: ActivatedRoute
   ) {
     this.deliveryNoteForm = this.fb.group({
-      job_card_id: [null, [Validators.required]] // Remove min validator
+      job_card_id: [null, [Validators.required]]
     });
   }
 
   ngOnInit(): void {
-    this.loadCompletedJobCards();
+    this.route.queryParams.subscribe(params => {
+      if (params['jobCardId']) {
+        this.jobCardId = +params['jobCardId'];
+        this.deliveryNoteForm.patchValue({
+          job_card_id: this.jobCardId
+        });
+        this.loadJobCardDetails(this.jobCardId);
+      }
+    });
   }
 
-    // Load completed job cards from API
-  loadCompletedJobCards(): void {
-    this.isLoadingJobCards = true;
-    this.apiService.get_completed_job_cards().subscribe({
+  loadJobCardDetails(jobCardId: number): void {
+    this.isLoadingJobCardDetails = true;
+    this.apiService.get_job_cards().subscribe({
       next: (jobCards) => {
-        this.completedJobCards = jobCards || [];
-        this.isLoadingJobCards = false;
+        const jobCard = jobCards.find((jc: any) => jc.job_card_id === jobCardId);
+        if (jobCard) {
+          this.jobCardDetails = jobCard;
+        } else {
+          this.notification.showError('Error', 'Job card not found');
+        }
+        this.isLoadingJobCardDetails = false;
       },
       error: (err) => {
-        console.error('Error loading job cards:', err);
-        this.notification.showError('Error', 'Failed to load job cards');
-        this.isLoadingJobCards = false;
+        console.error('Error loading job card details:', err);
+        this.notification.showError('Error', 'Failed to load job card details');
+        this.isLoadingJobCardDetails = false;
       }
     });
   }
@@ -71,13 +89,8 @@ export class CreateDeliveryNoteComponent {
   };
 
   async submitForm(): Promise<void> {
-    // Validate form
-    Object.values(this.deliveryNoteForm.controls).forEach(control => {
-      control.markAsTouched();
-    });
-
     if (!this.deliveryNoteForm.valid) {
-      this.notification.showError('Error', 'Please fill all required fields');
+      this.notification.showError('Error', 'Please ensure all required fields are filled');
       return;
     }
 
@@ -118,14 +131,12 @@ export class CreateDeliveryNoteComponent {
       });
     } catch (uploadError: any) {
       console.error('Upload failed:', uploadError);
-
       let errorMessage = 'Failed to upload delivery note PDF';
       if (uploadError?.message === 'Bucket not found') {
         errorMessage = 'Storage bucket "delivery-notes" not found. Please contact support.';
       } else if (uploadError?.message) {
         errorMessage += `: ${uploadError.message}`;
       }
-
       this.notification.showError('Upload Error', errorMessage);
       this.isSubmitting = false;
     }
@@ -133,7 +144,6 @@ export class CreateDeliveryNoteComponent {
 
   private handleCreateError(err: any): void {
     console.error('Error creating delivery note:', err);
-
     let errorMessage = 'Failed to create delivery note';
 
     if (err.status === 404) {

@@ -1,34 +1,33 @@
+<!-- Main Stock View Header -->
 <div nz-row [nzJustify]="'center'">
-  <div nz-col [nzSpan]="!showStockView && !showCreateView && !showUpdateView ? 22:18" style="text-align: start;">
-    <h1 *ngIf="!showStockView && !showCreateView && !showUpdateView"><b>Stock</b></h1>
-    <button nz-button nzType="default" *ngIf="showStockView || showCreateView || showUpdateView" (click)="handleFormClose()">
+  <div nz-col [nzSpan]="!showStockView && !showCreateView && !showUpdateView && !showStructureView ? 22 : 18" style="text-align: start;">
+    <h1 *ngIf="!showStockView && !showCreateView && !showUpdateView && !showStructureView"><b>Stock Management</b></h1>
+    <button nz-button nzType="default" *ngIf="showStockView || showCreateView || showUpdateView || showStructureView" (click)="handleFormClose()">
       <span nz-icon nzType="arrow-left" nzTheme="outline"></span>
-      Back to Stock
+      Back to Stock Dashboard
     </button>
   </div>
 </div>
 
-<!-- Main Stock View -->
-<div nz-row nzJustify="end" class="mb-3">
+<!-- Action Buttons (Only show on main view) -->
+<div nz-row nzJustify="end" class="mb-3" *ngIf="!showStockView && !showCreateView && !showUpdateView && !showStructureView">
   <div nz-col>
-    <!-- Material Export Button -->
-    <button nz-button
-            nzType="primary"
-            (click)="exportMaterialToExcel()"
-            style="margin-right: 8px;">
-      <span nz-icon nzType="export" nzTheme="outline"></span>
-      Export Materials to Excel
+    <!-- Stock Structure Button -->
+    <button nz-button nzType="default" (click)="showStructure()" style="margin-right: 8px;">
+      <span nz-icon nzType="apartment" nzTheme="outline"></span>
+      Stock Structure
     </button>
 
-
+    <!-- Material Export Button -->
+    <button nz-button nzType="primary" (click)="exportMaterialToExcel()" style="margin-right: 8px;">
+      <span nz-icon nzType="export" nzTheme="outline"></span>
+      Export Materials
+    </button>
 
     <!-- Material Import Button -->
-    <button nz-button
-            nzType="default"
-            (click)="fileInput.click()"
-            style="margin-right: 8px;">
+    <button nz-button nzType="default" (click)="fileInput.click()" style="margin-right: 8px;">
       <span nz-icon nzType="import" nzTheme="outline"></span>
-      Import Materials from Excel
+      Import Materials
     </button>
 
     <!-- Hidden file input -->
@@ -39,22 +38,24 @@
            hidden>
   </div>
 </div>
-    <div nz-row *ngIf="importResult">
-      <div nz-col nzSpan="24">
-        <nz-alert [nzType]="importResult.success ? 'success' : 'error'"
-                  [nzMessage]="importResult.message"
-                  [nzDescription]="importResult.description"
-                  nzShowIcon
-                  [nzCloseable]="true"
-                  (nzOnClose)="closeImportAlert()">
-        </nz-alert>
-      </div>
-    </div>
+
+<!-- Import Result Alert -->
+<div nz-row *ngIf="importResult">
+  <div nz-col nzSpan="24">
+    <nz-alert [nzType]="importResult.success ? 'success' : 'error'"
+              [nzMessage]="importResult.message"
+              [nzDescription]="importResult.description"
+              nzShowIcon
+              [nzCloseable]="true"
+              (nzOnClose)="closeImportAlert()">
+    </nz-alert>
+  </div>
+</div>
 
 
 
 
-<div nz-row [nzJustify]="'center'" *ngIf="!showStockView && !showCreateView && !showUpdateView">
+<div nz-row [nzJustify]="'center'" *ngIf="!showStockView && !showCreateView && !showUpdateView && !showStructureView">
   <div nz-col nzSpan="24">
     <nz-tabset nzType="card">
 
@@ -260,7 +261,7 @@
 <div nz-row [nzJustify]="'center'" *ngIf="showCreateView">
   <div nz-col [nzSpan]="18">
     <br>
-    <app-create-stock (closeForm)="handleFormClose()"></app-create-stock>
+    <app-create-stock (closeForm)="handleFormClose()" [preselectedTypeId]="preselectedTypeId"></app-create-stock>
   </div>
 </div>
 
@@ -393,4 +394,176 @@
       </div>
     </div>
   </ng-container>
+</nz-modal>
+
+<!-- Stock Structure View -->
+<div nz-row [nzJustify]="'center'" *ngIf="showStructureView">
+  <div nz-col [nzSpan]="24">
+    <div class="structure-header">
+      <h2>Stock Structure Overview</h2>
+      <p>Manage your inventory hierarchy with categories, types, and individual stock items</p>
+    </div>
+
+    <nz-card class="structure-card">
+      <div nz-row>
+        <div nz-col nzSpan="24">
+          <nz-spin [nzSpinning]="isLoadingStructure">
+            <div class="tree-view">
+              <ul>
+                <li *ngFor="let category of stockStructure">
+                  <div class="tree-node category">
+                    <span (click)="toggleCategory(category)" class="toggle-icon">
+                      <i nz-icon [nzType]="category.expanded ? 'minus-square' : 'plus-square'" nzTheme="outline"></i>
+                    </span>
+                    <i nz-icon nzType="folder-open" nzTheme="outline" class="node-icon"></i>
+                    <span class="node-title">{{ category.title }}</span>
+                    <div class="node-actions">
+                      <button nz-button nzType="default" nzSize="small" (click)="addType(category)" nz-tooltip="Add Type">
+                        <i nz-icon nzType="plus" nzTheme="outline"></i>
+                      </button>
+                      <button nz-button nzType="default" nzSize="small" (click)="editCategory(category)" nz-tooltip="Edit">
+                        <i nz-icon nzType="edit" nzTheme="outline"></i>
+                      </button>
+                      <button nz-button nzType="default" nzSize="small" (click)="deleteCategory(category)" nz-tooltip="Delete">
+                        <i nz-icon nzType="delete" nzTheme="outline"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <ul *ngIf="category.expanded">
+                    <li *ngFor="let type of category.children">
+                      <div class="tree-node type">
+                        <span (click)="toggleType(type)" class="toggle-icon">
+                          <i nz-icon [nzType]="type.expanded ? 'minus-square' : 'plus-square'" nzTheme="outline"></i>
+                        </span>
+                        <i nz-icon nzType="folder" nzTheme="outline" class="node-icon"></i>
+                        <span class="node-title">{{ type.title }}</span>
+                        <div class="node-actions">
+                          <button nz-button nzType="default" nzSize="small" (click)="openCreateViewWithType(type)" nz-tooltip="Add Stock">
+                            <i nz-icon nzType="plus" nzTheme="outline"></i>
+                          </button>
+                          <button nz-button nzType="default" nzSize="small" (click)="editType(type)" nz-tooltip="Edit">
+                            <i nz-icon nzType="edit" nzTheme="outline"></i>
+                          </button>
+                          <button nz-button nzType="default" nzSize="small" (click)="deleteType(type)" nz-tooltip="Delete">
+                            <i nz-icon nzType="delete" nzTheme="outline"></i>
+                          </button>
+                          <nz-select nzSize="small" style="width: 140px; margin-left: 8px;"
+                                    nzPlaceHolder="Move to category"
+                                    (nzChange)="moveTypeToCategory(type, $event)">
+                            <nz-option nzLabel="Select category" nzDisabled nzValue=""></nz-option>
+                            <nz-option *ngFor="let cat of stockCategories"
+                                      [nzValue]="cat.stock_category_id"
+                                      [nzLabel]="cat.category_name">
+                            </nz-option>
+                          </nz-select>
+                        </div>
+                      </div>
+                      <ul *ngIf="type.expanded">
+                        <li *ngFor="let stock of type.children">
+                          <div class="tree-node stock">
+                            <span class="toggle-icon"></span>
+                            <i nz-icon nzType="file" nzTheme="outline" class="node-icon"></i>
+                            <span class="node-title">{{ stock.title }}</span>
+                            <div class="node-actions">
+                              <button nz-button nzType="default" nzSize="small" (click)="viewStockFromStructure(stock.stock)" nz-tooltip="View">
+                                <i nz-icon nzType="eye" nzTheme="outline"></i>
+                              </button>
+                              <button nz-button nzType="default" nzSize="small" (click)="openUpdateViewFromStructure(stock.stock)" nz-tooltip="Edit">
+                                <i nz-icon nzType="edit" nzTheme="outline"></i>
+                              </button>
+                              <button nz-button nzType="default" nzSize="small" (click)="deleteStock(stock)" nz-tooltip="Delete">
+                                <i nz-icon nzType="delete" nzTheme="outline"></i>
+                              </button>
+                              <nz-select nzSize="small" style="width: 120px; margin-left: 8px;"
+                                        nzPlaceHolder="Move to type"
+                                        (nzChange)="moveStockToType(stock, $event)">
+                                <nz-option nzLabel="Select type" nzDisabled nzValue=""></nz-option>
+                                <nz-option *ngFor="let typ of stockTypes"
+                                          [nzValue]="typ.stock_type_id"
+                                          [nzLabel]="typ.type_name">
+                                </nz-option>
+                              </nz-select>
+                            </div>
+                          </div>
+                        </li>
+                        <li *ngIf="type.children.length === 0">
+                          <span class="tree-node empty">
+                            <span class="toggle-icon"></span>
+                            <i nz-icon nzType="file-exclamation" nzTheme="outline"></i>
+                            No items in this type
+                          </span>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+          </nz-spin>
+        </div>
+      </div>
+    </nz-card>
+  </div>
+</div>
+
+<!-- Category Modal -->
+<nz-modal
+  [(nzVisible)]="showCategoryModal"
+  [nzTitle]="editingCategory ? 'Edit Category' : 'Add Category'"
+  (nzOnCancel)="showCategoryModal = false"
+  (nzOnOk)="saveCategory()">
+  <div *nzModalContent>
+    <nz-form-item>
+      <nz-form-label>Category Name</nz-form-label>
+      <nz-form-control>
+        <input nz-input [(ngModel)]="newCategoryName" placeholder="Enter category name">
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+</nz-modal>
+
+<!-- Type Modal -->
+<nz-modal
+  [(nzVisible)]="showTypeModal"
+  [nzTitle]="editingType ? 'Edit Type' : 'Add Type'"
+  (nzOnCancel)="showTypeModal = false"
+  (nzOnOk)="saveType()">
+  <div *nzModalContent>
+    <nz-form-item>
+      <nz-form-label>Type Name</nz-form-label>
+      <nz-form-control>
+        <input nz-input [(ngModel)]="newTypeName" placeholder="Enter type name">
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label>Category</nz-form-label>
+      <nz-form-control>
+        <nz-select [(ngModel)]="selectedCategoryId" nzPlaceHolder="Select category">
+          <nz-option *ngFor="let category of stockCategories"
+                    [nzValue]="category.stock_category_id"
+                    [nzLabel]="category.category_name">
+          </nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+</nz-modal>
+
+<!-- Move Confirmation Modal -->
+<nz-modal
+  [(nzVisible)]="showMoveConfirm"
+  [nzTitle]="moveAction === 'type' ? 'Confirm Type Move' : 'Confirm Stock Move'"
+  (nzOnCancel)="cancelMove()"
+  (nzOnOk)="confirmMove()">
+  <div *nzModalContent>
+    <p *ngIf="moveAction === 'type'">
+      Are you sure you want to move the type "<strong>{{movingType?.title}}</strong>"
+      to the category "<strong>{{moveTarget?.category_name}}</strong>"?
+    </p>
+    <p *ngIf="moveAction === 'stock'">
+      Are you sure you want to move the stock item "<strong>{{movingStock?.title}}</strong>"
+      to the type "<strong>{{moveTarget?.type_name}}</strong>"?
+    </p>
+    <p class="text-warning"><i nz-icon nzType="warning" nzTheme="outline"></i> This action cannot be undone.</p>
+  </div>
 </nz-modal>

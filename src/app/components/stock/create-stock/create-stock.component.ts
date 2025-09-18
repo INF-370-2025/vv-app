@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { ApiService } from '../../../services/api.service';
 import { AppModule } from '../../../app.module';
 import { NotificationService } from '../../../services/notification.service';
@@ -14,6 +14,8 @@ import { material, stock_type, CreateStock } from '../../../models/stock';
 })
 export class CreateStockComponent implements OnInit {
   @Output() closeForm = new EventEmitter<void>();
+  @Input() preselectedTypeId: number | null = null;
+
   stockForm: FormGroup;
   materials: material[] = [];
   stockTypes: stock_type[] = [];
@@ -39,6 +41,14 @@ export class CreateStockComponent implements OnInit {
     this.loadStockTypes();
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['preselectedTypeId'] && this.preselectedTypeId) {
+      this.stockForm.patchValue({
+        stock_type_id: this.preselectedTypeId
+      });
+    }
+  }
+
   loadMaterials(): void {
     this.apiService.get_materials().subscribe({
       next: (response: any[]) => {
@@ -61,6 +71,13 @@ export class CreateStockComponent implements OnInit {
           ...t,
           stock_type_id: +t.stock_type_id
         }));
+
+        // After loading types, set the preselected type if provided
+        if (this.preselectedTypeId) {
+          this.stockForm.patchValue({
+            stock_type_id: this.preselectedTypeId
+          });
+        }
       },
       error: (err) => {
         console.error('Error loading stock types:', err);

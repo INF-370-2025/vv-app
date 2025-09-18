@@ -1,55 +1,71 @@
 <nz-spin [nzSpinning]="isloading">
-    <form [formGroup]="quoteForm">
+  <form [formGroup]="quoteForm">
 
-        <div nz-row [nzJustify]="'start'" [nzGutter]="[24,24]" [nzAlign]="'middle'">
-            <div nz-col nzSpan="12">
-                <h1>Create Quotation</h1>
-            </div>
-            <div nz-col nzSpan="12">
-                <nz-form-item>
-                    <nz-form-control nzErrorTip="Number Required">
-                        <input style="float: inline-end;" nz-input formControlName="quotation_number" placeholder="Q001">
-                    </nz-form-control>
-                </nz-form-item>
-            </div>
-        </div>
+    <!-- Header -->
+    <div nz-row [nzJustify]="'space-between'" [nzAlign]="'middle'" [nzGutter]="24">
+      <div nz-col nzSpan="12">
+        <h1>Create Quotation</h1>
+      </div>
+      <div nz-col nzSpan="12">
+        <nz-form-item>
+          <nz-form-control
+            [nzErrorTip]="
+              quoteForm.get('quotation_number')?.hasError('required') ? 'Quotation number is required' :
+              quoteForm.get('quotation_number')?.hasError('pattern') ? 'Must start with Q followed by numbers' : ''
+            "
+          >
+            <input nz-input formControlName="quotation_number" placeholder="Q001">
+          </nz-form-control>
 
-        <hr class="hr">
-        <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
-            <div nz-col nzSpan="12">
-                <nz-form-item>
-                    <nz-form-control nzErrorTip="Deposit Required">
-                        <nz-form-label>Deposit Value</nz-form-label>
-                        <input nz-input formControlName="deposit" placeholder="50000.00">
-                    </nz-form-control>
-                </nz-form-item>
-            </div>
-            <div nz-col nzSpan="12">
-                <nz-form-item>
-                    <nz-form-control nzErrorTip="Required">
-                        <nz-form-label>Total</nz-form-label>
-                        <input nz-input formControlName="total_cost" placeholder="50000.00">
-                    </nz-form-control>
-                </nz-form-item>
-            </div>
-        </div>
+          <nz-form-control
+            [nzErrorTip]="
+              quoteForm.get('total_cost')?.hasError('required') ? 'Total cost is required' :
+              quoteForm.get('total_cost')?.hasError('min') ? 'Total cost must be greater than 0' : ''
+            "
+          >
+            <nz-form-label>Total</nz-form-label>
+            <input nz-input type="number" step="0.01" formControlName="total_cost" placeholder="50000.00">
+          </nz-form-control>
 
-        <div nz-row [nzJustify]="'center'" [nzGutter]="5">
-            <div nz-col nzSpan="24">
-                <nz-upload nzType="drag" [nzMultiple]="false" [nzBeforeUpload]="beforeUpload" [(nzFileList)]="fileList" nzAccept=".pdf">
-                    <p class="ant-upload-drag-icon">
-                        <span nz-icon nzType="inbox"></span>
-                    </p>
-                    <p class="ant-upload-text">Click or drag quotation to this area to upload</p>
-                </nz-upload>
-                <br>
-            </div>
-        </div>
-        <br><br>
+        </nz-form-item>
+      </div>
+    </div>
 
-        <button [nzLoading]="btnLoading" (click)="createQuote()" nz-button nzType="primary" style="width: 100%;" [disabled]="!quoteForm.valid || fileList.length == 0" [nz-tooltip]="!quoteForm.valid || fileList.length == 0 ? 'Please ensure all fields are complete and quote pdf is attached':null">
+    <!-- Upload PDF -->
+    <div nz-row [nzJustify]="'center'" [nzGutter]="5">
+      <div nz-col nzSpan="24">
+        <nz-upload
+          nzType="drag"
+          [nzMultiple]="false"
+          [nzBeforeUpload]="beforeUpload"
+          [(nzFileList)]="fileList"
+          nzAccept=".pdf"
+        >
+          <p class="ant-upload-drag-icon">
+            <span nz-icon nzType="inbox"></span>
+          </p>
+          <p class="ant-upload-text">Click or drag quotation to this area to upload</p>
+        </nz-upload>
+        <br>
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div nz-row [nzJustify]="'center'">
+      <div nz-col nzSpan="12">
+        <button
+          [nzLoading]="btnLoading"
+          (click)="createQuote()"
+          nz-button
+          nzType="primary"
+          style="width: 100%;"
+          [disabled]="!quoteForm.valid || fileList.length === 0"
+          [nz-tooltip]="!quoteForm.valid || fileList.length === 0 ? 'Please ensure all fields are complete and quote pdf is attached': null"
+        >
           Send Quote to Customer
         </button>
+      </div>
+    </div>
 
-    </form>
+  </form>
 </nz-spin>

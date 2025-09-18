@@ -12,6 +12,8 @@ import { NotificationService } from '../../../services/notification.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NzUploadFile, UploadFileStatus } from 'ng-zorro-antd/upload';
 import { SupabaseService } from '../../../services/supabase.service';
+import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+
 
 @Component({
   selector: 'app-customer-job-requests',
@@ -33,6 +35,7 @@ export class CustomerJobRequestsComponent implements OnInit {
   cancelled:jobRequest[] = [];
   customer_types:customerType[] = [];
   showHelpModal:boolean = false;
+  minDate: string | undefined;
 
   viewingJob:jobRequest = new jobRequest();
   viewingImages: GalleryItem[] = [];
@@ -43,11 +46,14 @@ export class CustomerJobRequestsComponent implements OnInit {
   file!: NzUploadFile | undefined;
   fileList :any[] = [];
 
-  jobRequestForm:FormGroup = new FormGroup({
-        title: new FormControl(null, [Validators.required]),
-        quantity: new FormControl(null, [Validators.required]),
-        description: new FormControl(null, [Validators.required]),
-        finish_date: new FormControl(null, [Validators.required]),
+  jobRequestForm: FormGroup = new FormGroup({
+    title: new FormControl(null, [Validators.required]),
+    quantity: new FormControl(null, [Validators.required, Validators.min(1)]),
+    description: new FormControl(null, [Validators.required]),
+    finish_date: new FormControl(null, [
+      Validators.required,
+      this.minDateValidator()
+    ]),
   });
 
   constructor(
@@ -63,8 +69,37 @@ export class CustomerJobRequestsComponent implements OnInit {
     setTimeout(() => {
       this.loadJobRequests();
     }, 500);
-
+    const today = new Date();
+    const minDate = new Date(today);
+    minDate.setDate(today.getDate() + 7);
+    this.minDate = minDate.toISOString().split('T')[0];
   }
+
+  minDateValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) {
+        return null;
+      }
+
+      const selectedDate = new Date(control.value);
+      const today = new Date();
+      const minValidDate = new Date(today);
+      minValidDate.setDate(today.getDate() + 7);
+
+      minValidDate.setHours(0, 0, 0, 0);
+      selectedDate.setHours(0, 0, 0, 0);
+
+      return selectedDate >= minValidDate ? null : { minDate: true };
+    };
+  }
+
+  handleRemove = (file: NzUploadFile): boolean => {
+    const index = this.fileList.indexOf(file);
+    if (index > -1) {
+      this.fileList.splice(index, 1);
+    }
+    return true;
+  };
 
   showHelp(){
     this.showHelpModal = true;

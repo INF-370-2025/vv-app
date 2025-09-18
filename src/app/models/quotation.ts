@@ -12,6 +12,7 @@ export class quotation{
     quotation_status?:quotationStatus;
     quotation_url!:string;
     quotation_number!:string;
+    has_invoice?: boolean;
 }
 
 export class quotationStatus{
