@@ -14,7 +14,6 @@ import { NotificationService } from './services/notification.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { role } from './models/role';
 import { Subject, takeUntil } from 'rxjs';
-import { ApiService } from './services/api.service';
 
 @Component({
   selector: 'app-root',
@@ -69,7 +68,7 @@ export class AppComponent {
     private destroy$ = new Subject<void>();
 
   constructor(private theme:ThemeService,public supabase:SupabaseService,private notification:NotificationService,private router:Router,
-  private iconService:IconService,public authService:AuthService,private spinner: NgxSpinnerService,private ApiService: ApiService) {
+  private iconService:IconService,public authService:AuthService,private spinner: NgxSpinnerService,private apiService: ApiService) {
     this.supabase.connect_to_sb();
     this.subscribeToSupaAuth();
 
