@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { AppModule } from '../../app.module';
 import { jobCard, jobCardStatus, pattern, quotation} from '../../models/jobCard';
@@ -38,6 +38,14 @@ export class JobCardsComponent implements OnInit {
   showHelp:boolean = false;
   allMaterials: any[] = [];
   allArtisans: any[] = [];
+  completedDates: { [key: number]: Date | null | 'loading' } = {};
+
+
+  deliveryNoteJobCardIds: Set<number> = new Set();
+  completedFilter: string = 'all';
+  originalCompleted: jobCard[] = [];
+  searchTerm: string = '';
+  deliveryNotesLoading: boolean = true;
 
 
   constructor(
@@ -45,7 +53,8 @@ export class JobCardsComponent implements OnInit {
     private notification: NotificationService,
     private modal: NzModalService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
 
 
   ) {}
@@ -54,7 +63,6 @@ export class JobCardsComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       if (params['quotationId'] && params['invoiceId']) {
         this.openCreateForm();
-        // Pass these params to the create component
       }
     });
     this.loadJobCardStatuses();
@@ -63,6 +71,53 @@ export class JobCardsComponent implements OnInit {
     this.loadQuotations();
     this.loadAllMaterials();
     this.loadAllArtisans();
+    this.loadDeliveryNotes();
+  }
+
+  isDate(obj: any): boolean {
+    return obj instanceof Date;
+  }
+
+  loadDeliveryNotes(): void {
+    this.deliveryNotesLoading = true;
+    this.apiService.get_delivery_notes().subscribe({
+      next: (response: any[]) => {
+        const jobCardIds = response.map(note => note.job_card_id);
+        this.deliveryNoteJobCardIds = new Set(jobCardIds);
+        this.deliveryNotesLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error loading delivery notes:', err);
+        this.deliveryNotesLoading = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  hasDeliveryNote(jobCardId: number): boolean {
+    return this.deliveryNoteJobCardIds.has(jobCardId);
+  }
+
+
+
+  fetchCompletedDate(job: jobCard): void {
+    if (this.completedDates[job.job_card_id] !== undefined) return;
+
+    this.completedDates[job.job_card_id] = 'loading';
+
+    this.apiService.get_job_update_card(job.job_card_id).subscribe({
+      next: (res) => {
+        this.completedDates[job.job_card_id] = res.completed_at
+          ? new Date(res.completed_at)
+          : null;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.completedDates[job.job_card_id] = null;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   showHelpModal(){
@@ -137,6 +192,8 @@ export class JobCardsComponent implements OnInit {
         this.jobCards = [...response] as jobCard[];
         this.updateFilteredArrays();
         this.isloading = false;
+
+        this.loadDeliveryNotes();
       },
       error: (err) => {
         console.error('Error loading job cards:', err);
@@ -149,8 +206,11 @@ export class JobCardsComponent implements OnInit {
     this.pending = this.jobCards.filter(x => x.job_card_status_id === 5);
     this.inProgress = this.jobCards.filter(x => x.job_card_status_id === 1);
     this.completed = this.jobCards.filter(x => x.job_card_status_id === 2);
+    this.originalCompleted = [...this.completed];
     this.cancelled = this.jobCards.filter(x => x.job_card_status_id === 3);
   }
+
+
 
 
   handleJobCardUpdate(updatedJobCard: jobCard): void {
@@ -214,13 +274,12 @@ export class JobCardsComponent implements OnInit {
     this.showUpdateForm = false;
   }
 
-  // Add this method to your JobCardsComponent class
-resetViews(): void {
-  this.showjobCard = false;
-  this.showUpdateForm = false;
-  this.showCreateForm = false;
-  this.showDesigns = false;
-}
+  resetViews(): void {
+    this.showjobCard = false;
+    this.showUpdateForm = false;
+    this.showCreateForm = false;
+    this.showDesigns = false;
+  }
 
   openUpdateForm(jobCard: jobCard): void {
     this.resetViews();
@@ -272,7 +331,6 @@ resetViews(): void {
     });
   }
 
-  // Cancel job card (status ID 3)
   cancelJobCard(job: jobCard): void {
     this.modal.confirm({
       nzTitle: 'Cancel Job Card',
@@ -345,10 +403,59 @@ resetViews(): void {
   }
 
   createDeliveryNote(job: any): void {
-    this.router.navigate(['/delivery_note'], {
+    this.router.navigate(['/create-delivery-note'], {
       queryParams: {
         jobCardId: job.job_card_id
       }
     });
+  }
+
+
+  // fetchCompletedDate(job: jobCard): void {
+  //   // Already fetching or fetched
+  //   if (this.completedDates[job.job_card_id] !== undefined) return;
+
+  //   // Mark as loading
+  //   this.completedDates[job.job_card_id] = 'loading';
+
+  //   this.apiService.get_job_update_card(job.job_card_id).subscribe({
+  //     next: (res) => {
+  //       this.completedDates[job.job_card_id] = res.completed_at
+  //         ? new Date(res.completed_at)
+  //         : null;
+  //     },
+  //     error: () => {
+  //       this.completedDates[job.job_card_id] = null;
+  //     }
+  //   });
+  // }
+
+  onSearchCompletedJobs(event: any): void {
+    this.searchTerm = event.target.value.toLowerCase();
+    this.applyCompletedFilter();
+  }
+
+  applyCompletedFilter(): void {
+    let filtered = [...this.originalCompleted];
+
+    if (this.searchTerm) {
+      filtered = filtered.filter(x =>
+        (x.job_card_id?.toString() === this.searchTerm) ||
+        (x.quotation?.job_request?.customer?.user?.name?.toLowerCase().includes(this.searchTerm)) ||
+        (x.quotation?.job_request?.customer?.user?.surname?.toLowerCase().includes(this.searchTerm)) ||
+        (x.quotation?.job_request?.customer?.user?.phone_number?.includes(this.searchTerm))
+      );
+    }
+    if (this.completedFilter === 'withNote') {
+      filtered = filtered.filter(job => this.hasDeliveryNote(job.job_card_id));
+    } else if (this.completedFilter === 'withoutNote') {
+      filtered = filtered.filter(job => !this.hasDeliveryNote(job.job_card_id));
+    }
+
+    this.completed = filtered;
+  }
+
+  getFilteredCompletedJobs(): jobCard[] {
+    return this.completed;
   }
 }

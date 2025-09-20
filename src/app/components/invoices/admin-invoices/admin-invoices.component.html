@@ -48,15 +48,38 @@
                                   <nz-tag [nzColor]="'red'">Outstanding payment</nz-tag>
                               </td>
                               <td>
-                                  <b>{{ (invoice.job_card?.quotation?.job_request?.title ||
-                                        'Invoice #' + (invoice.invoice_number || '')) | titlecase }}</b>
-                                  <div *ngIf="invoice.job_card?.quotation?.job_request?.description"
-                                      class="description-text"
-                                      [nz-tooltip]="invoice.job_card?.quotation?.job_request?.description || 'No description available'">
-                                      {{ (invoice.job_card?.quotation?.job_request?.description | slice:0:50) || 'No description' }}
-                                      {{ ((invoice.job_card?.quotation?.job_request?.description || '').length > 50) ? '...' : '' }}
-                                  </div>
+                                <b>
+                                  {{
+                                    (invoice.job_card?.quotation?.job_request?.title
+                                      || invoice.direct_quote?.job_request?.title
+                                      || 'Invoice #' + (invoice.invoice_number || '')
+                                    ) | titlecase
+                                  }}
+                                </b>
+
+                                <div
+                                  *ngIf="invoice.job_card?.quotation?.job_request?.description
+                                          || invoice.direct_quote?.job_request?.description"
+                                  class="description-text"
+                                  [nz-tooltip]="
+                                    invoice.job_card?.quotation?.job_request?.description
+                                    || invoice.direct_quote?.job_request?.description
+                                    || 'No description available'
+                                  ">
+                                  {{
+                                    (invoice.job_card?.quotation?.job_request?.description
+                                      || invoice.direct_quote?.job_request?.description
+                                      | slice:0:50)
+                                    || 'No description'
+                                  }}
+                                  {{
+                                    (((invoice.job_card?.quotation?.job_request?.description
+                                        || invoice.direct_quote?.job_request?.description) || '').length > 50)
+                                      ? '...' : ''
+                                  }}
+                                </div>
                               </td>
+
                               <td>
                                   {{invoice.total | currency:'R':'symbol' }}
                               </td>
@@ -136,15 +159,37 @@
                                   <nz-tag [nzColor]="'green'">Paid</nz-tag>
                               </td>
                               <td>
-                                  <b>{{ (invoice.job_card?.quotation?.job_request?.title ||
-                                        'Invoice #' + (invoice.invoice_number || '')) | titlecase }}</b>
-                                  <div *ngIf="invoice.job_card?.quotation?.job_request?.description"
-                                      class="description-text"
-                                      [nz-tooltip]="invoice.job_card?.quotation?.job_request?.description || 'No description available'">
-                                      {{ (invoice.job_card?.quotation?.job_request?.description | slice:0:50) || 'No description' }}
-                                      {{ ((invoice.job_card?.quotation?.job_request?.description || '').length > 50) ? '...' : '' }}
-                                  </div>
-                              </td>
+                                <b>
+                                  {{
+                                    (invoice.job_card?.quotation?.job_request?.title
+                                      || invoice.direct_quote?.job_request?.title
+                                      || 'Invoice #' + (invoice.invoice_number || '')
+                                    ) | titlecase
+                                  }}
+                                </b>
+
+                                <div
+                                  *ngIf="invoice.job_card?.quotation?.job_request?.description
+                                          || invoice.direct_quote?.job_request?.description"
+                                  class="description-text"
+                                  [nz-tooltip]="
+                                    invoice.job_card?.quotation?.job_request?.description
+                                    || invoice.direct_quote?.job_request?.description
+                                    || 'No description available'
+                                  ">
+                                  {{
+                                    (invoice.job_card?.quotation?.job_request?.description
+                                      || invoice.direct_quote?.job_request?.description
+                                      | slice:0:50)
+                                    || 'No description'
+                                  }}
+                                  {{
+                                    (((invoice.job_card?.quotation?.job_request?.description
+                                        || invoice.direct_quote?.job_request?.description) || '').length > 50)
+                                      ? '...' : ''
+                                  }}
+                                </div>
+                            </td>
                               <td>
                                   {{invoice.total | currency:'R':'symbol' }}
                               </td>

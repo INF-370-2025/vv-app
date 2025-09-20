@@ -12,11 +12,10 @@ interface DeliveryNote {
   job_card_id: number;
   job_card_created_at: string;
   completed_at: string;
+  date_of_collection?: string;
   special_instructions?: string;
   job_card_status_id: number;
-  job_card_status: {
-    status: string;
-  };
+  job_card_status: { status: string };
   pattern_id?: number;
   quotation_id?: number;
   user_id?: number;
@@ -47,6 +46,7 @@ interface DeliveryNote {
     };
   };
 }
+
 
 @Component({
   selector: 'app-admin-delivery-note',
@@ -241,4 +241,11 @@ export class AdminDeliveryNoteComponent implements OnInit {
   showHelp(): void {
     this.showHelpModal = true;
   }
+
+  getCollectionDate(date?: string): string {
+    if (!date) return 'N/A';
+    const d = new Date(date);
+    return isNaN(d.getTime()) ? 'N/A' : d.toLocaleDateString();
+  }
+
 }

@@ -1,4 +1,3 @@
-
 <div nz-row [nzJustify]="'center'">
     <div nz-col [nzSpan]="24" style="text-align: start;">
         <h1><b>Dashboard</b></h1>
@@ -38,42 +37,138 @@
                     </nz-spin>
                 </div>
 
-                <!-- Completed Jobs Card -->
+                <!-- Pending Quotations Card -->
                 <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="6" [nzLg]="6" [nzXl]="6">
                     <nz-spin [nzSpinning]="isloading">
                         <nz-card nzHoverable="true" style="text-align: center !important; position: relative;">
-                            <button routerLink="/job-cards" nz-button nzType="default" nzShape="circle" nzSize="large" style="position: absolute; top: 10px; right: 10px; z-index: 10;">
+                            <button routerLink="/quotations" [queryParams]="{status: 'pending'}" nz-button nzType="default" nzShape="circle" nzSize="large" style="position: absolute; top: 10px; right: 10px; z-index: 10;">
                                 <i nz-icon nzType="arrow-right" nzTheme="outline"></i>
                             </button>
-                            <span nz-icon nzType="vv:orders" nzTheme="outline" style="font-size: 40px !important;" class="color"></span>
-                            <h3><b>Completed Jobs <small class="color">(week)</small></b></h3>
+                            <span nz-icon nzType="file-text" nzTheme="outline" style="font-size: 40px !important;" class="color"></span>
+                            <h3><b>Pending Quotes</b></h3>
                             <div nz-row [nzJustify]="'center'" [nzGutter]="5">
                                 <nz-col nzSpan="24" style="text-align: center !important;">
-                                    <h1><b>{{ adminStats?.completed_job_cards_week }}</b></h1>
+                                    <h1><b>{{ adminStats?.pending_quotations }}</b></h1>
                                 </nz-col>
                             </div>
                         </nz-card>
                     </nz-spin>
                 </div>
 
-                <!-- Total Customers Card -->
+                <!-- Unpaid Invoices Card -->
                 <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="6" [nzLg]="6" [nzXl]="6">
                     <nz-spin [nzSpinning]="isloading">
                         <nz-card nzHoverable="true" style="text-align: center !important; position: relative;">
-                            <button routerLink="/user" nz-button nzType="default" nzShape="circle" nzSize="large" style="position: absolute; top: 10px; right: 10px; z-index: 10;">
+                            <button routerLink="/invoices" [queryParams]="{status: 'unpaid'}" nz-button nzType="default" nzShape="circle" nzSize="large" style="position: absolute; top: 10px; right: 10px; z-index: 10;">
                                 <i nz-icon nzType="arrow-right" nzTheme="outline"></i>
                             </button>
-                            <span nz-icon nzType="vv:customers" nzTheme="outline" style="font-size: 40px !important;" class="color"></span>
-                            <h3><b>Total Customers</b></h3>
+                            <span nz-icon nzType="dollar" nzTheme="outline" style="font-size: 40px !important;" class="color"></span>
+                            <h3><b>Unpaid Invoices</b></h3>
                             <div nz-row [nzJustify]="'center'" [nzGutter]="5">
                                 <nz-col nzSpan="24" style="text-align: center !important;">
-                                    <h1><b>{{ adminStats?.total_customers }}</b></h1>
+                                    <h1><b>{{ adminStats?.unpaid_invoices }}</b></h1>
+                                </nz-col>
+                            </div>
+                        </nz-card>
+                    </nz-spin>
+                </div>
+
+                <!-- Low Stock Items Card -->
+                <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="6" [nzLg]="6" [nzXl]="6">
+                    <nz-spin [nzSpinning]="isloading">
+                        <nz-card nzHoverable="true" style="text-align: center !important; position: relative;">
+                            <button routerLink="/stock" [queryParams]="{filter: 'low'}" nz-button nzType="default" nzShape="circle" nzSize="large" style="position: absolute; top: 10px; right: 10px; z-index: 10;">
+                                <i nz-icon nzType="arrow-right" nzTheme="outline"></i>
+                            </button>
+                            <span nz-icon nzType="exclamation-circle" nzTheme="outline" style="font-size: 40px !important; color: #ff4d4f;"></span>
+                            <h3><b>Low Stock Items</b></h3>
+                            <div nz-row [nzJustify]="'center'" [nzGutter]="5">
+                                <nz-col nzSpan="24" style="text-align: center !important;">
+                                    <h1><b>{{ adminStats?.low_stock_items }}</b></h1>
                                 </nz-col>
                             </div>
                         </nz-card>
                     </nz-spin>
                 </div>
             </div>
+                        <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="18" [nzLg]="18" [nzXl]="18">
+                <nz-card nzTitle="Top 10 Lowest Stock Items" [nzExtra]="stockExtraTemplate">
+                    <ng-template #stockExtraTemplate>
+                        <button nz-button nzType="link" (click)="refreshStockChart()">
+                            <i nz-icon nzType="reload" nzTheme="outline"></i>
+                        </button>
+                    </ng-template>
+
+                    <nz-spin [nzSpinning]="isloadingCard1">
+                        <div style="position: relative; height: 300px;">
+                            <canvas id="lowStockChart"></canvas>
+                        </div>
+                    </nz-spin>
+
+                    <div nz-row nzJustify="center" nzAlign="middle" style="margin-top: 16px;">
+                        <div nz-col nzSpan="24" style="text-align: center;">
+                            <nz-tag [nzColor]="'#17726d'">Adequate Stock</nz-tag>
+                            <nz-tag [nzColor]="'#FF0000'">Low Stock</nz-tag>
+                        </div>
+                    </div>
+                </nz-card>
+            </div>
+<!--
+            <div nz-row [nzGutter]="[24,24]" style="margin-top: 24px;">
+                <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="12" [nzLg]="12" [nzXl]="12">
+                    <nz-card nzTitle="Job Request Status Distribution" [nzExtra]="extraTemplate">
+                        <ng-template #extraTemplate>
+                            <button nz-button nzType="link" (click)="refreshJobRequestChart()">
+                                <i nz-icon nzType="reload" nzTheme="outline"></i>
+                            </button>
+                        </ng-template>
+                        <div style="position: relative; height: 300px;">
+                            <canvas id="jobRequestChart"></canvas>
+                        </div>
+                    </nz-card>
+                </div>
+
+                <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="12" [nzLg]="12" [nzXl]="12">
+                    <nz-card nzTitle="Monthly Performance Trends" [nzExtra]="trendExtraTemplate">
+                        <ng-template #trendExtraTemplate>
+                            <nz-select [ngModel]="'requests'" (ngModelChange)="changeTrendMetric($event)" nzSize="small" style="width: 120px; margin-right: 8px;">
+                                <nz-option nzValue="requests" nzLabel="Requests"></nz-option>
+                                <nz-option nzValue="quotations" nzLabel="Quotations"></nz-option>
+                                <nz-option nzValue="completed" nzLabel="Completed Jobs"></nz-option>
+                            </nz-select>
+                            <button nz-button nzType="link" (click)="refreshTrendChart()">
+                                <i nz-icon nzType="reload" nzTheme="outline"></i>
+                            </button>
+                        </ng-template>
+                        <div style="position: relative; height: 300px;">
+                            <canvas id="performanceTrendChart"></canvas>
+                        </div>
+                    </nz-card>
+                </div> -->
+            <!-- </div> -->
+            <div nz-row [nzGutter]="[24,24]" style="margin-top: 24px;">
+              <div nz-col [nzSpan]="24">
+                <nz-card nzTitle="Job Card Completion Timeline" [nzExtra]="completionExtraTemplate">
+                  <ng-template #completionExtraTemplate>
+                    <button nz-button nzType="link" (click)="loadCompletionTimeline()">
+                      <i nz-icon nzType="reload" nzTheme="outline"></i>
+                    </button>
+                  </ng-template>
+                  <div style="position: relative; height: 300px;">
+                    <canvas id="completionTimelineChart"></canvas>
+                  </div>
+                  <div nz-row nzJustify="center" nzAlign="middle" style="margin-top: 16px;">
+                    <div nz-col nzSpan="24" style="text-align: center;">
+                      <!-- <nz-tag [nzColor]="'#38d550ff'">On Time</nz-tag>
+                      <nz-tag [nzColor]="'#e3574dff'">Delayed</nz-tag> -->
+                      <p style="margin-top: 8px; color: #8c8c8c;">
+                        <small>Shows job cards completed on time vs. delayed based on expected finish date and actual completion date</small>
+                      </p>
+                    </div>
+                  </div>
+                </nz-card>
+              </div>
+</div>
         </nz-collapse-panel>
     </nz-collapse>
 
@@ -141,19 +236,19 @@
                     </nz-card>
                 </div>
 
-                <!-- NEW: Job Cards by Status Report -->
+                <!-- job req -->
                 <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="12" [nzLg]="6" [nzXl]="6">
-                    <nz-card nzHoverable="true" style="height: 100%;border:none;" (click)="openJobCardsByStatusReport()">
+                    <nz-card nzHoverable="true" style="height: 100%;border:none;" (click)="openPendingJobRequestsReport()">
                         <span nz-icon nzType="container" nzTheme="outline" style="font-size: 40px !important;" class="color"></span><br>
-                        Job Cards by Status
+                        Pedning Job Requests
                     </nz-card>
                 </div>
 
                 <!-- NEW: Stock by Stock Type Report -->
                 <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="12" [nzLg]="6" [nzXl]="6">
-                    <nz-card nzHoverable="true" style="height: 100%;border:none;" (click)="openStockByTypeReport()">
+                    <nz-card nzHoverable="true" style="height: 100%;border:none;" (click)="openRevenueReport()">
                         <span nz-icon nzType="appstore" nzTheme="outline" style="font-size: 40px !important;" class="color"></span><br>
-                        Stock by Stock Type
+                        Revenue
                     </nz-card>
                 </div>
             </div>

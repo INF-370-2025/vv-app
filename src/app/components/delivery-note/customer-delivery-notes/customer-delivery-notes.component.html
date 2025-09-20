@@ -1,76 +1,75 @@
 <div nz-row [nzJustify]="'center'">
   <div nz-col nzSpan="22">
-    <nz-tabset nzType="card">
-      <nz-tab [nzTitle]="'Delivery Notes'">
-        <nz-spin [nzSpinning]="isLoading">
-          <!-- Error message -->
-          <div *ngIf="errorMessage" class="error-message">
-            <nz-alert nzType="error" [nzMessage]="errorMessage" nzShowIcon></nz-alert>
-            <button nz-button nzType="primary" (click)="loadDeliveryNotes()" style="margin-top: 16px;">
-              <i nz-icon nzType="reload"></i> Retry
-            </button>
-          </div>
+    <nz-spin [nzSpinning]="isLoading">
+      <!-- Error message -->
+      <div *ngIf="errorMessage" class="error-message">
+        <nz-alert nzType="error" [nzMessage]="errorMessage" nzShowIcon></nz-alert>
+        <button nz-button nzType="primary" (click)="loadDeliveryNotes()" style="margin-top: 16px;">
+          <i nz-icon nzType="reload"></i> Retry
+        </button>
+      </div>
 
-          <!-- Empty state -->
-          <div *ngIf="!isLoading && !errorMessage && deliveryNotes.length === 0" class="empty-state">
-            <nz-empty nzNotFoundContent="No delivery notes found"></nz-empty>
-          </div>
+      <!-- Empty state -->
+      <div *ngIf="!isLoading && !errorMessage && deliveryNotes.length === 0" class="empty-state">
+        <nz-empty nzNotFoundContent="No delivery notes found"></nz-empty>
+      </div>
 
-          <!-- table -->
-          <div *ngIf="!isLoading && deliveryNotes.length > 0">
-            <nz-table #deliveryNotesTable [nzData]="deliveryNotes" [nzPageSize]="20" nzSize="middle">
-              <thead>
-                <tr>
-                  <th colSpan="5">
-                    <nz-input-group [nzSuffix]="suffixIconSearch">
-                      <input
-                        type="text"
-                        nz-input
-                        placeholder="Search delivery notes..."
-                        (keyup)="searchDeliveryNotes($event)"
-                      />
-                    </nz-input-group>
-                    <ng-template #suffixIconSearch>
-                      <i nz-icon nzType="search"></i>
-                    </ng-template>
-                  </th>
-                </tr>
-                <tr>
-                  <th>ID</th>
-                  <th>Job Title</th>
-                  <th>Description</th>
-                  <th>Completed Date</th>
-                  <th>View</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let note of deliveryNotesTable.data">
-                  <td><b>#{{note.delivery_note_id}}</b></td>
-                  <td>{{getJobTitle(note)}}</td>
-                  <td>
-                    <div class="truncate-cell" [nz-tooltip]="getJobDescription(note)">
-                      {{ (getJobDescription(note) | slice:0:50) }}
-                      {{ (getJobDescription(note).length > 50) ? '...' : '' }}
-                    </div>
-                  </td>
-                  <td>{{getCompletedDate(note.completed_at)}}</td>
-                  <td>
-                    <button
-                      nz-button
-                      nzType="primary"
-                      nzSize="small"
-                      (click)="viewDeliveryNote(note)"
-                      [disabled]="!note.delivery_note_url">
-                      <i nz-icon nzType="eye" nzTheme="outline"></i> View
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </nz-table>
-          </div>
-        </nz-spin>
-      </nz-tab>
-    </nz-tabset>
+      <!-- Table -->
+      <div *ngIf="!isLoading && deliveryNotes.length > 0">
+        <nz-table #deliveryNotesTable [nzData]="deliveryNotes" [nzPageSize]="20" nzSize="middle">
+          <thead>
+            <tr>
+              <th colSpan="6">
+                <nz-input-group [nzSuffix]="suffixIconSearch">
+                  <input
+                    type="text"
+                    nz-input
+                    placeholder="Search delivery notes..."
+                    (keyup)="searchDeliveryNotes($event)"
+                  />
+                </nz-input-group>
+                <ng-template #suffixIconSearch>
+                  <i nz-icon nzType="search"></i>
+                </ng-template>
+              </th>
+            </tr>
+            <tr>
+              <th>ID</th>
+              <th>Job Title</th>
+              <th>Description</th>
+              <th>Completed Date</th>
+              <th>Collected At</th>
+              <th>View</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let note of deliveryNotesTable.data">
+              <td><b>#{{note.delivery_note_id}}</b></td>
+              <td>{{getJobTitle(note)}}</td>
+              <td>
+                <div [nz-tooltip]="getJobDescription(note)">
+                  {{ getJobDescription(note) | slice:0:80 }}{{ getJobDescription(note).length > 80 ? '...' : '' }}
+                </div>
+              </td>
+
+
+              <td>{{getCompletedDate(note.completed_at)}}</td>
+              <td>{{getCollectedAt(note.job_card_created_at)}}</td>
+              <td>
+                <button
+                  nz-button
+                  nzType="primary"
+                  nzSize="small"
+                  (click)="viewDeliveryNote(note)"
+                  [disabled]="!note.delivery_note_url">
+                  <i nz-icon nzType="eye" nzTheme="outline"></i> View
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+    </nz-spin>
 
     <button nz-button (click)="showHelp()" style="margin-top: 16px;">
       <span nz-icon nzType="question-circle" nzTheme="outline"></span>
@@ -78,7 +77,6 @@
     </button>
   </div>
 </div>
-
 
 <nz-modal
   [nzWidth]="800"
@@ -103,7 +101,6 @@
 
         <div class="help-section">
           <h3><i nz-icon nzType="appstore" nzTheme="outline" style="margin-right: 8px;"></i> Key Features</h3>
-
           <div class="feature">
             <h4><i nz-icon nzType="container" nzTheme="outline" style="margin-right: 8px;"></i> Document Tracking</h4>
             <ul>
@@ -112,20 +109,10 @@
               <li>Quickly verify delivery completion</li>
             </ul>
           </div>
-
-          <div class="feature">
-            <h4><i nz-icon nzType="search" nzTheme="outline" style="margin-right: 8px;"></i> Navigation</h4>
-            <ul>
-              <li>Sort by Delivery Note ID</li>
-              <li>Filter by Job Card ID</li>
-              <li>View status at a glance</li>
-            </ul>
-          </div>
         </div>
 
         <div class="help-section">
           <h3><i nz-icon nzType="question-circle" nzTheme="outline" style="margin-right: 8px;"></i> How to Use</h3>
-
           <div class="usage-step">
             <h4><i nz-icon nzType="eye" nzTheme="outline" style="margin-right: 8px;"></i> Viewing a Delivery Note</h4>
             <ol>
@@ -135,24 +122,6 @@
               <li>Print or download as needed</li>
             </ol>
             <p class="warning-text"><i nz-icon nzType="warning" nzTheme="outline"></i> Grayed out buttons indicate unavailable documents</p>
-          </div>
-
-          <div class="usage-step">
-            <h4><i nz-icon nzType="reload" nzTheme="outline" style="margin-right: 8px;"></i> Refreshing the List</h4>
-            <ol>
-              <li>If notes aren't loading:</li>
-              <li>Click <button nz-button nzType="primary" nzSize="small"><i nz-icon nzType="reload" nzTheme="outline"></i> Retry</button></li>
-              <li>Check your network connection</li>
-            </ol>
-          </div>
-        </div>
-
-        <div class="help-section troubleshooting">
-          <h3><i nz-icon nzType="exclamation-circle" nzTheme="outline" style="margin-right: 8px;"></i> Troubleshooting</h3>
-          <div class="warning">
-            <p><strong>Can't view document?</strong> The note may not have generated properly</p>
-            <p><strong>Missing job card?</strong> Verify the job exists in the system</p>
-            <p><strong>Empty list?</strong> Check if any deliveries have been processed</p>
           </div>
         </div>
       </div>

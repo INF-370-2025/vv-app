@@ -11,6 +11,7 @@ interface DeliveryNote {
   job_card_id: number;
   job_card_created_at: string;
   completed_at: string;
+  date_of_collection?: string;
   special_instructions?: string;
   job_card_status_id: number;
   job_card_status: {
@@ -131,4 +132,16 @@ export class CustomerDeliveryNotesComponent implements OnInit {
   showHelp(): void {
     this.showHelpModal = true;
   }
+
+  getCollectedAt(createdAt: string): string {
+    if (!createdAt) return 'N/A';
+    try {
+      const date = new Date(createdAt);
+      if (isNaN(date.getTime())) return 'N/A';
+      return date.toLocaleDateString();
+    } catch {
+      return 'N/A';
+    }
+  }
+
 }

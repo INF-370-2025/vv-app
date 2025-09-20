@@ -7,6 +7,7 @@ import { NotificationService } from '../../../services/notification.service';
 import { SupabaseService } from '../../../services/supabase.service';
 import { AppModule } from '../../../app.module';
 import { ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 
 interface DeliveryNotePayload {
   delivery_note_id?: number;
@@ -41,7 +42,8 @@ export class CreateDeliveryNoteComponent implements OnInit {
     private apiService: ApiService,
     private notification: NotificationService,
     private supabase: SupabaseService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {
     this.deliveryNoteForm = this.fb.group({
       job_card_id: [null, [Validators.required]]
@@ -164,5 +166,7 @@ export class CreateDeliveryNoteComponent implements OnInit {
 
   cancel(): void {
     this.closeForm.emit();
+    this.router.navigate(['/delivery_note']);
   }
+
 }
