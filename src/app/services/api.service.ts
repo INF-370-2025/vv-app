@@ -560,18 +560,19 @@ export class ApiService {
     );
   }
 
-  get_all_stock() {
-    return this.http.get<any>(environment.api_url + this.stock_ep + `/get_all_stock`);
+    get_all_stock() {
+      return this.http.get<any>(environment.api_url + this.stock_ep + `/get_all_stock`);
+    }
+
+  get_stock_categories() {
+    return this.http.get<any>(environment.api_url + this.stock_ep + `/get_stock_categories`);
+
   }
 
   get_stock(stock_id: number) {
     return this.http.get<any>(
       environment.api_url + this.stock_ep + `/get_stock/${stock_id}`
     );
-  }
-
-  get_stock_categories() {
-    return this.http.get<any>(environment.api_url + this.stock_ep + `/get_stock_categories`);
   }
 
   create_stock(stock: any) {
