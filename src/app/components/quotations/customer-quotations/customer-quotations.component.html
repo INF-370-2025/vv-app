@@ -20,9 +20,9 @@
                                         <i nz-icon nzType="search"></i>
                                     </ng-template>
                                 </th>
-                                <th>Job Title</th>
+                                <th>Job Info</th>
                                 <th>Quote Total</th>
-                                <th>Contact Person</th>
+                                <!-- <th>Contact Person</th> -->
                                 <th>
                                     <p style="text-align: center;font-weight: 600;">
                                         {{pending.length}} Requests
@@ -43,15 +43,16 @@
                                     <nz-tag [nzColor]="'yellow'">Pending</nz-tag>
                                 </td>
                                 <td>
-                                    <b>{{quote.job_request?.title | titlecase}}</b>
+                                    <b>Title: </b>{{quote.job_request?.title | titlecase}}<br>
+                                    <b>Description: </b>{{quote.job_request?.description | titlecase}}
                                 </td>
                                 <td>
                                     {{quote.total_cost | currency:'R':'symbol' }}
                                 </td>
-                                <td>
+                                <!-- <td>
                                   <nz-avatar nzIcon="user" [nzSrc]="quote.job_request?.customer?.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ quote.job_request?.customer?.user?.name"></nz-avatar>
                                   {{ (quote.job_request?.customer?.user?.name || '') + (quote.job_request?.customer?.user?.phone_number ? ' | ' + quote.job_request?.customer?.user?.phone_number : '') || '-' }}
-                                </td>
+                                </td> -->
                                 <td style="text-align: center;">
                                     <button nz-button nzType="primary" (click)="viewQuote(quote)">
                                       <i nz-icon nzType="eye" nzTheme="outline"></i>
@@ -87,9 +88,9 @@
                                         <i nz-icon nzType="search"></i>
                                     </ng-template>
                                 </th>
-                                <th>Job Title</th>
+                                <th>Job Info</th>
                                 <th>Quote Total</th>
-                                <th>Contact Person</th>
+                                <!-- <th>Contact Person</th> -->
                                 <th>Invoice Status</th> <!-- New column -->
                                 <th>
                                     <p style="text-align: center;font-weight: 600;">
@@ -111,12 +112,13 @@
                                     <nz-tag [nzColor]="'green'">Accepted</nz-tag>
                                 </td>
                                 <td>
-                                    <b>{{quote.job_request?.title | titlecase}}</b>
+                                    <b>Title: </b>{{quote.job_request?.title | titlecase}}<br>
+                                    <b>Description: </b>{{quote.job_request?.description | titlecase}}
                                 </td>
                                 <td>
                                     {{quote.total_cost | currency:'R':'symbol' }}
                                 </td>
-                                <td>
+                                <!-- <td>
                                     <nz-avatar nzIcon="user"
                                               [nzSrc]="quote.job_request?.customer?.user?.image ||
                                                       'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+
@@ -124,7 +126,7 @@
                                     </nz-avatar>
                                     {{ quote.job_request?.customer?.user?.name || '' }} {{ quote.job_request?.customer?.user?.surname || '' }}
                                     <div>{{ quote.job_request?.customer?.user?.phone_number || '-' }}</div>
-                                </td>
+                                </td> -->
                                 <!-- Invoice Status Column -->
                                 <td>
                                     <nz-tag *ngIf="quote.has_invoice" [nzColor]="'blue'">Invoice Created</nz-tag>
@@ -165,9 +167,9 @@
                                         <i nz-icon nzType="search"></i>
                                     </ng-template>
                                 </th>
-                                <th>Job Title</th>
+                                <th>Job Info</th>
                                 <th>Quote Total</th>
-                                <th>Contact Person</th>
+                                <!-- <th>Contact Person</th> -->
                                 <th>
                                     <p style="text-align: center;font-weight: 600;">
                                         {{pending.length}} Requests
@@ -188,15 +190,16 @@
                                     <nz-tag [nzColor]="'red'">Rejected</nz-tag>
                                 </td>
                                 <td>
-                                    <b>{{quote.job_request?.title | titlecase}}</b>
+                                    <b>Title: </b>{{quote.job_request?.title | titlecase}}<br>
+                                    <b>Description: </b>{{quote.job_request?.description | titlecase}}
                                 </td>
                                 <td>
                                     {{quote.total_cost | currency:'R':'symbol' }}
                                 </td>
-                                <td>
+                                <!-- <td>
                                     <nz-avatar nzIcon="user" [nzSrc]="quote.job_request?.customer?.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ quote.job_request?.customer?.user?.name"></nz-avatar>
                                     {{quote.job_request?.customer?.user?.name + ' | ' + quote.job_request?.customer?.user?.phone_number || '-'}}
-                                </td>
+                                </td> -->
                                 <td style="text-align: center;">
                                     <button nz-button nzType="primary" (click)="viewQuote(quote)">
                                   <i nz-icon nzType="eye" nzTheme="outline"></i>

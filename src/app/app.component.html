@@ -19,25 +19,34 @@
                     <span>Home</span>
                 </a>
             </li>
-            <li nz-menu-item nzMatchRouter="job-requests">
-                <a routerLink="job-requests" routerLinkActive="activebutton">
-                    <i nz-icon nzType="vv:job_requests" style="font-size: 20px !important;"></i>
-                    <span>Job Requests</span>
-                    <nz-badge nzSize="small" [nzCount]="4" [nzOverflowCount]="9" [nzOffset]="[5, 0]"></nz-badge>
-                </a>
+
+
+            <li nz-menu-item nzMatchRouter="job-requests"
+                [ngClass]="{'menu-item-new': newJobRequestsCount > 0}">
+              <a routerLink="job-requests" routerLinkActive="activebutton" (click)="markJobRequestsAsSeen()">
+                <i nz-icon nzType="vv:job_requests" style="font-size: 20px !important;"></i>
+                <span>Job Requests</span>
+              </a>
             </li>
-            <li nz-menu-item nzMatchRouter="quotations">
-                <a routerLink="quotations" routerLinkActive="activebutton">
-                    <i nz-icon nzType="file-text" nzTheme="outline"></i>
-                    <span>Quotations</span>
-                </a>
+
+            <li nz-menu-item nzMatchRouter="quotations"
+                [ngClass]="{'menu-item-new': newQuotationsCount > 0}">
+              <a routerLink="quotations" routerLinkActive="activebutton" (click)="markQuotationsAsSeen()">
+                <i nz-icon nzType="file-text" nzTheme="outline"></i>
+                <span>Quotations</span>
+              </a>
             </li>
-            <li nz-menu-item nzMatchRouter="invoices">
-                <a routerLink="invoices" routerLinkActive="activebutton">
-                    <i nz-icon nzType="file-pdf" nzTheme="outline"></i>
-                    <span>Invoices</span>
-                </a>
+
+            <li nz-menu-item nzMatchRouter="invoices"
+                [ngClass]="{'menu-item-new': newInvoicesCount > 0}">
+              <a routerLink="invoices" routerLinkActive="activebutton" (click)="markInvoicesAsSeen()">
+                <i nz-icon nzType="file-pdf" nzTheme="outline"></i>
+                <span>Invoices</span>
+              </a>
             </li>
+
+
+
             <li nz-menu-item nzMatchRouter="job-cards">
                 <a routerLink="job-cards" routerLinkActive="activebutton">
                     <i nz-icon nzType="vv:engineering" style="font-size: 20px !important;"></i>
@@ -45,36 +54,22 @@
                 </a>
             </li>
 
-            <!-- <li nz-menu-item nzMatchRouter="reciepts">
-                <a routerLink="reciepts" routerLinkActive="activebutton">
-                    <i nz-icon nzType="file-done" nzTheme="outline"></i>
-                    <span>Receipts</span>
-                </a>
-            </li> -->
-            <li nz-menu-item nzMatchRouter="user">
-                <a routerLink="user" routerLinkActive="activebutton">
-                    <i nz-icon nzType="team"></i>
-                    <span>Users</span>
-                </a>
+
+            <li nz-menu-item nzMatchRouter="delivery_note">
+              <a routerLink="delivery_note" routerLinkActive="activebutton">
+                <i nz-icon nzType="car" nzTheme="outline"></i>
+                <span>Delivery Notes</span>
+              </a>
             </li>
-            <!-- <li nz-menu-item nzMatchRouter="employee">
-                <a routerLink="employee" routerLinkActive="activebutton">
-                    <i nz-icon nzType="usergroup-add"></i>
-                    <span>Employees</span>
-                </a>
-            </li> -->
-             <li nz-menu-item nzMatchRouter="role">
-                <a routerLink="role" routerLinkActive="activebutton">
-                    <i nz-icon nzType="sliders"></i>
-                    <span>Roles</span>
-                </a>
-            </li>
+
+
             <li nz-menu-item nzMatchRouter="stock">
               <a routerLink="stock" routerLinkActive="activebutton">
                 <i nz-icon nzType="appstore" nzTheme="outline"></i>
                 <span>Stock</span>
               </a>
             </li>
+
 
             <li nz-menu-item nzMatchRouter="pattern">
               <a routerLink="pattern" routerLinkActive="activebutton">
@@ -83,12 +78,38 @@
               </a>
             </li>
 
-            <li nz-menu-item nzMatchRouter="delivery_note">
-              <a routerLink="delivery_note" routerLinkActive="activebutton">
-                <i nz-icon nzType="car" nzTheme="outline"></i>
-                <span>Delivery Notes</span>
-              </a>
+
+            <!-- <li nz-menu-item nzMatchRouter="reciepts">
+                <a routerLink="reciepts" routerLinkActive="activebutton">
+                    <i nz-icon nzType="file-done" nzTheme="outline"></i>
+                    <span>Receipts</span>
+                </a>
+            </li> -->
+
+
+            <li nz-menu-item nzMatchRouter="user">
+                <a routerLink="user" routerLinkActive="activebutton">
+                    <i nz-icon nzType="team"></i>
+                    <span>Users</span>
+                </a>
             </li>
+
+
+            <!-- <li nz-menu-item nzMatchRouter="employee">
+                <a routerLink="employee" routerLinkActive="activebutton">
+                    <i nz-icon nzType="usergroup-add"></i>
+                    <span>Employees</span>
+                </a>
+            </li> -->
+
+
+             <li nz-menu-item nzMatchRouter="role">
+                <a routerLink="role" routerLinkActive="activebutton">
+                    <i nz-icon nzType="sliders"></i>
+                    <span>Roles</span>
+                </a>
+            </li>
+
 
             <li nz-menu-item nzMatchRouter="help">
               <a routerLink="help" routerLinkActive="activebutton">
@@ -103,7 +124,6 @@
                     <i nz-icon nzType="logout"></i>
                     <span>Logout</span>
                 </a>
-
             </li>
         </ul>
     </nz-sider>

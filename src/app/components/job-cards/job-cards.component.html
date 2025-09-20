@@ -227,78 +227,81 @@
             <!-- Completed Tab -->
             <nz-tab [nzTitle]="'Completed'">
                 <nz-spin [nzSpinning]="isloading">
-                    <nz-table #completedTable [nzData]="completed" [nzPageSize]="20">
+                    <nz-table #completedTable [nzData]="getFilteredCompletedJobs()" [nzPageSize]="20">
                         <thead>
                             <tr>
                                 <th colSpan="3">
                                     <nz-input-group [nzSuffix]="suffixIconSearch">
                                         <input type="text" nz-input placeholder="Search Here"
-                                               (keyup)="completed = searchJobs($event, 2)" />
+                                              (keyup)="onSearchCompletedJobs($event)" />
                                     </nz-input-group>
                                     <ng-template #suffixIconSearch>
                                         <i nz-icon nzType="search"></i>
                                     </ng-template>
                                 </th>
-                                <th></th>
-                               <th> </th>
-                               <th> </th>
-                               <th>  </th>
-
+                                <th>
+                                    <nz-radio-group [(ngModel)]="completedFilter" (ngModelChange)="applyCompletedFilter()">
+                                        <label nz-radio nzValue="all">All</label>
+                                        <label nz-radio nzValue="withNote">With Delivery Note</label>
+                                        <label nz-radio nzValue="withoutNote">Without Delivery Note</label>
+                                    </nz-radio-group>
+                                </th>
+                                <th> </th>
+                                <th> </th>
+                                <th>  </th>
                             </tr>
                         </thead>
                         <tbody class="table-body">
                             <tr *ngFor="let job of completedTable.data">
                                 <td><b>#{{job.job_card_id}}</b></td>
-                                <!-- <td>
-                                    <b>Started:</b> {{job.created_at | date:"medium"}}
-                                </td> -->
                                 <td>
-                                    <b>Title:</b> {{job.quotation?.job_request?.title}}<br>
-                                    <b>Description:</b> {{job.quotation?.job_request?.description | slice:0:50}}...
+                                  <b>Started:</b> {{ job.created_at | date:"medium" }}<br>
+                                  <b>Completed:</b>
+                                  <ng-container *ngIf="completedDates[job.job_card_id] === undefined">
+                                    {{ fetchCompletedDate(job) }} Loading...
+                                  </ng-container>
+                                  <ng-container *ngIf="completedDates[job.job_card_id] === 'loading'">
+                                    Loading...
+                                  </ng-container>
+                                  <ng-container *ngIf="isDate(completedDates[job.job_card_id])">
+                                    {{ completedDates[job.job_card_id] | date:"medium" }}
+                                  </ng-container>
+                                  <ng-container *ngIf="completedDates[job.job_card_id] === null">
+                                    Not completed
+                                  </ng-container>
                                 </td>
-                                <td>
-                                    <b>Started:</b> {{job.created_at | date:"medium"}}<br>
-                                    <b>Completed:</b> {{job.completed_at}}
-                                </td>
-                                <!-- <td>
-                                    <b>Status:</b>
-                                    <nz-tag [nzColor]="'green'">Completed</nz-tag>
-                                </td> -->
-                                <!-- <td>
-                                  {{job.quotation?.job_request?.customer?.company_name || '-' }}
-                                </td> -->
-                                <!-- <td>
-                                    {{job.quotation?.job_request?.customer?.user?.name || ''}}
-                                    {{job.quotation?.job_request?.customer?.user?.surname || ''}} |
-                                    {{job.quotation?.job_request?.customer?.user?.phone_number || '-'}}
-                                </td> -->
                                 <td>
                                     <b>Company: </b> {{job.quotation?.job_request?.customer?.company_name}}<br>
                                     <b>Contact: </b>
                                     <nz-avatar nzIcon="user"
                                               [nzSrc]="job.quotation?.job_request?.customer?.user?.image ||
-                                                       'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+
-                                                       job.quotation?.job_request?.customer?.user?.name"></nz-avatar>
+                                                      'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+
+                                                      job.quotation?.job_request?.customer?.user?.name"></nz-avatar>
                                     {{job.quotation?.job_request?.customer?.user?.name || ''}}
                                     {{job.quotation?.job_request?.customer?.user?.surname || ''}} |
                                     {{job.quotation?.job_request?.customer?.user?.phone_number || '-'}}
                                 </td>
                                 <td>
-                                  <div class="action-buttons" (click)="createDeliveryNote(job)">
-                                    <button nz-button nzType="primary"
-                                      nzTooltipTitle="Delivery Note"> Create Delivery Note
+                                  <div class="action-buttons">
+                                    <!-- Show spinner while delivery notes are loading -->
+                                    <div *ngIf="deliveryNotesLoading" class="delivery-note-loading">
+                                      <nz-spin nzSimple [nzSize]="'small'"></nz-spin>
+                                    </div>
+
+                                    <!-- Show button when delivery notes are loaded -->
+                                    <div *ngIf="!deliveryNotesLoading">
+                                      <button nz-button
+                                              nzType="primary"
+                                              [disabled]="hasDeliveryNote(job.job_card_id)"
+                                              (click)="createDeliveryNote(job)"
+                                              nz-tooltip
+                                              [nzTooltipTitle]="hasDeliveryNote(job.job_card_id) ? 'A delivery note is already created for this job' : 'Create Delivery Note'">
+                                        Create Delivery Note
                                         <i nz-icon nzType="car" nzTheme="outline"></i>
-                                    </button>
+                                      </button>
+                                    </div>
                                   </div>
                                 </td>
-                                <!-- <td>
-                                    <div class="action-buttons">
-                                        <button nz-button nzType="primary"
-                                                nzTooltipTitle="Create Invoice"> View Invoice
-                                            <i nz-icon nzType="file-pdf" nzTheme="outline"></i>
-                                        </button>
-                                    </div>
-                                </td> -->
                                 <td>
                                     <div class="action-buttons">
                                         <button nz-button nzType="primary" (click)="viewJobCard(job)"

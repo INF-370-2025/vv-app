@@ -32,6 +32,7 @@ export class AppComponent {
   menuCollapsedWidth = 54;
   menuUnCollapsedWidth = 230;
 
+
   // Modals
   contactModal:boolean= false;
 
@@ -49,6 +50,16 @@ export class AppComponent {
   showSearch = true;
   allowClear = true;
   dropdownMatchSelectWidth = true;
+
+  jobRequests: any[] = [];
+
+  lastViewedJobRequests = new Date(); // load from localStorage or backend
+  lastViewedQuotations = new Date();
+  lastViewedInvoices = new Date();
+
+  newJobRequestsCount = 0;
+  newQuotationsCount = 0;
+  newInvoicesCount = 0;
 
   year: any = new Date().getFullYear();
 
@@ -84,13 +95,63 @@ export class AppComponent {
         this.selectedRole = this.authService.user?.role_id || 1;
       }
     }, 1000);
+    this.loadJobRequests();
+
   }
 
-  // Temp login circumvent
-  async ignoreLogIn(){
-    await this.authService.isLoggedInSubject.next(true)
-    await this.authService.user?.role?.role_id! == 1;
+
+  loadJobRequests(): void {
+    this.apiService.getJobRequests().subscribe({
+      next: (res: any[]) => {
+        this.jobRequests = res;
+
+        // Get last visit timestamp from localStorage
+        const lastVisit = localStorage.getItem('jobRequestsLastVisit') || '1970-01-01T00:00:00Z';
+        const lastVisitDate = new Date(lastVisit);
+
+        // Count new job requests
+        this.newJobRequestsCount = this.jobRequests.filter(j => new Date(j.created_at) > lastVisitDate).length;
+      },
+      error: (err) => {
+        console.error('Error loading job requests', err);
+      }
+    });
   }
+
+
+  checkNewItems(jobRequests: any[], quotations: any[], invoices: any[]) {
+    // Job Requests
+    this.newJobRequestsCount = jobRequests.filter(
+      jr => new Date(jr.created_at) > this.lastViewedJobRequests
+    ).length;
+
+    // Quotations
+    this.newQuotationsCount = quotations.filter(
+      q => new Date(q.created_at) > this.lastViewedQuotations
+    ).length;
+
+    // Invoices (only unpaid = 2)
+    this.newInvoicesCount = invoices.filter(
+      i => i.status === 2 && new Date(i.created_at) > this.lastViewedInvoices
+    ).length;
+  }
+
+  markJobRequestsAsSeen() {
+    this.lastViewedJobRequests = new Date();
+    this.newJobRequestsCount = 0;
+    // optionally save to localStorage or backend
+  }
+
+  markQuotationsAsSeen() {
+    this.lastViewedQuotations = new Date();
+    this.newQuotationsCount = 0;
+  }
+
+  markInvoicesAsSeen() {
+    this.lastViewedInvoices = new Date();
+    this.newInvoicesCount = 0;
+  }
+
 
   //#region Auth
 

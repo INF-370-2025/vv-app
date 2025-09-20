@@ -4,9 +4,9 @@ import { jobCard } from './jobCard';
 export class invoice {
     invoice_id!: number;
     created_at!: Date;
-    invoice_created_at!: Date; // Add this
+    invoice_created_at!: Date;
     job_card_id!: number;
-    quote_id?: number; // Add this
+    quote_id?: number;
     job_card?: jobCard;
     total!: number;
     invoice_status_id!: number;
@@ -15,7 +15,7 @@ export class invoice {
     invoice_number!: string;
     pop!: string;
 
-    // Add these properties for the new view structure
+    // Existing
     direct_customer?: {
         customer_id: number;
         company_name: string;
@@ -35,6 +35,18 @@ export class invoice {
             image: string;
         };
     };
+
+    // Add this to match your view
+    direct_quote?: {
+        quotation_id?: number;
+        quotation_number?: string;
+        job_request?: {
+            job_request_id?: number;
+            title?: string;
+            description?: string;
+            finish_date?: string;
+        };
+    };
 }
 
 export class invoiceStatus {
@@ -45,7 +57,7 @@ export class invoiceStatus {
 export class upsertInvoice {
     invoice_id!: number;
     job_card_id!: number;
-    quote_id?: number; // Add this
+    quote_id?: number;
     total!: number;
     invoice_url!: string;
     invoice_number!: string;

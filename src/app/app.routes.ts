@@ -18,6 +18,7 @@ import { DeliveryNoteComponent } from './components/delivery-note/delivery-note.
 import { HelpComponent } from './components/help/help.component';
 import { PaymentSuccessComponent } from './components/invoices/payment-success/payment-success.component';
 import { AdminDeliveryNoteComponent } from './components/delivery-note/admin-delivery-note/admin-delivery-note.component';
+import { CreateDeliveryNoteComponent } from './components/delivery-note/create-delivery-note/create-delivery-note.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: '/login' },
@@ -38,6 +39,7 @@ export const routes: Routes = [
   { path: 'delivery_note', component:DeliveryNoteComponent},
   {path: 'help', component: HelpComponent},
   { path: 'payment-success', component: PaymentSuccessComponent },
-  { path: 'payment-cancel', component: PaymentCancelComponent }
+  { path: 'payment-cancel', component: PaymentCancelComponent },
+  {path: 'create-delivery-note', component: CreateDeliveryNoteComponent}
 
 ];

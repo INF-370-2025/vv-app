@@ -427,6 +427,19 @@ export class ApiService {
 
     general_ep = 'general';
 
+
+    get_revenue_data() {
+      return this.http.get<any>(environment.api_url + this.general_ep + `/get_revenue_data`);
+    }
+
+    get_pending_job_requests(timeFilter: string) {
+      return this.http.get<any>(environment.api_url + this.general_ep + `/get_pending_job_requests?filter=${timeFilter}`);
+    }
+
+    getJobCompletionTimeline() {
+      return this.http.get<any>(environment.api_url + this.general_ep + `/get_job_completion_timeline`);
+    }
+
     get_faqs() {
       return this.http.get<any>(environment.api_url + this.general_ep + `/get_faqs`);
     }
