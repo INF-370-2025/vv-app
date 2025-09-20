@@ -28,7 +28,7 @@ export class CreateQuotationComponent {
     ]),
     total_cost: new FormControl(null, [
       Validators.required,
-      Validators.min(0.01)
+      Validators.min(10)
     ]),
   });
 
