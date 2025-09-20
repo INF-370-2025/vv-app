@@ -1,31 +1,24 @@
-// src/app/services/api.service.ts
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { contact } from '../models/general';
-import { insertJobRequest } from '../models/jobRequest';
+import { insertJobRequest, jobRequest } from '../models/jobRequest';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { customer } from '../models/user';
 
-/** ---------------- Helper to unwrap common API envelopes ----------------
- * Supports:
- *  - { data: {...}, error?: string }
- *  - { data: [ {...} ], error?: string }
- *  - plain {...}
- *  - plain [ {...} ]
- */
-type ApiEnvelope<T> = { data?: T | T[]; error?: string; message?: string } | T | T[];
+// Export lightweight shapes you can reuse in components
+export interface BaseUser {
+  user_id: number;
+  name: string;
+  surname: string;
+  email_address: string;
+  phone_number: string;
+  image?: string | null;
+}
 
-function unwrapRow<T>(res: ApiEnvelope<T>): T | null {
-  if (Array.isArray(res)) return (res[0] ?? null) as T | null;     // plain array
-  if (res && typeof res === 'object' && !('data' in res)) {
-    return res as T;                                               // plain object row
-  }
-  const r = res as { data?: T | T[]; error?: string };
-  if (r?.error) throw new Error(r.error);
-  if (Array.isArray(r?.data)) return (r!.data![0] ?? null) as T | null;
-  return (r?.data ?? null) as T | null;
+export interface Customer {
+  customer_id: number;
+  user: BaseUser;
+  // add extra fields your backend returns as needed
 }
 
 @Injectable({
@@ -38,7 +31,7 @@ export class ApiService {
   //#region Default
 
   send_email(email: any) {
-    return this.http.post<any>(environment.api_url + 'send-email', email);
+    return this.http.post<any>(environment.api_url + 'send-email', email)
   }
 
   //#endregion
@@ -48,11 +41,11 @@ export class ApiService {
   customers_ep = 'customers';
 
   get_customers() {
-    return this.http.get<any>(environment.api_url + this.customers_ep + `/get_customers`);
+    return this.http.get<any>(environment.api_url + this.customers_ep + `/get_customers`)
   }
 
   get_customer_types() {
-    return this.http.get<any>(environment.api_url + this.customers_ep + `/get_customer_types`);
+    return this.http.get<any>(environment.api_url + this.customers_ep + `/get_customer_types`)
   }
 
   create_customer(customer: any) {
@@ -61,38 +54,6 @@ export class ApiService {
 
   update_customer(customer_id: number, customer: any) {
     return this.http.put<any>(environment.api_url + this.customers_ep + `/update_customer/${customer_id}`, customer);
-  }
-
-  /** Returns the customer row or null (does NOT throw if missing) */
-  get_profile_customer_or_null(user_id: number) {
-    const url = `${environment.api_url}${this.users_ep}/get_user_customer/${user_id}`;
-    return this.http.get<any>(url).pipe(
-      map((res: any) => {
-        // handle common shapes: {data}, [row], row
-        const data = res?.data ?? res;
-        if (Array.isArray(data)) return (data[0] ?? null) as customer | null;
-        if (data && typeof data === 'object') return (data as customer) ?? null;
-        return null;
-      })
-    );
-  }
-
-  /**
-   * Creates a minimal/blank customer row for an existing user_id.
-   * Adjust required fields if your backend requires more (e.g. customer_type_id).
-   */
-  create_blank_customer_for_user(user_id: number, seed?: Partial<customer>) {
-    const payload = {
-      user_id,
-      company_name: seed?.company_name ?? '',
-      telephone: seed?.telephone ?? '',
-      registration_number: seed?.registration_number ?? '',
-      vat_number: seed?.vat_number ?? '',
-      address: seed?.address ?? ''
-      // If your backend needs customer_type_id or others, set them here:
-      // customer_type_id: seed?.customer_type_id ?? 1
-    };
-    return this.create_customer(payload);
   }
 
   //#endregion
@@ -156,11 +117,11 @@ export class ApiService {
   employees_ep = 'employees';
 
   get_employees() {
-    return this.http.get<any>(environment.api_url + this.employees_ep + `/get_employees`);
+    return this.http.get<any>(environment.api_url + this.employees_ep + `/get_employees`)
   }
 
   get_employee_warnings() {
-    return this.http.get<any>(environment.api_url + this.employees_ep + `/get_employee_warnings`);
+    return this.http.get<any>(environment.api_url + this.employees_ep + `/get_employee_warnings`)
   }
 
   create_employee_pay_slip(employee_pay_slip: any) {
@@ -192,16 +153,9 @@ export class ApiService {
   }
 
   get_time_logs() {
-    return this.http.get<any>(environment.api_url + this.employees_ep + `/get_time_logs`);
+    return this.http.get<any>(environment.api_url + this.employees_ep + `/get_time_logs`)
   }
 
-    clock_in(employee_id: number) {
-      return this.http.get<any>(environment.api_url +  this.employees_ep  + `/clock_in/${employee_id}`)
-    }
-
-    clock_out(employee_id: number) {
-      return this.http.get<any>(environment.api_url + this.employees_ep  + `/clock_out/${employee_id}`)
-    }
   get_artisans() {
     return this.http.get<any>(
       environment.api_url + this.employees_ep + '/get_artisans'
@@ -215,7 +169,7 @@ export class ApiService {
   users_ep = 'users';
 
   get_users() {
-    return this.http.get<any>(environment.api_url + this.users_ep + `/get_users`);
+    return this.http.get<any>(environment.api_url + this.users_ep + `/get_users`)
   }
 
   create_user(user: any) {
@@ -233,24 +187,21 @@ export class ApiService {
   }
 
   get_profile_employee(user_id: number) {
-    return this.http.get<any>(environment.api_url + this.users_ep + `/get_user_employee/${user_id}`);
+    return this.http.get<any>(environment.api_url + this.users_ep + `/get_user_employee/${user_id}`)
   }
 
   get_profile_customer(user_id: number) {
-    return this.http.get<any>(environment.api_url + this.users_ep + `/get_user_customer/${user_id}`);
+    return this.http.get<any>(environment.api_url + this.users_ep + `/get_user_customer/${user_id}`)
   }
 
-  /** Clean version (optional): returns the customer row with nested `user` directly, or throws if missing */
+  // === Shims to match component calls ===
+  // If your backend has distinct endpoints for these, swap the implementation later.
+  get_profile_customer_or_null(user_id: number) {
+    return this.get_profile_customer(user_id);
+  }
+
   get_profile_customer_clean(user_id: number) {
-    const url = `${environment.api_url}${this.users_ep}/get_user_customer/${user_id}`;
-    return this.http.get<any>(url).pipe(
-      map((res: any) => {
-        const row = unwrapRow<customer>(res);
-        if (!row) throw new Error('No customer found for this user.');
-        if (!row.user) throw new Error('Customer row is missing joined user.');
-        return row;
-      })
-    );
+    return this.get_profile_customer(user_id);
   }
 
   //#endregion
@@ -260,19 +211,19 @@ export class ApiService {
   job_requests_ep = 'job_requests';
 
   getJobRequests() {
-    return this.http.get<any>(environment.api_url + this.job_requests_ep + `/get_job_requests`);
+    return this.http.get<any>(environment.api_url + this.job_requests_ep + `/get_job_requests`)
   }
 
   get_job_requests_user(user_id: number) {
-    return this.http.get<any>(environment.api_url + this.job_requests_ep + `/get_job_requests_user/${user_id}`);
+    return this.http.get<any>(environment.api_url + this.job_requests_ep + `/get_job_requests_user/${user_id}`)
   }
 
   rejectJob(job_request_id: number) {
-    return this.http.get<any>(environment.api_url + this.job_requests_ep + `/reject_job_request/${job_request_id}`);
+    return this.http.get<any>(environment.api_url + this.job_requests_ep + `/reject_job_request/${job_request_id}`)
   }
 
   create_job_request(job_request: insertJobRequest) {
-    return this.http.post<any>(environment.api_url + this.job_requests_ep + `/create_job_request`, job_request);
+    return this.http.post<any>(environment.api_url + this.job_requests_ep + `/create_job_request`, job_request)
   }
 
   cancel_job_request(job_request_id: number) {
@@ -288,7 +239,7 @@ export class ApiService {
   job_cards_ep = 'job_cards';
 
   get_job_card_statuses() {
-    return this.http.get<any>(environment.api_url + this.job_cards_ep + `/get_job_card_statuses`);
+    return this.http.get<any>(environment.api_url + this.job_cards_ep + `/get_job_card_statuses`)
   }
 
   get_job_card_status(job_card_status_id: number) {
@@ -298,7 +249,7 @@ export class ApiService {
   }
 
   get_job_cards() {
-    return this.http.get<any>(environment.api_url + this.job_cards_ep + `/get_job_cards`);
+    return this.http.get<any>(environment.api_url + this.job_cards_ep + `/get_job_cards`)
   }
 
   get_job_card(job_card_id: number) {
@@ -322,7 +273,7 @@ export class ApiService {
 
   update_job_card(job_card_id: number, job_card: any) {
     return this.http.put<any>(
-      environment.api_url +  this.job_cards_ep + `/update_job_card/${job_card_id}`,
+      environment.api_url + this.job_cards_ep + `/update_job_card/${job_card_id}`,
       job_card
     );
   }
@@ -340,9 +291,7 @@ export class ApiService {
     );
   }
 
-
-
-  get_completed_job_cards(){
+  get_completed_job_cards() {
     return this.http.get<any>(environment.api_url + this.job_cards_ep + `/get_completed_job_cards`)
   }
 
@@ -354,7 +303,7 @@ export class ApiService {
   quotation_statuses_ep = 'quotation_statuses';
 
   get_quotation_statuses() {
-    return this.http.get<any>(environment.api_url + this.quotations_ep + `/get_quotation_statuses`);
+    return this.http.get<any>(environment.api_url + this.quotations_ep + `/get_quotation_statuses`)
   }
 
   get_quotation_status(quotation_status_id: number) {
@@ -364,11 +313,11 @@ export class ApiService {
   }
 
   get_quotations() {
-    return this.http.get<any>(environment.api_url + this.quotations_ep + `/get_quotations`);
+    return this.http.get<any>(environment.api_url + this.quotations_ep + `/get_quotations`)
   }
 
   get_quotations_user(user_id: number) {
-    return this.http.get<any>(environment.api_url + this.quotations_ep + `/get_quotations_user/${user_id}`);
+    return this.http.get<any>(environment.api_url + this.quotations_ep + `/get_quotations_user/${user_id}`)
   }
 
   get_quotation(quotation_id: number) {
@@ -401,8 +350,7 @@ export class ApiService {
 
   get_pending_quotes() {
     return this.http.get<any>(
-      environment.api_url + this.quotations_ep + '/pending_quotes'
-    );
+      environment.api_url + this.quotations_ep + '/pending_quotes');
   }
 
   //#endregion
@@ -412,7 +360,7 @@ export class ApiService {
   invoices_ep = 'invoices';
 
   get_invoices() {
-    return this.http.get<any>(environment.api_url + this.invoices_ep + `/get_invoices`);
+    return this.http.get<any>(environment.api_url + this.invoices_ep + `/get_invoices`)
   }
 
   update_invoice(invoice_id: number, invoice: any) {
@@ -423,7 +371,7 @@ export class ApiService {
   }
 
   get_invoices_user(user_id: number) {
-    return this.http.get<any>(environment.api_url + this.invoices_ep + `/get_invoices_user/${user_id}`);
+    return this.http.get<any>(environment.api_url + this.invoices_ep + `/get_invoices_user/${user_id}`)
   }
 
   update_invoice_status(invoice_id: number) {
@@ -449,14 +397,12 @@ export class ApiService {
 
   get_unpaid_invoices() {
     return this.http.get<any>(
-      environment.api_url + this.invoices_ep + '/unpaid_invoices'
-    );
+      environment.api_url + this.invoices_ep + '/unpaid_invoices');
   }
 
-  // In your api.service.ts
   confirmPayFastPayment(invoiceId: number) {
     return this.http.post(
-      environment.api_url +  this.invoices_ep +`/payfast-confirm/${invoiceId}`, {});
+      environment.api_url + this.invoices_ep + `/payfast-confirm/${invoiceId}`, {});
   }
 
   //#endregion
@@ -466,18 +412,20 @@ export class ApiService {
   get_receipts_ep = 'receipts';
 
   get_receipts() {
-    return this.http.get<any>(environment.api_url + this.get_receipts_ep + `/get_receipts`);
+    return this.http.get<any>(environment.api_url + this.get_receipts_ep + `/get_receipts`)
   }
 
   get_receipt(receipt_id: number) {
+    // fixed path to /receipts/get_receipt/:id
     return this.http.get<any>(
-      environment.api_url + this.get_receipts_ep + `receipts/get_receipt/${receipt_id}`
+      environment.api_url + this.get_receipts_ep + `/get_receipt/${receipt_id}`
     );
   }
 
   create_receipt(receipt: any) {
+    // fixed path to /receipts/create_receipt
     return this.http.post<any>(
-      environment.api_url + this.get_receipts_ep + 'receipts/create_receipt',
+      environment.api_url + this.get_receipts_ep + `/create_receipt`,
       receipt
     );
   }
@@ -488,49 +436,43 @@ export class ApiService {
 
   general_ep = 'general';
 
+  get_revenue_data() {
+    return this.http.get<any>(environment.api_url + this.general_ep + `/get_revenue_data`);
+  }
 
-    get_revenue_data() {
-      return this.http.get<any>(environment.api_url + this.general_ep + `/get_revenue_data`);
-    }
+  get_pending_job_requests(timeFilter: string) {
+    return this.http.get<any>(environment.api_url + this.general_ep + `/get_pending_job_requests?filter=${timeFilter}`);
+  }
 
-    get_pending_job_requests(timeFilter: string) {
-      return this.http.get<any>(environment.api_url + this.general_ep + `/get_pending_job_requests?filter=${timeFilter}`);
-    }
+  getJobCompletionTimeline() {
+    return this.http.get<any>(environment.api_url + this.general_ep + `/get_job_completion_timeline`);
+  }
 
-    getJobCompletionTimeline() {
-      return this.http.get<any>(environment.api_url + this.general_ep + `/get_job_completion_timeline`);
-    }
-
-    get_faqs() {
-      return this.http.get<any>(environment.api_url + this.general_ep + `/get_faqs`);
-    }
+  get_faqs() {
+    return this.http.get<any>(environment.api_url + this.general_ep + `/get_faqs`);
+  }
 
   getTitles() {
-    return this.http.get<any>(environment.api_url + this.general_ep + `/get_titles`);
+    return this.http.get<any>(environment.api_url + this.general_ep + `/get_titles`)
   }
 
   contactUs(contact: contact) {
-    return this.http.post(environment.api_url + this.general_ep + '/contact_us', contact);
+    return this.http.post(environment.api_url + this.general_ep + "/contact_us", contact);
   }
 
-    getAdminStats() {
-      return this.http.get<any>(environment.api_url + this.general_ep + `/get_admin_stats`)
-    }
+  getAdminStats() {
+    return this.http.get<any>(environment.api_url + this.general_ep + `/get_admin_stats`)
+  }
 
-    getArtisanStats(user_id:number) {
-      return this.http.get<any>(environment.api_url + this.general_ep + `/get_artisan_stats/${user_id}`)
-    }
+  getArtisanStats(user_id: number) {
+    return this.http.get<any>(environment.api_url + this.general_ep + `/get_artisan_stats/${user_id}`)
+  }
 
-    get_logout_timer(timer_id: number) {
-      return this.http.get<any>(
-        environment.api_url + this.general_ep + `/get_logout_timer/${timer_id}`
-      );
-    }
-
-    update_logout_timer(timer_id: number, logout_timer: any) {
-    return this.http.put<any>(
-      environment.api_url +  this.general_ep + `/update_logout_timer/${timer_id}`,
-      logout_timer
+  // NOTE: You have two functions with very similar names that point to different meanings.
+  // Keeping your second one as-is in case other code calls it with job_card_id.
+  get_artisan_stats(job_card_id: number) {
+    return this.http.get<any>(
+      environment.api_url + this.general_ep + `/get_artisan_stats/${job_card_id}`
     );
   }
 
@@ -550,11 +492,11 @@ export class ApiService {
     );
   }
 
+  get_stock_structure() {
+    return this.http.get<any>(environment.api_url + this.stock_ep + `/get_stock_structure`);
+  }
 
-    get_stock_structure() {
-      return this.http.get<any>(environment.api_url + this.stock_ep + `/get_stock_structure`);
-    }
-
+  // Stock Categories
   createStockCategory(categoryName: string) {
     return this.http.post<any>(
       environment.api_url + this.stock_ep + '/create_stock_category',
@@ -618,32 +560,39 @@ export class ApiService {
     );
   }
 
-    get_all_stock() {
-      return this.http.get<any>(environment.api_url + this.stock_ep + `/get_all_stock`);
-    }
-
-  get_stock_categories() {
+  get_all_stock() {
+    return this.http.get<any>(environment.api_url + this.stock_ep + `/get_all_stock`);
   }
 
-    create_stock(stock: any) {
-      return this.http.post<any>(
-        environment.api_url + this.stock_ep + '/create_stock',
-        stock
-      );
-    }
+  get_stock(stock_id: number) {
+    return this.http.get<any>(
+      environment.api_url + this.stock_ep + `/get_stock/${stock_id}`
+    );
+  }
 
-    update_stock(stock: any) {
-      return this.http.put<any>(
-        environment.api_url + this.stock_ep + `/update_stock/${stock.stock_id}`,
-        stock
-      );
-    }
+  get_stock_categories() {
+    return this.http.get<any>(environment.api_url + this.stock_ep + `/get_stock_categories`);
+  }
+
+  create_stock(stock: any) {
+    return this.http.post<any>(
+      environment.api_url + this.stock_ep + '/create_stock',
+      stock
+    );
+  }
+
+  update_stock(stock: any) {
+    return this.http.put<any>(
+      environment.api_url + this.stock_ep + `/update_stock/${stock.stock_id}`,
+      stock
+    );
+  }
 
   export_stock_to_excel(): Observable<Blob> {
     return this.http.get(
       environment.api_url + this.stock_ep + `/export_stock_excel`,
       { responseType: 'blob' }
-    ) as Observable<Blob>;
+    );
   }
 
   //#endregion
@@ -696,8 +645,9 @@ export class ApiService {
   }
 
   get_material(material_id: number) {
+    // fixed to use material_ep (was pattern_ep)
     return this.http.get<any>(
-      environment.api_url + this.pattern_ep + `/get_material/${material_id}`
+      environment.api_url + this.material_ep + `/get_material/${material_id}`
     );
   }
 
@@ -705,7 +655,7 @@ export class ApiService {
     return this.http.get(
       environment.api_url + this.material_ep + `/export_material_excel`,
       { responseType: 'blob' }
-    ) as Observable<Blob>;
+    );
   }
 
   import_material_excel(file: File): Observable<any> {
@@ -726,7 +676,7 @@ export class ApiService {
   delivery_note_ep = 'delivery_notes';
 
   get_delivery_notes() {
-    return this.http.get<any>(environment.api_url + this.delivery_note_ep + `/get_delivery_notes`);
+    return this.http.get<any>(environment.api_url + this.delivery_note_ep + `/get_delivery_notes`)
   }
 
   get_delivery_note(delivery_note_id: number) {
@@ -749,7 +699,8 @@ export class ApiService {
   }
 
   get_delivery_notes_user(user_id: number) {
-    return this.http.get<any>(environment.api_url + this.delivery_note_ep + `/get_devlivery_notes_user/${user_id}`);
+    // NOTE: backend path has "devlivery" in your original code; leaving as-is if that’s the real route
+    return this.http.get<any>(environment.api_url + this.delivery_note_ep + `/get_devlivery_notes_user/${user_id}`)
   }
 
   //#endregion
@@ -764,12 +715,19 @@ export class ApiService {
     );
   }
 
-
   generateClockCode(type: 'clock_in' | 'clock_out', expiresIn: number = 5): Observable<{ code: number, expires_at: string }> {
     return this.http.post<{ code: number, expires_at: string }>(
       environment.api_url + this.employee_time_logs_ep + '/generate-clock-code',
       { type, expires_in: expiresIn }
     );
+  }
+
+  clock_in(employee_id: number) {
+    return this.http.get<any>(environment.api_url + this.employee_time_logs_ep + `/clock_in/${employee_id}`);
+  }
+
+  clock_out(employee_id: number) {
+    return this.http.get<any>(environment.api_url + this.employee_time_logs_ep + `/clock_out/${employee_id}`);
   }
 
   verifyClockCode(employeeId: number, code: number, type: 'clock_in' | 'clock_out'): Observable<{ valid: boolean }> {
