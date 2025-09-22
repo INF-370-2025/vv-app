@@ -1,270 +1,232 @@
 <!--Row-->
 <div nz-row [nzJustify]="'center'">
-    <div nz-col nzSpan="22">
-        <button nz-button (click)="showHelp()">
-  <span nz-icon nzType="question-circle" nzTheme="outline"></span>
-  Get Help
-</button>
+  <div nz-col nzSpan="22">
+    <br>
+    <nz-tabset
+      nzType="card"
+      (nzSelectedIndexChange)="selectedTabChange($event)"
+      [(nzSelectedIndex)]="selectedTabIndex"
+      [nzTabBarExtraContent]="extraTemplate">
 
-        <br>
-        <nz-tabset nzType="card" (nzSelectedIndexChange)="selectedTabChange($event)" [(nzSelectedIndex)]="selectedTabIndex" [nzTabBarExtraContent]="extraTemplate">
+      <!-- Pending Tab -->
+      <nz-tab [nzTitle]="'Pending'">
+        <nz-spin [nzSpinning]="isloading">
+          <nz-table #pendingTable [nzData]="pending" [nzPageSize]="20">
+            <thead>
+              <tr>
+                <th colSpan="3">
+                  <nz-input-group [nzSuffix]="suffixIconSearch">
+                    <input type="text" nz-input placeholder="Search Here" (keyup)="searchPending($event)" />
+                  </nz-input-group>
+                  <ng-template #suffixIconSearch>
+                    <i nz-icon nzType="search"></i>
+                  </ng-template>
+                </th>
+                <th>Company Name</th>
+                <th>Contact Person</th>
+                <th>
+                  <p style="text-align: center;font-weight: 600;">
+                    {{pending.length}} Requests
+                  </p>
+                </th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody class="table-body">
+              <tr *ngFor="let job of pendingTable.data">
+                <td><b>#{{job.job_request_id}}</b></td>
+                <td><b>Requested on:</b> {{job.created_at | date:"medium"}}</td>
+                <td><b>Status:</b> <nz-tag [nzColor]="'yellow'">Pending</nz-tag></td>
+                <td>{{job.customer?.company_name || '-' }}</td>
+                <td>
+                  <nz-avatar
+                    nzIcon="user"
+                    [nzSrc]="job.customer?.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ job.customer?.user?.name">
+                  </nz-avatar>
+                  {{job.customer?.user?.name + ' | ' + job.customer?.user?.phone_number || '-'}}
+                </td>
+                <td style="text-align: center;">
+                  <button nz-button nzType="primary" (click)="viewJob(job)">
+                    <i nz-icon nzType="eye" nzTheme="outline"></i> View
+                  </button>
+                </td>
+                <td style="text-align: center;">
+                  <button
+                    style="margin-left: 5px;"
+                    nz-button
+                    nzType="default"
+                    nzDanger
+                    (click)="initiateCancel(job)">
+                    <i nz-icon nzType="close-circle" nzTheme="outline"></i> Cancel
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </nz-spin>
+      </nz-tab>
 
-            <!-- Pending Tab -->
-            <nz-tab [nzTitle]="'Pending'">
-                <nz-spin [nzSpinning]="isloading">
-                    <nz-table #pendingTable [nzData]="pending" [nzPageSize]="20">
-                        <thead>
-                            <tr>
-                                <th colSpan="3">
-                                    <nz-input-group [nzSuffix]="suffixIconSearch">
-                                        <input type="text" nz-input placeholder="Search Here" (keyup)="searchPending($event)" />
-                                    </nz-input-group>
-                                    <ng-template #suffixIconSearch>
-                                        <i nz-icon nzType="search"></i>
-                                    </ng-template>
-                                </th>
-                                <th>Company Name</th>
-                                <th>Contact Person</th>
-                                <th>
-                                    <p style="text-align: center;font-weight: 600;">
-                                        {{pending.length}} Requests
-                                    </p>
-                                </th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody class="table-body">
-                            <tr *ngFor="let job of pendingTable.data">
-                                <td>
-                                    <b>#{{job.job_request_id}}</b>
-                                </td>
-                                <td>
-                                    <b>Requested on  : </b> {{job.created_at | date:"medium"}}
-                                </td>
-                                <td>
-                                    <b>Status: </b>
-                                    <nz-tag [nzColor]="'yellow'">Pending</nz-tag>
-                                </td>
-                                <td>
-                                    {{job.customer?.company_name || '-' }}
-                                </td>
-                                <td>
-                                    <nz-avatar nzIcon="user" [nzSrc]="job.customer?.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ job.customer?.user?.name"></nz-avatar>
-                                    {{job.customer?.user?.name + ' | ' + job.customer?.user?.phone_number || '-'}}
-                                </td>
-                                <!-- <td style="text-align: center;"> -->
-                                    <!-- <button nz-button nzType="primary" (click)="viewJob(job)">
-                                      <i nz-icon nzType="eye" nzTheme="outline"></i>
-                                      View
-                                    </button> -->
-                                    <!-- <button style="margin-left: 5px;" nz-button nzType="primary" (click)="editRequest()">
-                                    <i nz-icon nzType="edit" nzTheme="outline"></i>
-                                    Edit
-                                  </button> -->
-                                  <td style="text-align: center;">
-                                  <button nz-button nzType="primary" (click)="viewJob(job)">
-                                    <i nz-icon nzType="eye" nzTheme="outline"></i> View
-                                  </button>
-                                  <!-- <button style="margin-left: 5px;" nz-button nzType="primary" (click)="editRequest()">
-                                    <i nz-icon nzType="edit" nzTheme="outline"></i> Edit
-                                  </button> -->
-                                  </td>
-                                  <td  style="text-align: center;">
-                                    <!--  Cancel Button -->
-                                    <button
-                                      style="margin-left: 5px;"
-                                      nz-button
-                                      nzType="default"
-                                      nzDanger
-                                      (click)="initiateCancel(job)"
-                                    >
-                                      <i nz-icon nzType="close-circle" nzTheme="outline"></i> Cancel
-                                    </button>
+      <!-- Accepted Tab -->
+      <nz-tab [nzTitle]="'Accepted'">
+        <nz-spin [nzSpinning]="isloading">
+          <nz-table #acceptedTable [nzData]="accepted" [nzPageSize]="20">
+            <thead>
+              <tr>
+                <th colSpan="3">
+                  <nz-input-group [nzSuffix]="suffixIconSearch">
+                    <input type="text" nz-input placeholder="Search Here" (keyup)="searchPending($event)" />
+                  </nz-input-group>
+                  <ng-template #suffixIconSearch>
+                    <i nz-icon nzType="search"></i>
+                  </ng-template>
+                </th>
+                <th>Contact Person</th>
+                <th></th>
+                <th>
+                  <p style="text-align: center;font-weight: 600;">
+                    {{accepted.length}} Requests
+                  </p>
+                </th>
+              </tr>
+            </thead>
+            <tbody class="table-body">
+              <tr *ngFor="let job of acceptedTable.data">
+                <td><b>#{{job.job_request_id}}</b></td>
+                <td><b>Requested on:</b> {{job.created_at | date:"medium"}}</td>
+                <td><b>Status:</b> <nz-tag [nzColor]="'green'">Accepted</nz-tag></td>
+                <td>
+                  <nz-avatar
+                    nzIcon="user"
+                    [nzSrc]="job.customer?.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ job.customer?.user?.name">
+                  </nz-avatar>
+                  {{job.customer?.user?.name + ' | ' + job.customer?.user?.phone_number || '-'}}
+                </td>
+                <td style="text-align: center;">
+                  <button nz-button nzType="primary" routerLink="/quotations">
+                    View Quotations
+                  </button>
+                </td>
+                <td style="text-align: center;">
+                  <button nz-button nzType="primary" (click)="viewJob(job)">
+                    <i nz-icon nzType="eye" nzTheme="outline"></i> View
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </nz-spin>
+      </nz-tab>
 
-                                </td>
+      <!-- Rejected Tab -->
+      <nz-tab [nzTitle]="'Rejected'">
+        <nz-spin [nzSpinning]="isloading">
+          <nz-table #rejectedTable [nzData]="rejected" [nzPageSize]="20">
+            <thead>
+              <tr>
+                <th colSpan="3">
+                  <nz-input-group [nzSuffix]="suffixIconSearch">
+                    <input type="text" nz-input placeholder="Search Here" (keyup)="searchRejected($event)" />
+                  </nz-input-group>
+                  <ng-template #suffixIconSearch>
+                    <i nz-icon nzType="search"></i>
+                  </ng-template>
+                </th>
+                <th>Company Name</th>
+                <th>Contact Person</th>
+                <th>
+                  <p style="text-align: center;font-weight: 600;">
+                    {{rejected.length}} Requests
+                  </p>
+                </th>
+              </tr>
+            </thead>
+            <tbody class="table-body">
+              <tr *ngFor="let job of rejectedTable.data">
+                <td><b>#{{job.job_request_id}}</b></td>
+                <td><b>Requested on:</b> {{job.created_at | date:"medium"}}</td>
+                <td><b>Status:</b> <nz-tag [nzColor]="'red'">Rejected</nz-tag></td>
+                <td>{{job.customer?.company_name || '-' }}</td>
+                <td>
+                  <nz-avatar
+                    nzIcon="user"
+                    [nzSrc]="job.customer?.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ job.customer?.user?.name">
+                  </nz-avatar>
+                  {{job.customer?.user?.name + ' | ' + job.customer?.user?.phone_number || '-'}}
+                </td>
+                <td style="text-align: center;">
+                  <button nz-button nzType="primary" (click)="viewJob(job)">
+                    <i nz-icon nzType="eye" nzTheme="outline"></i> View
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </nz-spin>
+      </nz-tab>
 
+      <!-- Cancelled Tab -->
+      <nz-tab [nzTitle]="'Cancelled'">
+        <nz-spin [nzSpinning]="isloading">
+          <nz-table #cancelledTable [nzData]="cancelled" [nzPageSize]="20">
+            <thead>
+              <tr>
+                <th colSpan="3">
+                  <nz-input-group [nzSuffix]="suffixIconSearch">
+                    <input type="text" nz-input placeholder="Search Here" (keyup)="searchCancelled($event)" />
+                  </nz-input-group>
+                  <ng-template #suffixIconSearch>
+                    <i nz-icon nzType="search"></i>
+                  </ng-template>
+                </th>
+                <th>Company Name</th>
+                <th>Contact Person</th>
+                <th>
+                  <p style="text-align: center;font-weight: 600;">
+                    {{cancelled.length}} Requests
+                  </p>
+                </th>
+              </tr>
+            </thead>
+            <tbody class="table-body">
+              <tr *ngFor="let job of cancelledTable.data">
+                <td><b>#{{job.job_request_id}}</b></td>
+                <td><b>Requested on:</b> {{job.created_at | date:"medium"}}</td>
+                <td><b>Status:</b> <nz-tag [nzColor]="'black'">Cancelled</nz-tag></td>
+                <td>{{job.customer?.company_name || '-' }}</td>
+                <td>
+                  <nz-avatar
+                    nzIcon="user"
+                    [nzSrc]="job.customer?.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ job.customer?.user?.name">
+                  </nz-avatar>
+                  {{job.customer?.user?.name + ' | ' + job.customer?.user?.phone_number || '-'}}
+                </td>
+                <td style="text-align: center;">
+                  <button nz-button nzType="primary" (click)="viewJob(job)">
+                    <i nz-icon nzType="eye" nzTheme="outline"></i> View
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </nz-spin>
+      </nz-tab>
+    </nz-tabset>
 
-                            </tr>
-                        </tbody>
-                    </nz-table>
-                </nz-spin>
-            </nz-tab>
+    <ng-template #extraTemplate>
+      <button nz-button nzType="primary" (click)="openCreateModal()">
+        Create New
+        <span nz-icon nzType="plus" nzTheme="outline"></span>
+      </button>
+    </ng-template>
 
-            <!-- Accepted -->
-            <nz-tab [nzTitle]="'Accepted'">
-                <nz-spin [nzSpinning]="isloading">
-                    <nz-table #acceptedTable [nzData]="accepted" [nzPageSize]="20">
-                        <thead>
-                            <tr>
-                                <th colSpan="3">
-                                    <nz-input-group [nzSuffix]="suffixIconSearch">
-                                        <input type="text" nz-input placeholder="Search Here" (keyup)="searchPending($event)" />
-                                    </nz-input-group>
-                                    <ng-template #suffixIconSearch>
-                                        <i nz-icon nzType="search"></i>
-                                    </ng-template>
-                                </th>
-                                <!-- <th>Company Name</th> -->
-                                <th>Contact Person</th>
-                                <th> </th>
-                                <th>
-                                    <p style="text-align: center;font-weight: 600;">
-                                        {{accepted.length}} Requests
-                                    </p>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="table-body">
-                            <tr *ngFor="let job of acceptedTable.data">
-                                <td>
-                                    <b>#{{job.job_request_id}}</b>
-                                </td>
-                                <td>
-                                    <b>Requested on  : </b> {{job.created_at | date:"medium"}}
-                                </td>
-                                <td>
-                                    <b>Status: </b>
-                                    <nz-tag [nzColor]="'green'">Accepted</nz-tag>
-                                </td>
-
-                                <td>
-                                    <nz-avatar nzIcon="user" [nzSrc]="job.customer?.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ job.customer?.user?.name"></nz-avatar>
-                                    {{job.customer?.user?.name + ' | ' + job.customer?.user?.phone_number || '-'}}
-                                </td>
-                                <td style="text-align: center;">
-                                  <button nz-button nzType="primary" routerLink="/quotations">
-                                    View Quotations
-                                  </button>
-                                </td>
-
-                                <td style="text-align: center;">
-                                    <button nz-button nzType="primary" (click)="viewJob(job)">
-                                      <i nz-icon nzType="eye" nzTheme="outline"></i>
-                                      View
-                                  </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </nz-table>
-                </nz-spin>
-            </nz-tab>
-
-            <!--Rejected-->
-            <nz-tab [nzTitle]="'Rejected'">
-                <nz-spin [nzSpinning]="isloading">
-                    <nz-table #rejectedTable [nzData]="rejected" [nzPageSize]="20">
-                        <thead>
-                            <tr>
-                                <th colSpan="3">
-                                    <nz-input-group [nzSuffix]="suffixIconSearch">
-                                        <input type="text" nz-input placeholder="Search Here" (keyup)="searchRejected($event)" />
-                                    </nz-input-group>
-                                    <ng-template #suffixIconSearch>
-                                        <i nz-icon nzType="search"></i>
-                                    </ng-template>
-                                </th>
-                                <th>Company Name</th>
-                                <th>Contact Person</th>
-                                <th>
-                                    <p style="text-align: center;font-weight: 600;">
-                                        {{rejected.length}} Requests
-                                    </p>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="table-body">
-                            <tr *ngFor="let job of rejectedTable.data">
-                                <td>
-                                    <b>#{{job.job_request_id}}</b>
-                                </td>
-                                <td>
-                                    <b>Requested on  : </b> {{job.created_at | date:"medium"}}
-                                </td>
-                                <td>
-                                    <b>Status: </b>
-                                    <nz-tag [nzColor]="'red'">Rejected</nz-tag>
-                                </td>
-                                <td>
-                                    {{job.customer?.company_name || '-' }}
-                                </td>
-                                <td>
-                                    <nz-avatar nzIcon="user" [nzSrc]="job.customer?.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ job.customer?.user?.name"></nz-avatar>
-                                    {{job.customer?.user?.name + ' | ' + job.customer?.user?.phone_number || '-'}}
-                                </td>
-                                <td style="text-align: center;">
-                                    <button nz-button nzType="primary" (click)="viewJob(job)">
-                                      <i nz-icon nzType="eye" nzTheme="outline"></i>
-                                      View
-                                  </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </nz-table>
-                </nz-spin>
-            </nz-tab>
-
-            <!--Cancelled-->
-            <nz-tab [nzTitle]="'Cancelled'">
-                <nz-spin [nzSpinning]="isloading">
-                    <nz-table #cancelledTable [nzData]="cancelled" [nzPageSize]="20">
-                        <thead>
-                            <tr>
-                                <th colSpan="3">
-                                    <nz-input-group [nzSuffix]="suffixIconSearch">
-                                        <input type="text" nz-input placeholder="Search Here" (keyup)="searchCancelled($event)" />
-                                    </nz-input-group>
-                                    <ng-template #suffixIconSearch>
-                                        <i nz-icon nzType="search"></i>
-                                    </ng-template>
-                                </th>
-                                <th>Company Name</th>
-                                <th>Contact Person</th>
-                                <th>
-                                    <p style="text-align: center;font-weight: 600;">
-                                        {{cancelled.length}} Requests
-                                    </p>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="table-body">
-                            <tr *ngFor="let job of cancelledTable.data">
-                                <td>
-                                    <b>#{{job.job_request_id}}</b>
-                                </td>
-                                <td>
-                                    <b>Requested on  : </b> {{job.created_at | date:"medium"}}
-                                </td>
-                                <td>
-                                    <b>Status: </b>
-                                    <nz-tag [nzColor]="'black'">Cancelled</nz-tag>
-                                </td>
-                                <td>
-                                    {{job.customer?.company_name || '-' }}
-                                </td>
-                                <td>
-                                    <nz-avatar nzIcon="user" [nzSrc]="job.customer?.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ job.customer?.user?.name"></nz-avatar>
-                                    {{job.customer?.user?.name + ' | ' + job.customer?.user?.phone_number || '-'}}
-                                </td>
-                                <td style="text-align: center;">
-                                    <button nz-button nzType="primary" (click)="viewJob(job)">
-                                      <i nz-icon nzType="eye" nzTheme="outline"></i>
-                                      View
-                                  </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </nz-table>
-                </nz-spin>
-            </nz-tab>
-
-        </nz-tabset>
-        <ng-template #extraTemplate>
-            <button nz-button nzType="primary" (click)="openCreateModal()">
-                Create New
-                <span nz-icon nzType="plus" nzTheme="outline"></span>
-            </button>
-        </ng-template>
+    <!-- Moved Get Help button to bottom -->
+    <div class="page-footer-help" style="margin-top:16px;text-align:center;">
+      <button nz-button nzType="default" (click)="showHelpModal = true">
+        <span nz-icon nzType="question-circle" nzTheme="outline"></span>
+        Get Help
+      </button>
     </div>
+  </div>
 </div>
 
 <!--Modal-->

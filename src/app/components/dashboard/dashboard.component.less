@@ -1,191 +1,20 @@
-/* Report Container */
-.report-container {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 20px;
-  background: white;
-}
-
-/* Header */
-.report-header {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 20px;
-}
-
-/* Title */
-.report-title {
-  text-align: center;
-  margin-bottom: 20px;
-}
-.report-title h2 {
-  margin: 0;
-  font-size: 24px;
-}
-.report-title p {
-  margin: 5px 0 0;
-  color: #666;
-}
-
-/* Meta Info */
-.report-meta {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #eee;
-}
-
-/* Table Styling */
-.quotation-report {
-  margin: 20px 0;
-}
-.quotation-report table {
-  width: 100%;
-  border-collapse: collapse;
-}
-.quotation-report th {
-  background-color: #f0f2f5;
-  padding: 10px;
-  text-align: left;
-  border: 1px solid #ddd;
-}
-.quotation-report td {
-  padding: 10px;
-  border: 1px solid #ddd;
-}
-
-/* Footer */
-.report-footer {
-  margin-top: 40px;
-  padding-top: 10px;
-  border-top: 1px solid #eee;
-  text-align: center;
-  color: #666;
-}
-
-.request-count-footer {
-  margin-top: 20px;
-  text-align: right;
-  font-size: 16px;
-}
-
-/* Add to your component's CSS */
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
-.report-container {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: white;
-  padding: 20px;
-}
-
-.report-title {
-  text-align: center;
-  margin-bottom: 20px;
-}
-.report-title h2 {
-  margin: 0;
-  font-size: 24px;
-}
-.report-title p {
-  margin: 5px 0 0;
-  color: #666;
-}
-
-.report-meta {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #eee;
-}
-
-.report-footer {
-  margin-top: 40px;
-  padding-top: 10px;
-  border-top: 1px solid #eee;
-  text-align: center;
-  color: #666;
-}
-
-.request-count-footer {
-  margin-top: 20px;
-  text-align: right;
-  font-size: 16px;
-}
-
-/* Table styling */
-nz-table {
-  width: 100%;
-}
-th {
-  background-color: #f0f2f5;
-  font-weight: bold;
-}
-td {
-  vertical-align: top;
-}
-
-/* Add to your component's CSS */
-.chart-header {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 15px;
-}
-
-.chart-header {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 15px;
-  align-items: center;
-}
-
-.chart-header nz-select {
-  flex-grow: 1;
-  margin-right: 10px;
-}
-
-/* Ensure dropdown text is visible */
-.stock-type-select ::ng-deep .ant-select-selection-item,
-.stock-type-select ::ng-deep .ant-select-selection-placeholder {
-    color: rgba(0, 0, 0, 0.85) !important; /* Dark text for visibility */
-}
-
-.stock-type-select ::ng-deep .ant-select-arrow {
-    color: rgba(0, 0, 0, 0.25) !important; /* Arrow color */
-}
-
-/* More specific selector */
-.chart-header .stock-type-select ::ng-deep .ant-select-selection-item {
-    color: rgba(0, 0, 0, 0.85) !important;
-}
-
-/* Add to your component's CSS or global styles */
+/* Theme colors */
 :root {
   --primary-color: #17726d;
   --help-color: #1890ff;
 }
 
+/* ---------------- CUSTOMER DASHBOARD ---------------- */
 .customer-dashboard {
   padding: 20px;
   max-width: 1400px;
   margin: 0 auto;
 }
 
-.dashboard-header {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 20px;
-}
-
+/* Cards area (add bottom space before global footer help) */
 .dashboard-cards {
   padding: 15px 0;
+  margin-bottom: 32px;
 }
 
 .dashboard-card-col {
@@ -193,20 +22,21 @@ td {
   justify-content: center;
 }
 
+/* Flexible card with min width to prevent squish */
 .dashboard-card {
-  width: 200px;
+  min-width: 240px;   /* keep in sync with [nzFlex] basis in HTML */
   height: 180px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  border-radius: 8px;
+  border-radius: 12px;
   transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .dashboard-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
 
 .card-content {
@@ -219,47 +49,32 @@ td {
   text-align: center;
 }
 
+/* Bigger icons for the five tiles */
 .card-icon {
-  font-size: 48px;
+  font-size: 64px;
   margin-bottom: 15px;
   color: var(--primary-color);
 }
 
+/* Tile label */
 .card-label {
   font-size: 18px;
   font-weight: 600;
 }
 
-/* Distinct styling for help card */
-.help-card .card-icon {
-  color: var(--help-color);
-}
+/* Distinct styling for help tile */
+.help-card .card-icon { color: var(--help-color); }
+.help-card:hover .card-icon { color: #40a9ff; }
 
-.help-card:hover .card-icon {
-  color: #40a9ff;
-}
-
-/* Responsive adjustments */
+/* ---------------- RESPONSIVE ---------------- */
 @media (max-width: 1200px) {
-  .dashboard-card {
-    width: 180px;
-    height: 160px;
-  }
+  .dashboard-card { min-width: 220px; height: 170px; }
 }
 
 @media (max-width: 992px) {
-  .dashboard-card {
-    width: 160px;
-    height: 150px;
-  }
-
-  .card-icon {
-    font-size: 42px;
-  }
-
-  .card-label {
-    font-size: 16px;
-  }
+  .dashboard-card { min-width: 220px; height: 160px; }
+  .card-icon { font-size: 52px; }
+  .card-label { font-size: 16px; }
 }
 
 @media (max-width: 768px) {
@@ -267,7 +82,6 @@ td {
     flex-wrap: wrap;
     justify-content: center !important;
   }
-
   .dashboard-card-col {
     flex: 0 0 33.333%;
     max-width: 33.333%;
@@ -276,30 +90,15 @@ td {
 }
 
 @media (max-width: 576px) {
+  .dashboard-card { min-width: 200px; height: 150px; }
+  .card-icon { font-size: 44px; margin-bottom: 10px; }
   .dashboard-card-col {
     flex: 0 0 50%;
     max-width: 50%;
   }
-
-  .dashboard-card {
-    width: 140px;
-    height: 140px;
-  }
-
-  .card-icon {
-    font-size: 36px;
-    margin-bottom: 10px;
-  }
 }
 
 @media (max-width: 400px) {
-  .dashboard-card-col {
-    flex: 0 0 100%;
-    max-width: 100%;
-  }
-
-  .dashboard-card {
-    width: 180px;
-    height: 140px;
-  }
+  .dashboard-card-col { flex: 0 0 100%; max-width: 100%; }
+  .dashboard-card { min-width: 180px; height: 140px; }
 }

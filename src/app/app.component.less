@@ -7,8 +7,8 @@
   text-align: center;
 }
 
-.sidebar-logo
-{
+/* ---------- Sidebar Branding ---------- */
+.sidebar-logo {
   position: relative;
   height: 60px !important;
   padding-left: 10px;
@@ -23,11 +23,12 @@
   margin: 0 0 0 20px;
   color: #fff;
   font-weight: 600;
-  font-size:18px;
-  font-family: Avenir,Helvetica Neue,Arial,Helvetica,sans-serif;
+  font-size: 18px;
+  font-family: Avenir, Helvetica Neue, Arial, Helvetica, sans-serif;
   vertical-align: middle;
 }
 
+/* ---------- Role Selector ---------- */
 .role-selector {
   width: 180px;
   margin-right: 10px;
@@ -42,6 +43,54 @@
   }
 }
 
+/* ---------- Customer Background ---------- */
+.customer-bg {
+  background-image: url('/assets/images/background-login.jpg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  min-height: calc(100vh - 64px - 64px);
+  padding: 24px 0;
+  position: relative;
+}
 
+/* =========================================================
+   CUSTOMER MODE LAYOUT (role_id == 6)
+   ========================================================= */
+.customer-panel.customer-mode {
+  display: flex;
+  flex-direction: column;
+  min-height: 60vh; /* allows footer help button to sit at the bottom */
+}
 
+/* Routed content grows */
+.customer-panel.customer-mode router-outlet {
+  display: block;
+  flex: 1 1 auto;
+}
 
+/* Center titles for customer pages only (h1 or page headers rendered by children) */
+.customer-panel.customer-mode h1,
+.customer-panel.customer-mode .page-title,
+.customer-panel.customer-mode .ant-page-header-heading-title {
+  text-align: center !important;
+  width: 100%;
+  margin: 0 auto 16px auto;
+}
+
+/* Shared bottom “Get Help” */
+.dashboard-footer {
+  flex: 0 0 auto;
+  text-align: center;
+  padding: 24px 0 12px;
+}
+
+.dashboard-footer button[nz-button] {
+  padding: 8px 18px;
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.dashboard-footer button[nz-button]:hover {
+  border-color: #17726d;
+}

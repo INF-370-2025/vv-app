@@ -1,190 +1,201 @@
 <div nz-row [nzJustify]="'center'">
-    <div nz-col nzSpan="22">
-        <nz-tabset nzType="card" (nzSelectedIndexChange)="selectedTabChange($event)" [(nzSelectedIndex)]="selectedTabIndex">
+  <div nz-col nzSpan="22">
+    <nz-tabset nzType="card" (nzSelectedIndexChange)="selectedTabChange($event)" [(nzSelectedIndex)]="selectedTabIndex">
 
-            <!-- Unpaid Invoices Tab -->
-            <nz-tab [nzTitle]="'Unpaid'">
-                <nz-spin [nzSpinning]="isloading">
-                    <nz-table #unpaidTable [nzData]="unpaid" [nzPageSize]="20">
-                        <thead>
-                            <tr>
-                                <th colSpan="7">
-                                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                                        <nz-input-group [nzSuffix]="suffixIconSearch" style="width: 300px;">
-                                            <input type="text" nz-input placeholder="Search Invoices"
-                                                   (keyup)="searchUnpaid($event)" />
-                                        </nz-input-group>
-                                        <p style="font-weight: 600; margin: 0;">{{unpaid.length}} Unpaid</p>
-                                    </div>
-                                    <ng-template #suffixIconSearch>
-                                        <i nz-icon nzType="search"></i>
-                                    </ng-template>
-                                </th>
-                            </tr>
-                            <tr>
-                                <th>Invoice #</th>
-                                <th>Job Details</th>
-                                <th>Amount</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                                <th>Payment Options</th>
-                            </tr>
-                        </thead>
-                        <tbody class="table-body">
-                            <tr *ngFor="let invoice of unpaidTable.data">
-                                <td>
-                                    <b>#{{invoice.invoice_number | titlecase}}</b>
-                                </td>
-                                <td>
-                                    <!-- Display job title and description, handling cases where job card might not exist -->
-                                    <div *ngIf="invoice.job_card?.quotation?.job_request as jobRequest">
-                                        <b>{{ jobRequest.title || 'Invoice #' + invoice.invoice_number | titlecase }}</b>
-                                        <br>
-                                        <small *ngIf="jobRequest.description" class="text-muted">
-                                            {{ jobRequest.description | slice:0:100 }}{{ jobRequest.description.length > 100 ? '...' : '' }}
-                                        </small>
-                                    </div>
-                                    <div *ngIf="!invoice.job_card && invoice.direct_customer">
-                                        <b>{{ (invoice.direct_customer.company_name + ' Invoice') || 'Invoice #' + invoice.invoice_number | titlecase }}</b>
-                                        <br>
-                                        <small class="text-muted">
-                                            Direct customer invoice
-                                        </small>
-                                    </div>
-                                    <div *ngIf="!invoice.job_card && !invoice.direct_customer">
-                                        <b>Invoice #{{invoice.invoice_number}}</b>
-                                        <br>
-                                        <small class="text-muted">
-                                            No job details available
-                                        </small>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="amount">{{invoice.total | currency:'R':'symbol' }}</span>
-                                </td>
-                                <td>
-                                    <nz-tag [nzColor]="'red'">Outstanding</nz-tag>
-                                </td>
-                                <td style="text-align: center;">
-                                    <button nz-button nzType="default" (click)="viewinvoice(invoice)">
-                                        <i nz-icon nzType="eye" nzTheme="outline"></i>
-                                        View Invoice
-                                    </button>
-                                </td>
-                                <td style="text-align: center;">
-                                    <div style="display: flex; flex-direction: column; gap: 8px;">
-                                        <button nz-button nzType="primary" (click)="payWithPayFast(invoice)" style="width: 100%;">
-                                            <i nz-icon nzType="credit-card" nzTheme="outline"></i>
-                                            Pay Online
-                                        </button>
-                                        <button nz-button nzType="default" (click)="editinvoice(invoice)" style="width: 100%;">
-                                            <i nz-icon nzType="upload" nzTheme="outline"></i>
-                                            Upload EFT Proof
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </nz-table>
-                </nz-spin>
-            </nz-tab>
+      <!-- Unpaid Invoices Tab -->
+      <nz-tab [nzTitle]="'Unpaid'">
+        <nz-spin [nzSpinning]="isloading">
+          <nz-table #unpaidTable [nzData]="unpaid" [nzPageSize]="20">
+            <thead>
+              <tr>
+                <th colSpan="7">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <nz-input-group [nzSuffix]="suffixIconSearch" style="width: 300px;">
+                      <input
+                        type="text"
+                        nz-input
+                        placeholder="Search Invoices"
+                        (keyup)="searchUnpaid($event)" />
+                    </nz-input-group>
+                    <p style="font-weight: 600; margin: 0;">{{unpaid.length}} Unpaid</p>
+                  </div>
+                  <ng-template #suffixIconSearch>
+                    <i nz-icon nzType="search"></i>
+                  </ng-template>
+                </th>
+              </tr>
+              <tr>
+                <th>Invoice #</th>
+                <th>Job Details</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Actions</th>
+                <th>Payment Options</th>
+              </tr>
+            </thead>
+            <tbody class="table-body">
+              <tr *ngFor="let invoice of unpaidTable.data">
+                <td><b>#{{invoice.invoice_number | titlecase}}</b></td>
 
-            <!-- Paid Invoices Tab -->
-            <nz-tab [nzTitle]="'Paid'">
-                <nz-spin [nzSpinning]="isloading">
-                    <nz-table #paidTable [nzData]="paid" [nzPageSize]="20">
-                        <thead>
-                            <tr>
-                                <th colSpan="6">
-                                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                                        <nz-input-group [nzSuffix]="suffixIconSearchPaid" style="width: 300px;">
-                                            <input type="text" nz-input placeholder="Search Paid Invoices"
-                                                   (keyup)="searchPaid($event)" />
-                                        </nz-input-group>
-                                        <p style="font-weight: 600; margin: 0;">{{paid.length}} Paid</p>
-                                    </div>
-                                    <ng-template #suffixIconSearchPaid>
-                                        <i nz-icon nzType="search"></i>
-                                    </ng-template>
-                                </th>
-                            </tr>
-                            <tr>
-                                <th>Invoice #</th>
-                                <th>Job Details</th>
-                                <th>Amount</th>
-                                <th>Paid Date</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="table-body">
-                            <tr *ngFor="let invoice of paidTable.data">
-                                <td>
-                                    <b>#{{invoice.invoice_number | titlecase}}</b>
-                                </td>
-                                <td>
-                                    <!-- Display job title and description, handling cases where job card might not exist -->
-                                    <div *ngIf="invoice.job_card?.quotation?.job_request as jobRequest">
-                                        <b>{{ jobRequest.title || 'Invoice #' + invoice.invoice_number | titlecase }}</b>
-                                        <br>
-                                        <small *ngIf="jobRequest.description" class="text-muted">
-                                            {{ jobRequest.description | slice:0:100 }}{{ jobRequest.description.length > 100 ? '...' : '' }}
-                                        </small>
-                                    </div>
-                                    <div *ngIf="!invoice.job_card && invoice.direct_customer">
-                                        <b>{{ (invoice.direct_customer.company_name + ' Invoice') || 'Invoice #' + invoice.invoice_number | titlecase }}</b>
-                                        <br>
-                                        <small class="text-muted">
-                                            Direct customer invoice
-                                        </small>
-                                    </div>
-                                    <div *ngIf="!invoice.job_card && !invoice.direct_customer">
-                                        <b>Invoice #{{invoice.invoice_number}}</b>
-                                        <br>
-                                        <small class="text-muted">
-                                            No job details available
-                                        </small>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="amount">{{invoice.total | currency:'R':'symbol' }}</span>
-                                </td>
-                                <td>
-                                    {{ invoice.invoice_created_at | date:"mediumDate" }}
-                                </td>
-                                <td>
-                                    <nz-tag [nzColor]="'green'">Paid</nz-tag>
-                                    <div *ngIf="invoice.pop" style="margin-top: 4px;">
-                                        <nz-tag [nzColor]="'blue'">Proof Uploaded</nz-tag>
-                                    </div>
-                                </td>
-                                <td style="text-align: center;">
-                                    <div style="display: flex; flex-direction: column; gap: 8px;">
-                                        <button nz-button nzType="default" (click)="viewinvoice(invoice)">
-                                            <i nz-icon nzType="eye" nzTheme="outline"></i>
-                                            View Invoice
-                                        </button>
-                                        <button nz-button nzType="default"
-                                                *ngIf="invoice.pop"
-                                                (click)="viewPop(invoice)">
-                                            <i nz-icon nzType="file-pdf" nzTheme="outline"></i>
-                                            View Receipt
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </nz-table>
-                </nz-spin>
-            </nz-tab>
+                <td>
+                  <!-- With job card -->
+                  <div *ngIf="invoice.job_card?.quotation?.job_request as jobRequest">
+                    <b>{{ jobRequest.title || ('Invoice #' + invoice.invoice_number) | titlecase }}</b>
+                    <br />
+                    <small *ngIf="jobRequest.description" class="text-muted">
+                      {{ jobRequest.description | slice:0:100 }}{{ jobRequest.description.length > 100 ? '...' : '' }}
+                    </small>
+                  </div>
 
-        </nz-tabset>
+                  <!-- Direct customer -->
+                  <div *ngIf="!invoice.job_card && invoice.direct_customer">
+                    <b>{{ (invoice.direct_customer.company_name + ' Invoice') || ('Invoice #' + invoice.invoice_number) | titlecase }}</b>
+                    <br />
+                    <small class="text-muted">Direct customer invoice</small>
+                  </div>
 
-        <button nz-button (click)="showHelp()" style="margin-top: 16px;">
-            <span nz-icon nzType="question-circle" nzTheme="outline"></span>
-            Payment Help
-        </button>
+                  <!-- Fallback -->
+                  <div *ngIf="!invoice.job_card && !invoice.direct_customer">
+                    <b>Invoice #{{invoice.invoice_number}}</b>
+                    <br />
+                    <small class="text-muted">No job details available</small>
+                  </div>
+                </td>
+
+                <td><span class="amount">{{invoice.total | currency:'R':'symbol' }}</span></td>
+
+                <td>
+                  <nz-tag [nzColor]="'red'">Outstanding</nz-tag>
+                </td>
+
+                <td style="text-align: center;">
+                  <button nz-button nzType="default" (click)="viewinvoice(invoice)">
+                    <i nz-icon nzType="eye" nzTheme="outline"></i>
+                    View Invoice
+                  </button>
+                </td>
+
+                <td style="text-align: center;">
+                  <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <button nz-button nzType="primary" (click)="payWithPayFast(invoice)" style="width: 100%;">
+                      <i nz-icon nzType="credit-card" nzTheme="outline"></i>
+                      Pay Online
+                    </button>
+                    <button nz-button nzType="default" (click)="editinvoice(invoice)" style="width: 100%;">
+                      <i nz-icon nzType="upload" nzTheme="outline"></i>
+                      Upload EFT Proof
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </nz-spin>
+      </nz-tab>
+
+      <!-- Paid Invoices Tab -->
+      <nz-tab [nzTitle]="'Paid'">
+        <nz-spin [nzSpinning]="isloading">
+          <nz-table #paidTable [nzData]="paid" [nzPageSize]="20">
+            <thead>
+              <tr>
+                <th colSpan="6">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <nz-input-group [nzSuffix]="suffixIconSearchPaid" style="width: 300px;">
+                      <input
+                        type="text"
+                        nz-input
+                        placeholder="Search Paid Invoices"
+                        (keyup)="searchPaid($event)" />
+                    </nz-input-group>
+                    <p style="font-weight: 600; margin: 0;">{{paid.length}} Paid</p>
+                  </div>
+                  <ng-template #suffixIconSearchPaid>
+                    <i nz-icon nzType="search"></i>
+                  </ng-template>
+                </th>
+              </tr>
+              <tr>
+                <th>Invoice #</th>
+                <th>Job Details</th>
+                <th>Amount</th>
+                <th>Paid Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody class="table-body">
+              <tr *ngFor="let invoice of paidTable.data">
+                <td><b>#{{invoice.invoice_number | titlecase}}</b></td>
+
+                <td>
+                  <!-- With job card -->
+                  <div *ngIf="invoice.job_card?.quotation?.job_request as jobRequest">
+                    <b>{{ jobRequest.title || ('Invoice #' + invoice.invoice_number) | titlecase }}</b>
+                    <br />
+                    <small *ngIf="jobRequest.description" class="text-muted">
+                      {{ jobRequest.description | slice:0:100 }}{{ jobRequest.description.length > 100 ? '...' : '' }}
+                    </small>
+                  </div>
+
+                  <!-- Direct customer -->
+                  <div *ngIf="!invoice.job_card && invoice.direct_customer">
+                    <b>{{ (invoice.direct_customer.company_name + ' Invoice') || ('Invoice #' + invoice.invoice_number) | titlecase }}</b>
+                    <br />
+                    <small class="text-muted">Direct customer invoice</small>
+                  </div>
+
+                  <!-- Fallback -->
+                  <div *ngIf="!invoice.job_card && !invoice.direct_customer">
+                    <b>Invoice #{{invoice.invoice_number}}</b>
+                    <br />
+                    <small class="text-muted">No job details available</small>
+                  </div>
+                </td>
+
+                <td><span class="amount">{{invoice.total | currency:'R':'symbol' }}</span></td>
+
+                <td>{{ invoice.invoice_created_at | date:"mediumDate" }}</td>
+
+                <td>
+                  <nz-tag [nzColor]="'green'">Paid</nz-tag>
+                  <div *ngIf="invoice.pop" style="margin-top: 4px;">
+                    <nz-tag [nzColor]="'blue'">Proof Uploaded</nz-tag>
+                  </div>
+                </td>
+
+                <td style="text-align: center;">
+                  <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <button nz-button nzType="default" (click)="viewinvoice(invoice)">
+                      <i nz-icon nzType="eye" nzTheme="outline"></i>
+                      View Invoice
+                    </button>
+                    <button
+                      nz-button
+                      nzType="default"
+                      *ngIf="invoice.pop"
+                      (click)="viewPop(invoice)">
+                      <i nz-icon nzType="file-pdf" nzTheme="outline"></i>
+                      View Receipt
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </nz-spin>
+      </nz-tab>
+
+    </nz-tabset>
+
+    <!-- Footer help (bottom only) -->
+    <div class="page-footer-help" style="margin-top: 16px; text-align: center;">
+      <button nz-button nzType="default" (click)="showHelp()">
+        <span nz-icon nzType="question-circle" nzTheme="outline"></span>
+        Payment Help
+      </button>
     </div>
+  </div>
 </div>
 
 <!-- Help Modal (simplified for customer) -->
@@ -209,7 +220,10 @@
         </div>
 
         <div class="help-section">
-          <h4><i nz-icon nzType="credit-card" nzTheme="outline" style="margin-right: 8px;"></i> Online Payment (Recommended)</h4>
+          <h4>
+            <i nz-icon nzType="credit-card" nzTheme="outline" style="margin-right: 8px;"></i>
+            Online Payment (Recommended)
+          </h4>
           <ol>
             <li>Click <strong>"Pay Online"</strong> next to your invoice</li>
             <li>You'll be redirected to our secure payment portal</li>
@@ -220,7 +234,10 @@
         </div>
 
         <div class="help-section">
-          <h4><i nz-icon nzType="bank" nzTheme="outline" style="margin-right: 8px;"></i> Bank Transfer (EFT)</h4>
+          <h4>
+            <i nz-icon nzType="bank" nzTheme="outline" style="margin-right: 8px;"></i>
+            Bank Transfer (EFT)
+          </h4>
           <ol>
             <li>Click <strong>"View Invoice"</strong> to see our banking details</li>
             <li>Make a transfer using your online banking</li>
@@ -231,7 +248,10 @@
         </div>
 
         <div class="help-section troubleshooting">
-          <h4><i nz-icon nzType="exclamation-circle" nzTheme="outline" style="margin-right: 8px;"></i> Need Help?</h4>
+          <h4>
+            <i nz-icon nzType="exclamation-circle" nzTheme="outline" style="margin-right: 8px;"></i>
+            Need Help?
+          </h4>
           <p>If you encounter any issues with payment:</p>
           <ul>
             <li>Ensure you have sufficient funds</li>
