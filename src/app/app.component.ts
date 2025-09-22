@@ -41,7 +41,7 @@ export class AppComponent {
   placement: NzDrawerPlacement = 'right';
   roles: any[] = [
     {"idx":0,"role_id":1,"created_at":"2025-05-01 08:00:00+00","role_name":"Admin"},
-    {"idx":4,"role_id":5,"created_at":"2025-05-01 08:20:00+00","role_name":"Artisan"},
+    {"idx":4,"role_id":5,"created_at":"2025-05-01 08:20:00+00","role_name":"Receptonist"},
     {"idx":5,"role_id":6,"created_at":"2025-05-21 08:09:37.88906+00","role_name":"Customer"},
 
   ];

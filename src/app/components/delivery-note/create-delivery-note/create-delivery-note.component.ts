@@ -6,7 +6,7 @@ import { ApiService } from '../../../services/api.service';
 import { NotificationService } from '../../../services/notification.service';
 import { SupabaseService } from '../../../services/supabase.service';
 import { AppModule } from '../../../app.module';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Router } from '@angular/router';
 
 interface DeliveryNotePayload {
@@ -18,7 +18,7 @@ interface DeliveryNotePayload {
 @Component({
   selector: 'app-create-delivery-note',
   standalone: true,
-  imports: [AppModule],
+  imports: [AppModule, RouterLink],
   templateUrl: './create-delivery-note.component.html',
   styleUrls: ['./create-delivery-note.component.less']
 })
@@ -142,6 +142,8 @@ export class CreateDeliveryNoteComponent implements OnInit {
       this.notification.showError('Upload Error', errorMessage);
       this.isSubmitting = false;
     }
+    this.router.navigate(['/delivery_note']);
+
   }
 
   private handleCreateError(err: any): void {

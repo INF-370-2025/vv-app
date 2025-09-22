@@ -249,6 +249,7 @@
                                 <th> </th>
                                 <th> </th>
                                 <th>  </th>
+                                <th>  </th>
                             </tr>
                         </thead>
                         <tbody class="table-body">
@@ -280,6 +281,10 @@
                                     {{job.quotation?.job_request?.customer?.user?.name || ''}}
                                     {{job.quotation?.job_request?.customer?.user?.surname || ''}} |
                                     {{job.quotation?.job_request?.customer?.user?.phone_number || '-'}}
+                                </td>
+                                                                <td>
+                                    <b>Title:</b> {{job.quotation?.job_request?.title}}<br>
+                                    <b>Description:</b> {{job.quotation?.job_request?.description | slice:0:50}}...
                                 </td>
                                 <td>
                                   <div class="action-buttons">
@@ -399,10 +404,10 @@
           </button>
 
 <ng-template #extraTemplate>
-    <button nz-button nzType="primary" (click)="openCreateForm()">
+    <!-- <button nz-button nzType="primary" (click)="openCreateForm()">
         Create New
         <span nz-icon nzType="plus" nzTheme="outline"></span>
-    </button>
+    </button> -->
 </ng-template>
     </div>
 </div>
