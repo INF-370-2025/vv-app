@@ -29,6 +29,9 @@ export class UserComponent implements OnInit{
   employeeWarnings:employeeWarning[] = [];
   warningCount: number = 0;
   viewingEmployee:user = new user();
+
+  viewingEmployeeEmployee:employee = new employee();
+
   viewingEmployeeDetails:employee = new employee();
   viewingCustomer:user = new user();
   showEmployeeModal:boolean = false;
@@ -216,7 +219,7 @@ export class UserComponent implements OnInit{
       //await this.setViewingImage(employee.user?.image);
       this.warningCount = this.employeeWarnings.filter(warning => warning.employee_id === this.viewingEmployee.employee?.employee_id).length;
       this.showEmployeeModal = true;
-      console.log(this.warningCount);
+      console.log(this.viewingEmployee);
   }
 
   async viewCustomer(customer:user) {
@@ -259,18 +262,12 @@ export class UserComponent implements OnInit{
         next: res => {
           this.createdUser.emit();
           console.log(userToInsert);
-        },
-        error: (error) => {
-          this.notification.showError("An Error Occoured while creating");
-          this.isloading = false;
-        }
-      });
+          employeeToInsert.user_id = res.user_id;
 
-      this.loadUsers();
-        this.employees.sort((a, b) => b.user_id - a.user_id);
-        employeeToInsert.user_id = this.employees[0].user_id;
+          this.employees.sort((a, b) => b.user_id - a.user_id);
+        employeeToInsert.user_id = this.employees[0].user_id + 1;
 
-    this.apiService.create_employee(employeeToInsert).subscribe({
+          this.apiService.create_employee(employeeToInsert).subscribe({
       next: res => {
         this.notification.showSuccess("Employee successfully created");
         this.showCreateEmployeeModal = false;
@@ -282,6 +279,14 @@ export class UserComponent implements OnInit{
         console.log(employeeToInsert);
       }
     });
+        },
+        error: (error) => {
+          this.notification.showError("An Error Occoured while creating");
+          this.isloading = false;
+        }
+      });
+
+      this.loadUsers();
 
   }
 
@@ -366,6 +371,7 @@ export class UserComponent implements OnInit{
         warnToInsert.employee_id = this.viewingEmployee.employee!.employee_id;
         warnToInsert.reason = this.warningForm.value.reason;
         warnToInsert.employee = this.viewingEmployee.employee;
+        warnToInsert.is_disputed = false;
 
         this.apiService.create_employee_warning(warnToInsert).subscribe({
         next: res => {
