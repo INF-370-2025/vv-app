@@ -17,6 +17,7 @@ export class jobCard{
     pattern?:pattern;
     job_card_artisans?:jobCardArtisans[];
     job_card_material_items?:jobCardMaterialItem[];
+    invoice?: invoice;
 }
 
 export class pattern{

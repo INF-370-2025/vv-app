@@ -18,31 +18,6 @@
           </nz-form-control>
         </nz-form-item>
 
-        <!-- Job Card Status -->
-        <!-- <nz-form-item>
-          <nz-form-label nzRequired>Status</nz-form-label>
-          <nz-form-control>
-            <nz-select formControlName="job_card_status_id" nzPlaceHolder="Select status">
-              <nz-option *ngFor="let status of jobCardStatuses"
-                [nzValue]="status.job_card_status_id"
-                [nzLabel]="status.status">
-              </nz-option>
-            </nz-select>
-          </nz-form-control>
-        </nz-form-item> -->
-
-        <!-- Quotation Dropdown -->
-        <!-- <nz-form-item>
-          <nz-form-label nzRequired>Quotation</nz-form-label>
-          <nz-form-control>
-            <nz-select formControlName="quotation_id" nzPlaceHolder="Select quotation">
-              <nz-option *ngFor="let quotation of quotations"
-                [nzValue]="quotation.quotation_id"
-                [nzLabel]="quotation.quotation_number">
-              </nz-option>
-            </nz-select>
-          </nz-form-control>
-        </nz-form-item> -->
 
         <!-- Special Instructions -->
         <nz-form-item>
@@ -52,26 +27,6 @@
               placeholder="Any special instructions" rows="3"></textarea>
           </nz-form-control>
         </nz-form-item>
-
-        <!-- Completion Date -->
-        <!-- <nz-form-item >
-          <nz-form-label>Completion Date</nz-form-label>
-          <nz-form-control [nzErrorTip]="dateErrorTpl">
-            <nz-date-picker
-              formControlName="completed_at"
-              nzPlaceHolder="Select completion date"
-              style="width: 100%">
-            </nz-date-picker>
-            <ng-template #dateErrorTpl let-control>
-              <ng-container *ngIf="control.hasError('pastDate')">
-                Completion date cannot be in the past
-              </ng-container>
-              <ng-container *ngIf="control.hasError('invalidDate')">
-                Invalid date format
-              </ng-container>
-            </ng-template>
-          </nz-form-control>
-        </nz-form-item> -->
       </nz-col>
 
       <!-- Right Column - Materials and Artisans -->

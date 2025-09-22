@@ -30,6 +30,7 @@ export class JobCardViewComponent implements OnInit {
   fileList: any[] = [];
 
   completionDate!: Date;
+  invoiceUrl: string | null = null;
 
   constructor(
     private notification: NotificationService,
@@ -41,6 +42,25 @@ export class JobCardViewComponent implements OnInit {
     this.completionDate = this.job_card.quotation?.job_request?.finish_date!;
     this.loadMaterials();
     this.loadJobCardDetails();
+    this.loadInvoice();
+  }
+
+  loadInvoice() {
+    if (!this.job_card.job_card_id) return;
+
+    this.apiService.get_invoice_by_job_card(this.job_card.job_card_id).subscribe({
+      next: (res: any[]) => {
+        if (res && res.length > 0) {
+          this.invoiceUrl = res[0].invoice_url;
+        } else {
+          this.invoiceUrl = null;
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching invoice:', err);
+        this.invoiceUrl = null;
+      }
+    });
   }
 
   loadJobCardDetails(): void {
@@ -118,12 +138,31 @@ export class JobCardViewComponent implements OnInit {
     }
   }
 
+  openProgressImages() {
+    if (this.job_card.quotation?.job_request?.progress_url) {
+      window.open(this.job_card.quotation.job_request.progress_url, '_blank');
+    } else {
+      this.notification.showError("Progress images are not available for this job.");
+    }
+  }
+
   viewInvoice() {
-    // if (this.job_card.invoice?.invoice_url) {
-    //   window.open(this.job_card.invoice?.invoice_url, '_blank');
-    // } else {
-    //   this.notification.showError("PDF link is not available.");
-    // }
+    if (this.invoiceUrl) {
+      window.open(this.invoiceUrl, '_blank');
+    } else {
+      this.notification.showError('Invoice not available');
+    }
+  }
+
+  viewProgressImages() {
+    const progressUrl = this.job_card.quotation?.job_request?.progress_url;
+
+    if (progressUrl) {
+      // Open in a new tab
+      window.open(progressUrl, '_blank');
+    } else {
+      this.notification.showError('No progress images available.');
+    }
   }
 
 

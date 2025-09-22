@@ -36,6 +36,8 @@ export interface adminStats {
   low_stock_items: number;
   pending_quotations?: number;
   unpaid_invoices?: number;
+  employees_clocked_in_today?: number;
+  pending_job_cards?: number;
 }
 
 @Component({

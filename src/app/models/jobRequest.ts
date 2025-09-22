@@ -12,6 +12,7 @@ export class jobRequest{
     job_request_status?:jobRequestStatus;
     job_request_items?:jobRequestItem[];
     job_request_status_id?: number;
+    progress_url?:string;
 
 }
 
@@ -35,4 +36,13 @@ export class insertJobRequest{
     description?:string;
     finish_date!:Date;
     quantity!:number;
+}
+
+export class invoice {
+  invoice_id!: number;
+  job_card_id?: number;
+  total?: number;
+  invoice_status_id?: number;
+  invoice_url?: string;
+  invoice_number?: string;
 }
