@@ -238,6 +238,11 @@ export class ApiService {
 
   job_cards_ep = 'job_cards';
 
+  get_invoice_by_quote(quote_id: number) {
+    return this.http.get<any>(`/invoices?quote_id=${quote_id}`);
+  }
+
+
   get_job_card_statuses() {
     return this.http.get<any>(environment.api_url + this.job_cards_ep + `/get_job_card_statuses`)
   }
@@ -374,6 +379,11 @@ export class ApiService {
     return this.http.get<any>(environment.api_url + this.invoices_ep + `/get_invoices_user/${user_id}`)
   }
 
+  get_invoice_by_quotation(quotation_id: number) {
+    return this.http.get<any>(environment.api_url + this.invoices_ep + `/get_invoice_by_quotation/${quotation_id}`);
+  }
+
+
   update_invoice_status(invoice_id: number) {
     return this.http.put<any>(
       environment.api_url + this.invoices_ep + `/update_invoice_status/${invoice_id}`,
@@ -393,6 +403,10 @@ export class ApiService {
       environment.api_url + this.invoices_ep + `/update_invoice_pop/${invoice_id}`,
       { pop: pop_url }
     );
+  }
+
+  get_invoice_by_job_card(job_card_id: number) {
+    return this.http.get<any>(environment.api_url + this.invoices_ep + `/get_invoice_job_card/${job_card_id}`);
   }
 
   get_unpaid_invoices() {
@@ -566,7 +580,6 @@ export class ApiService {
 
   get_stock_categories() {
     return this.http.get<any>(environment.api_url + this.stock_ep + `/get_stock_categories`);
-
   }
 
   get_stock(stock_id: number) {
