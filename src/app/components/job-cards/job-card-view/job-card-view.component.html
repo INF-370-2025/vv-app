@@ -104,34 +104,40 @@
     <hr class="hr">
     <br>
 
-    <div nz-row [nzJustify]="'start'" [nzGutter]="[24,24]" [nzAlign]="'middle'">
-        <div nz-col nzSpan="8" style="text-align: start;">
-            <p>
-                <b>Special Instructions : </b>
-                <textarea nz-input [value]="job_card.special_instructions || 'N/A'"></textarea>
-            </p>
-        </div>
-        <div nz-col nzSpan="8" style="text-align: center;">
-            <h3 style="color:gray;">
-                <div>Expected Completion: {{ completionDate | date:'yyyy-MM-dd' }}</div>
-                <div>Actual Completion: {{ (completedAt | date:'yyyy-MM-dd') || 'Not completed' }}</div>
-            </h3>
-        </div>
-        <div nz-col nzSpan="8" style="text-align: end;">
-          <button nz-button nzType="primary" nzShape="round" (click)="openMarkCompleted()" *ngIf="job_card.job_card_status_id == 1">
-              <span nz-icon nzType="check" nzTheme="outline" ></span>
-                Mark Completed
-            </button>
-            <nz-button-group >
-                <button nz-button nzType="primary" (click)="viewQuote()">
-                  <i nz-icon nzType="file-text" nzTheme="outline"></i>
-                  View Quote
-              </button>
-                <button nz-button nzType="primary" (click)="viewInvoice()" *ngIf="job_card.job_card_status_id == 2">
-                  <i nz-icon nzType="file-protect" nzTheme="outline"></i>
-                  View Invoice
-                </button>
-            </nz-button-group>
-        </div>
-    </div>
+  <div nz-col nzSpan="8" style="text-align: end;">
+    <nz-space nzSize="middle">
+      <!-- Mark Completed button, only if status is 1 -->
+      <button nz-button nzType="primary" nzShape="round"
+        (click)="openMarkCompleted()"
+        *ngIf="job_card.job_card_status_id == 1">
+        <span nz-icon nzType="check" nzTheme="outline"></span>
+        Mark Completed
+      </button>
+      <br>
+
+      <!-- View Quote button -->
+      <button nz-button nzType="primary" (click)="viewQuote()">
+        <i nz-icon nzType="file-text" nzTheme="outline"></i>
+        View Quote
+      </button>
+      <br>
+
+      <!-- View Invoice button, only if invoice exists -->
+      <button nz-button nzType="primary" (click)="viewInvoice()"
+              *ngIf="invoiceUrl">
+        <i nz-icon nzType="file-protect" nzTheme="outline"></i>
+        View Invoice
+      </button>
+      <br>
+
+
+      <!-- Progress Images button, only if status is 1 -->
+      <button nz-button nzType="default" (click)="openProgressImages()"
+        *ngIf="job_card.job_card_status_id == 1 && job_card.quotation?.job_request?.progress_url">
+        <i nz-icon nzType="picture" nzTheme="outline"></i>
+        View Progress
+      </button>
+    </nz-space>
+  </div>
+
 </nz-card>

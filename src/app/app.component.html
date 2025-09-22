@@ -1,161 +1,125 @@
 <ngx-spinner bdColor="#17726d" type="ball-pulse" [fullScreen]="true"></ngx-spinner>
 
-<!--Logged Out-->
-<router-outlet *ngIf="!(authService.isloggedIn | async)" />
+<!-- Logged Out -->
+<router-outlet *ngIf="!(authService.isloggedIn | async)"></router-outlet>
 
-<!--Logged In-->
-<nz-layout *ngIf="(authService.isloggedIn | async)" class="app-layout text-center" >
-    <nz-sider *ngIf="authService.user?.role_id != 6" (nzCollapsedChange)="menuCollapsed = !menuCollapsed" nzCollapsible [nzWidth]="230" [nzCollapsedWidth]="54" [nzCollapsed]="true" class="menu-sidebar">
-        <div class="sidebar-logo" [ngStyle]="{'margin-left': menuCollapsed  ? '6%':'10%'}">
-            <img src="assets/images/logo.png" height="30px" width="30px" style="border-radius: 50%;">
-            <h1 style="color: white;">
-                Vault Vision
-            </h1>
-        </div>
-        <ul nz-menu nzMode="inline">
-            <li nz-menu-item nzMatchRouter="home">
-                <a routerLink="/home" routerLinkActive="activebutton">
-                    <i nz-icon nzType="vv:dashboard" style="font-size: 20px !important;"></i>
-                    <span>Home</span>
-                </a>
-            </li>
+<!-- Logged In -->
+<nz-layout *ngIf="(authService.isloggedIn | async)" class="app-layout text-center">
 
+  <!-- Sidebar (Admin Only: role_id = 1) -->
+  <nz-sider *ngIf="authService.user?.role_id === 1"
+            (nzCollapsedChange)="menuCollapsed = !menuCollapsed"
+            nzCollapsible
+            [nzWidth]="230"
+            [nzCollapsedWidth]="54"
+            [nzCollapsed]="true"
+            class="menu-sidebar">
 
-            <li nz-menu-item nzMatchRouter="job-requests"
-                [ngClass]="{'menu-item-new': newJobRequestsCount > 0}">
-              <a routerLink="job-requests" routerLinkActive="activebutton" (click)="markJobRequestsAsSeen()">
-                <i nz-icon nzType="vv:job_requests" style="font-size: 20px !important;"></i>
-                <span>Job Requests</span>
-              </a>
-            </li>
+    <div class="sidebar-logo" [ngStyle]="{'margin-left': menuCollapsed ? '6%' : '10%'}">
+      <img src="assets/images/logo.png" height="30px" width="30px" style="border-radius: 50%;">
+      <h1 style="color: white;">Vault Vision</h1>
+    </div>
 
-            <li nz-menu-item nzMatchRouter="quotations"
-                [ngClass]="{'menu-item-new': newQuotationsCount > 0}">
-              <a routerLink="quotations" routerLinkActive="activebutton" (click)="markQuotationsAsSeen()">
-                <i nz-icon nzType="file-text" nzTheme="outline"></i>
-                <span>Quotations</span>
-              </a>
-            </li>
+    <ul nz-menu nzMode="inline">
+      <li nz-menu-item nzMatchRouter="home">
+        <a routerLink="/home" routerLinkActive="activebutton">
+          <i nz-icon nzType="vv:dashboard" style="font-size: 20px !important;"></i>
+          <span>Home</span>
+        </a>
+      </li>
 
-            <li nz-menu-item nzMatchRouter="invoices"
-                [ngClass]="{'menu-item-new': newInvoicesCount > 0}">
-              <a routerLink="invoices" routerLinkActive="activebutton" (click)="markInvoicesAsSeen()">
-                <i nz-icon nzType="file-pdf" nzTheme="outline"></i>
-                <span>Invoices</span>
-              </a>
-            </li>
+      <li nz-menu-item nzMatchRouter="job-requests" [ngClass]="{'menu-item-new': newJobRequestsCount > 0}">
+        <a routerLink="job-requests" routerLinkActive="activebutton" (click)="markJobRequestsAsSeen()">
+          <i nz-icon nzType="vv:job_requests" style="font-size: 20px !important;"></i>
+          <span>Job Requests</span>
+        </a>
+      </li>
 
+      <li nz-menu-item nzMatchRouter="quotations" [ngClass]="{'menu-item-new': newQuotationsCount > 0}">
+        <a routerLink="quotations" routerLinkActive="activebutton" (click)="markQuotationsAsSeen()">
+          <i nz-icon nzType="file-text" nzTheme="outline"></i>
+          <span>Quotations</span>
+        </a>
+      </li>
 
+      <li nz-menu-item nzMatchRouter="invoices" [ngClass]="{'menu-item-new': newInvoicesCount > 0}">
+        <a routerLink="invoices" routerLinkActive="activebutton" (click)="markInvoicesAsSeen()">
+          <i nz-icon nzType="file-pdf" nzTheme="outline"></i>
+          <span>Invoices</span>
+        </a>
+      </li>
 
-            <li nz-menu-item nzMatchRouter="job-cards">
-                <a routerLink="job-cards" routerLinkActive="activebutton">
-                    <i nz-icon nzType="vv:engineering" style="font-size: 20px !important;"></i>
-                    <span>Job Cards</span>
-                </a>
-            </li>
+      <li nz-menu-item nzMatchRouter="job-cards">
+        <a routerLink="job-cards" routerLinkActive="activebutton">
+          <i nz-icon nzType="vv:engineering" style="font-size: 20px !important;"></i>
+          <span>Job Cards</span>
+        </a>
+      </li>
 
+      <li nz-menu-item nz-menu-item nzMatchRouter="stock">
+        <a routerLink="stock" routerLinkActive="activebutton">
+          <i nz-icon nzType="appstore" nzTheme="outline"></i>
+          <span>Stock</span>
+        </a>
+      </li>
 
-            <li nz-menu-item nzMatchRouter="delivery_note">
-              <a routerLink="delivery_note" routerLinkActive="activebutton">
-                <i nz-icon nzType="car" nzTheme="outline"></i>
-                <span>Delivery Notes</span>
-              </a>
-            </li>
+      <li nz-menu-item nzMatchRouter="pattern">
+        <a routerLink="pattern" routerLinkActive="activebutton">
+          <i nz-icon nzType="block" nzTheme="outline"></i>
+          <span>Patterns</span>
+        </a>
+      </li>
 
+      <li nz-menu-item nzMatchRouter="user">
+        <a routerLink="user" routerLinkActive="activebutton">
+          <i nz-icon nzType="team"></i>
+          <span>Users</span>
+        </a>
+      </li>
 
-            <li nz-menu-item nzMatchRouter="stock">
-              <a routerLink="stock" routerLinkActive="activebutton">
-                <i nz-icon nzType="appstore" nzTheme="outline"></i>
-                <span>Stock</span>
-              </a>
-            </li>
+      <li nz-menu-item nzMatchRouter="role">
+        <a routerLink="role" routerLinkActive="activebutton">
+          <i nz-icon nzType="sliders"></i>
+          <span>Roles</span>
+        </a>
+      </li>
 
+      <li nz-menu-item nzMatchRouter="help">
+        <a routerLink="help" routerLinkActive="activebutton">
+          <i nz-icon nzType="question-circle" nzTheme="outline"></i>
+          <span>Help</span>
+        </a>
+      </li>
 
-            <li nz-menu-item nzMatchRouter="pattern">
-              <a routerLink="pattern" routerLinkActive="activebutton">
-                <i nz-icon nzType="block" nzTheme="outline"></i>
-                <span>Patterns</span>
-              </a>
-            </li>
+      <li nz-menu-item nzMatchRouter>
+        <a nz-popconfirm nzPopconfirmTitle="Are you sure you want to logout?"
+           (nzOnConfirm)="sign_out()"
+           [nzIcon]="iconTpl">
+          <i nz-icon nzType="logout"></i>
+          <span>Logout</span>
+        </a>
+      </li>
+    </ul>
+  </nz-sider>
 
-
-            <!-- <li nz-menu-item nzMatchRouter="reciepts">
-                <a routerLink="reciepts" routerLinkActive="activebutton">
-                    <i nz-icon nzType="file-done" nzTheme="outline"></i>
-                    <span>Receipts</span>
-                </a>
-            </li> -->
-
-
-            <li nz-menu-item nzMatchRouter="user">
-                <a routerLink="user" routerLinkActive="activebutton">
-                    <i nz-icon nzType="team"></i>
-                    <span>Users</span>
-                </a>
-            </li>
-
-
-            <!-- <li nz-menu-item nzMatchRouter="employee">
-                <a routerLink="employee" routerLinkActive="activebutton">
-                    <i nz-icon nzType="usergroup-add"></i>
-                    <span>Employees</span>
-                </a>
-            </li> -->
-
-
-             <li nz-menu-item nzMatchRouter="role">
-                <a routerLink="role" routerLinkActive="activebutton">
-                    <i nz-icon nzType="sliders"></i>
-                    <span>Roles</span>
-                </a>
-            </li>
-
-
-            <li nz-menu-item nzMatchRouter="help">
-              <a routerLink="help" routerLinkActive="activebutton">
-                <i nz-icon nzType="question-circle"  nzTheme="outline"></i>
-                <span>Help</span>
-              </a>
-            </li>
-
-
-            <li nz-menu-item nzMatchRouter>
-                <a nz-popconfirm nzPopconfirmTitle="Are you sure you want to logout?" (nzOnConfirm)="sign_out()" [nzIcon]="iconTpl">
-                    <i nz-icon nzType="logout"></i>
-                    <span>Logout</span>
-                </a>
-            </li>
-        </ul>
-    </nz-sider>
-    <nz-layout>
-
-<!--Header-->
+  <!-- Main Layout -->
+  <nz-layout>
+    <!-- Header -->
     <nz-header>
       <div nz-row nzJustify="center" nzAlign="top">
-        <!-- Left Column: Role selector and Dashboard button -->
+        <!-- Left Column: Role selector (optional) -->
         <div nz-col nzXs="0" nzSm="0" nzMd="8" nzLg="8" nzXL="8" style="text-align: left;">
-          <nz-select
-            *ngIf="(authService.isloggedIn | async)"
-            [(ngModel)]="selectedRole"
-            (ngModelChange)="changeRole($event)"
-            class="role-selector"
-            nzPlaceHolder="Change Role"
-            [nzShowSearch]="true"
-            [nzAllowClear]="true"
-            [nzDropdownMatchSelectWidth]="true"
-          >
-            <nz-option
-              *ngFor="let role of roles"
-              [nzLabel]="role.role_name"
-              [nzValue]="role.role_id"
-              [nzDisabled]="role.role_id === 7"
-            ></nz-option>
+          <nz-select *ngIf="(authService.isloggedIn | async)"
+                     [(ngModel)]="selectedRole"
+                     (ngModelChange)="changeRole($event)"
+                     class="role-selector"
+                     nzPlaceHolder="Change Role"
+                     [nzShowSearch]="true"
+                     [nzAllowClear]="true"
+                     [nzDropdownMatchSelectWidth]="true">
+            <nz-option *ngFor="let role of roles" [nzLabel]="role.role_name" [nzValue]="role.role_id" [nzDisabled]="role.role_id === 7">
+            </nz-option>
           </nz-select>
-
-          <button *ngIf="authService.user?.role_id == 6" nz-button [routerLink]="'/home'" nzType="primary" style="margin-left: 10px; margin-right: 10px">
-            <span nz-icon nzType="dashboard" nzTheme="outline" style="font-size: 18px;"></span>
-            Dashboard
-          </button>
         </div>
 
         <!-- Center Column: Title -->
@@ -163,63 +127,73 @@
           <h1 style="color: white;"><b>Vault Vision</b></h1>
         </div>
 
-        <!-- Right Column: User controls -->
+        <!-- Right Column: Profile & Buttons -->
         <div nz-col nzXs="24" nzSm="24" nzMd="8" nzLg="8" nzXL="8" style="text-align: right;">
-          <nz-avatar routerLink="/profile" nzIcon="user" style="cursor: pointer;" nzTooltipPlacement="bottom" [nzSrc]="authService.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ authService.user?.name"></nz-avatar>
-          <button nzShape="circle" nz-button (click)="contactModal = true" nzType="primary" nz-tooltip nzTooltipTitle="Message Support" nzTooltipPlacement="bottom" style="margin-left: 10px; margin-right: 10px">
+          <nz-avatar routerLink="/profile" nzIcon="user" style="cursor: pointer;"
+                     nzTooltipPlacement="bottom"
+                     [nzSrc]="authService.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ authService.user?.name">
+          </nz-avatar>
+
+          <button nzShape="circle" nz-button (click)="contactModal = true" nzType="primary"
+                  nz-tooltip nzTooltipTitle="Message Support" nzTooltipPlacement="bottom"
+                  style="margin-left: 10px; margin-right: 10px">
             <span nz-icon nzType="message" nzTheme="outline" style="font-size: 18px;"></span>
           </button>
+
           <nz-badge [nzCount]="1">
-            <button (click)="openNotifications()" nzShape="circle" nz-button nzType="primary" nz-tooltip nzTooltipTitle="Notifications" nzTooltipPlacement="bottom">
+            <button (click)="openNotifications()" nzShape="circle" nz-button nzType="primary"
+                    nz-tooltip nzTooltipTitle="Notifications" nzTooltipPlacement="bottom">
               <span nz-icon nzType="bell" nzTheme="outline" style="font-size: 18px;"></span>
             </button>
           </nz-badge>
-          <button *ngIf="authService.user?.role_id == 6" nzShape="circle" nz-button nzType="primary" style="margin-left: 10px; margin-right: 10px;background-color: rgba(0,0,0,0);border: none;" nz-popconfirm nzPopconfirmTitle="Are you sure you want to logout?" (nzOnConfirm)="sign_out()"
-              [nzIcon]="iconTpl">
+
+          <button nzShape="circle" nz-button nzType="primary" style="margin-left: 10px; margin-right: 10px;background-color: rgba(0,0,0,0);border: none;"
+                  nz-popconfirm nzPopconfirmTitle="Are you sure you want to logout?" (nzOnConfirm)="sign_out()"
+                  [nzIcon]="iconTpl">
             <span nz-icon nzType="logout" nzTheme="outline" style="font-size: 18px;color: rgb(179, 52, 52);" ></span>
           </button>
         </div>
       </div>
     </nz-header>
 
-        <!--Body-->
-        <nz-content>
-            <div class="inner-content text-center">
-                <br>
-                <div nz-row nzJustify="center">
-                    <div nz-col nzXs="23" nzSm="23" nzMd="23" nzLg="23">
-                        <router-outlet />
-                    </div>
-                </div>
-            </div>
-        </nz-content>
+    <!-- Body -->
+    <nz-content>
+      <div class="inner-content text-center">
+        <br>
+        <div nz-row nzJustify="center">
+          <div nz-col nzXs="23" nzSm="23" nzMd="23" nzLg="23">
+            <router-outlet></router-outlet>
+          </div>
+        </div>
+      </div>
+    </nz-content>
 
-        <!--Footer-->
-        <nz-footer>
-            <div nz-row nzJustify="center" nzAlign="middle">
-                <div nz-col nzSpan="24" style="text-align: center;">
-                    Copyright &copy;{{year}} Vault Vision
-                </div>
-            </div>
-        </nz-footer>
-
-    </nz-layout>
+    <!-- Footer -->
+    <nz-footer>
+      <div nz-row nzJustify="center" nzAlign="middle">
+        <div nz-col nzSpan="24" style="text-align: center;">
+          Copyright &copy;{{year}} Vault Vision
+        </div>
+      </div>
+    </nz-footer>
+  </nz-layout>
 </nz-layout>
 
-<!--Modals-->
+<!-- Modals -->
 <nz-modal [(nzVisible)]="contactModal" nzClosable="true" [nzTitle]="'Contact Us'" (nzOnCancel)="contactModal = false;" [nzFooter]="null">
-    <ng-container *nzModalContent>
-        <app-contact></app-contact>
-    </ng-container>
+  <ng-container *nzModalContent>
+    <app-contact></app-contact>
+  </ng-container>
 </nz-modal>
 
-<!--Drawers-->
+<!-- Drawers -->
 <nz-drawer [nzClosable]="false" [nzVisible]="visible" [nzPlacement]="placement" nzTitle="Notifications" (nzOnClose)="openNotifications()">
-    <ng-container *nzDrawerContent>
-        <p>Messages...</p>
-    </ng-container>
+  <ng-container *nzDrawerContent>
+    <p>Messages...</p>
+  </ng-container>
 </nz-drawer>
 
+<!-- Popconfirm icon template -->
 <ng-template #iconTpl>
-    <span nz-icon nzType="question-circle-o" style="color: red;"></span>
+  <span nz-icon nzType="question-circle-o" style="color: red;"></span>
 </ng-template>

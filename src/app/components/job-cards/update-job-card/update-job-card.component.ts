@@ -39,11 +39,11 @@ export class UpdateJobCardComponent implements OnInit {
   ) {
     this.jobCardForm = this.fb.group({
       job_card_id: ['', Validators.required],
-      pattern_id: [null, [Validators.required]],
-      job_card_status_id: [null, [Validators.required]],
-      quotation_id: [null, [Validators.required]],
+      pattern_id: [''],
+      // job_card_status_id: [null, [Validators.required]],
+      // quotation_id: [null, [Validators.required]],
       special_instructions: [''],
-      completed_at: [null, [this.futureDateValidator]]
+      // completed_at: [null, [this.futureDateValidator]]
     });
   }
 

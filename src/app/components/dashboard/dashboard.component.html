@@ -18,79 +18,134 @@
                 <span nz-icon nzType="caret-right" class="ant-collapse-arrow" [nzRotate]="p.nzActive ? 90 : -90"></span>
             </ng-template>
 
-            <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
-                <!-- New Requests Card -->
-                <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="6" [nzLg]="6" [nzXl]="6">
-                    <nz-spin [nzSpinning]="isloading">
-                        <nz-card nzHoverable="true" style="text-align: center !important; position: relative;">
-                            <button routerLink="/job-requests" nz-button nzType="default" nzShape="circle" nzSize="large" style="position: absolute; top: 10px; right: 10px; z-index: 10;">
-                                <i nz-icon nzType="arrow-right" nzTheme="outline"></i>
-                            </button>
-                            <span nz-icon nzType="vv:engineering" nzTheme="outline" style="font-size: 40px !important;" class="color"></span>
-                            <h3><b>New Requests</b></h3>
-                            <div nz-row [nzJustify]="'center'" [nzGutter]="5">
-                                <nz-col nzSpan="24" style="text-align: center !important;">
-                                    <h1><b>{{ adminStats?.new_requests }}</b></h1>
-                                </nz-col>
-                            </div>
-                        </nz-card>
-                    </nz-spin>
-                </div>
+            <div nz-row [nzGutter]="16">
 
-                <!-- Pending Quotations Card -->
-                <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="6" [nzLg]="6" [nzXl]="6">
-                    <nz-spin [nzSpinning]="isloading">
-                        <nz-card nzHoverable="true" style="text-align: center !important; position: relative;">
-                            <button routerLink="/quotations" [queryParams]="{status: 'pending'}" nz-button nzType="default" nzShape="circle" nzSize="large" style="position: absolute; top: 10px; right: 10px; z-index: 10;">
-                                <i nz-icon nzType="arrow-right" nzTheme="outline"></i>
-                            </button>
-                            <span nz-icon nzType="file-text" nzTheme="outline" style="font-size: 40px !important;" class="color"></span>
-                            <h3><b>Pending Quotes</b></h3>
-                            <div nz-row [nzJustify]="'center'" [nzGutter]="5">
-                                <nz-col nzSpan="24" style="text-align: center !important;">
-                                    <h1><b>{{ adminStats?.pending_quotations }}</b></h1>
-                                </nz-col>
-                            </div>
-                        </nz-card>
-                    </nz-spin>
-                </div>
+              <!-- Pending Job Requests -->
+              <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+                <nz-spin [nzSpinning]="isloading">
+                  <nz-card nzHoverable="true" style="text-align: center; position: relative;">
+                    <button routerLink="/job-requests" nz-button nzType="default" nzShape="circle" nzSize="large"
+                            style="position: absolute; top: 10px; right: 10px;">
+                      <i nz-icon nzType="arrow-right"></i>
+                    </button>
+                    <span nz-icon nzType="form" style="font-size: 40px;"></span>
+                    <h3><b>Pending Job Requests</b></h3>
+                    <h1><b>{{ adminStats?.new_requests }}</b></h1>
+                  </nz-card>
+                </nz-spin>
+              </div>
 
-                <!-- Unpaid Invoices Card -->
-                <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="6" [nzLg]="6" [nzXl]="6">
-                    <nz-spin [nzSpinning]="isloading">
-                        <nz-card nzHoverable="true" style="text-align: center !important; position: relative;">
-                            <button routerLink="/invoices" [queryParams]="{status: 'unpaid'}" nz-button nzType="default" nzShape="circle" nzSize="large" style="position: absolute; top: 10px; right: 10px; z-index: 10;">
-                                <i nz-icon nzType="arrow-right" nzTheme="outline"></i>
-                            </button>
-                            <span nz-icon nzType="dollar" nzTheme="outline" style="font-size: 40px !important;" class="color"></span>
-                            <h3><b>Unpaid Invoices</b></h3>
-                            <div nz-row [nzJustify]="'center'" [nzGutter]="5">
-                                <nz-col nzSpan="24" style="text-align: center !important;">
-                                    <h1><b>{{ adminStats?.unpaid_invoices }}</b></h1>
-                                </nz-col>
-                            </div>
-                        </nz-card>
-                    </nz-spin>
-                </div>
+              <!-- Completed Job Cards This Week -->
+              <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+                <nz-spin [nzSpinning]="isloading">
+                  <nz-card nzHoverable="true" style="text-align: center; position: relative;">
+                    <button routerLink="/job-cards" [queryParams]="{filter:'completed'}" nz-button nzType="default"
+                            nzShape="circle" nzSize="large" style="position: absolute; top: 10px; right: 10px;">
+                      <i nz-icon nzType="arrow-right"></i>
+                    </button>
+                    <span nz-icon nzType="check-circle" style="font-size: 40px; color:#52c41a;"></span>
+                    <h3><b>Completed This Week</b></h3>
+                    <h1><b>{{ adminStats?.completed_job_cards_week }}</b></h1>
+                  </nz-card>
+                </nz-spin>
+              </div>
 
-                <!-- Low Stock Items Card -->
-                <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="6" [nzLg]="6" [nzXl]="6">
-                    <nz-spin [nzSpinning]="isloading">
-                        <nz-card nzHoverable="true" style="text-align: center !important; position: relative;">
-                            <button routerLink="/stock" [queryParams]="{filter: 'low'}" nz-button nzType="default" nzShape="circle" nzSize="large" style="position: absolute; top: 10px; right: 10px; z-index: 10;">
-                                <i nz-icon nzType="arrow-right" nzTheme="outline"></i>
-                            </button>
-                            <span nz-icon nzType="exclamation-circle" nzTheme="outline" style="font-size: 40px !important; color: #ff4d4f;"></span>
-                            <h3><b>Low Stock Items</b></h3>
-                            <div nz-row [nzJustify]="'center'" [nzGutter]="5">
-                                <nz-col nzSpan="24" style="text-align: center !important;">
-                                    <h1><b>{{ adminStats?.low_stock_items }}</b></h1>
-                                </nz-col>
-                            </div>
-                        </nz-card>
-                    </nz-spin>
-                </div>
+              <!-- Total Customers -->
+              <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+                <nz-spin [nzSpinning]="isloading">
+                  <nz-card nzHoverable="true" style="text-align: center; position: relative;">
+                    <button routerLink="/customers" nz-button nzType="default" nzShape="circle" nzSize="large"
+                            style="position: absolute; top: 10px; right: 10px;">
+                      <i nz-icon nzType="arrow-right"></i>
+                    </button>
+                    <span nz-icon nzType="team" style="font-size: 40px;"></span>
+                    <h3><b>Total Customers</b></h3>
+                    <h1><b>{{ adminStats?.total_customers }}</b></h1>
+                  </nz-card>
+                </nz-spin>
+              </div>
+
+              <!-- Employees Clocked In Today -->
+              <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+                <nz-spin [nzSpinning]="isloading">
+                  <nz-card nzHoverable="true" style="text-align: center; position: relative;">
+                    <button routerLink="/employees" nz-button nzType="default" nzShape="circle" nzSize="large"
+                            style="position: absolute; top: 10px; right: 10px;">
+                      <i nz-icon nzType="arrow-right"></i>
+                    </button>
+                    <span nz-icon nzType="user" style="font-size: 40px;"></span>
+                    <h3><b>Clocked In Today</b></h3>
+                    <h1><b>{{ adminStats?.employees_clocked_in_today }}</b></h1>
+                  </nz-card>
+                </nz-spin>
+              </div>
+
+              <br>
+
+              <!-- Pending Quotations -->
+              <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+                <nz-spin [nzSpinning]="isloading">
+                  <nz-card nzHoverable="true" style="text-align: center; position: relative;">
+                    <button routerLink="/quotations" [queryParams]="{filter:'pending'}" nz-button nzType="default"
+                            nzShape="circle" nzSize="large" style="position: absolute; top: 10px; right: 10px;">
+                      <i nz-icon nzType="arrow-right"></i>
+                    </button>
+                    <span nz-icon nzType="file-done" style="font-size: 40px;"></span>
+                    <h3><b>Pending Quotations</b></h3>
+                    <h1><b>{{ adminStats?.pending_quotations }}</b></h1>
+                  </nz-card>
+                </nz-spin>
+              </div>
+
+              <!-- Unpaid Invoices -->
+              <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+                <nz-spin [nzSpinning]="isloading">
+                  <nz-card nzHoverable="true" style="text-align: center; position: relative;">
+                    <button routerLink="/invoices" [queryParams]="{filter:'unpaid'}" nz-button nzType="default"
+                            nzShape="circle" nzSize="large" style="position: absolute; top: 10px; right: 10px;">
+                      <i nz-icon nzType="arrow-right"></i>
+                    </button>
+                    <span nz-icon nzType="dollar" style="font-size: 40px; color:#fa8c16;"></span>
+                    <h3><b>Unpaid Invoices</b></h3>
+                    <h1><b>{{ adminStats?.unpaid_invoices }}</b></h1>
+                  </nz-card>
+                </nz-spin>
+              </div>
+
+              <!-- Low Stock Items -->
+              <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+                <nz-spin [nzSpinning]="isloading">
+                  <nz-card nzHoverable="true" style="text-align: center; position: relative;">
+                    <button routerLink="/stock" [queryParams]="{filter:'low'}" nz-button nzType="default"
+                            nzShape="circle" nzSize="large" style="position: absolute; top: 10px; right: 10px;">
+                      <i nz-icon nzType="arrow-right"></i>
+                    </button>
+                    <span nz-icon nzType="exclamation-circle" style="font-size: 40px; color:#f5222d;"></span>
+                    <h3><b>Low Stock Items</b></h3>
+                    <h1><b>{{ adminStats?.low_stock_items }}</b></h1>
+                  </nz-card>
+                </nz-spin>
+              </div>
+
+                <!-- Pending Job Cards -->
+              <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+                <nz-spin [nzSpinning]="isloading">
+                  <nz-card nzHoverable="true" style="text-align: center; position: relative;">
+                    <button routerLink="/job-cards" [queryParams]="{filter:'pending'}"
+                            nz-button nzType="default" nzShape="circle" nzSize="large"
+                            style="position: absolute; top: 10px; right: 10px;">
+                      <i nz-icon nzType="arrow-right"></i>
+                    </button>
+                    <span nz-icon nzType="profile" style="font-size: 40px; color:#1890ff;"></span>
+                    <h3><b>Pending Job Cards</b></h3>
+                    <h1><b>{{ adminStats?.pending_job_cards }}</b></h1>
+                  </nz-card>
+                </nz-spin>
+              </div>
+
+
             </div>
+
                         <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="18" [nzLg]="18" [nzXl]="18">
                 <nz-card nzTitle="Top 10 Lowest Stock Items" [nzExtra]="stockExtraTemplate">
                     <ng-template #stockExtraTemplate>
@@ -168,7 +223,7 @@
                   </div>
                 </nz-card>
               </div>
-</div>
+            </div>
         </nz-collapse-panel>
     </nz-collapse>
 
@@ -240,11 +295,10 @@
                 <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="12" [nzLg]="6" [nzXl]="6">
                     <nz-card nzHoverable="true" style="height: 100%;border:none;" (click)="openPendingJobRequestsReport()">
                         <span nz-icon nzType="container" nzTheme="outline" style="font-size: 40px !important;" class="color"></span><br>
-                        Pedning Job Requests
+                        Pending Job Requests
                     </nz-card>
                 </div>
 
-                <!-- NEW: Stock by Stock Type Report -->
                 <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="12" [nzLg]="6" [nzXl]="6">
                     <nz-card nzHoverable="true" style="height: 100%;border:none;" (click)="openRevenueReport()">
                         <span nz-icon nzType="appstore" nzTheme="outline" style="font-size: 40px !important;" class="color"></span><br>
