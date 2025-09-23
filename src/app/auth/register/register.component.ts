@@ -27,16 +27,30 @@ export class RegisterComponent implements OnInit {
 
   // Form
   registerForm: FormGroup = new FormGroup({
-    title: new FormControl(null, [Validators.required]),
-    name: new FormControl(null, [Validators.required]),
-    surname: new FormControl(null, [Validators.required]),
-    phoneNumber: new FormControl(null, [Validators.required, this.phoneNumberValidator]),
-    email: new FormControl(null, [Validators.required, Validators.email]),
-    companyName: new FormControl(null, [Validators.required]),
-    telephone: new FormControl(null, [Validators.required]),
-    registrationNumber: new FormControl(null, [Validators.required]),
-    vatNumber: new FormControl(null, [Validators.required]),
-    address: new FormControl(null, [Validators.required]),
+    title: new FormControl<number | null>(null, [Validators.required]),
+    name: new FormControl<string | null>(null, [Validators.required]),
+    surname: new FormControl<string | null>(null, [Validators.required]),
+    phoneNumber: new FormControl<string | null>(null, [Validators.required, this.phoneNumberValidator]),
+    email: new FormControl<string | null>(null, [Validators.required, Validators.email]),
+    companyName: new FormControl<string | null>(null, [Validators.required]),
+    telephone: new FormControl<string | null>(null, [Validators.required]),
+
+    // Match Profile component behavior
+    registrationNumber: new FormControl<string | null>(
+      null,
+      [
+        Validators.required,
+        Validators.pattern(/^\d{4}\/\d{6}\/\d{2}$/) // YYYY/NNNNNN/XX
+      ]
+    ),
+    vatNumber: new FormControl<string | null>(
+      null,
+      [
+        Validators.required,
+        Validators.pattern(/^\d{10}$/) // exactly 10 digits
+      ]
+    ),
+    address: new FormControl<string | null>(null, [Validators.required]),
   });
 
   constructor(
@@ -134,10 +148,79 @@ export class RegisterComponent implements OnInit {
     return raw;
   }
 
+  // ============ Reg No + VAT auto-format (match Profile) ============
+
+  // Keep only digits (max 10) for VAT as user types, re-run validators
+  onVatInput(event: Event): void {
+    const ctrl = this.registerForm.get('vatNumber');
+    if (!ctrl) return;
+
+    const input = event.target as HTMLInputElement;
+    const digits = (input.value || '').replace(/\D/g, '').slice(0, 10);
+
+    if (digits !== input.value) input.value = digits;
+    if (digits !== ctrl.value) {
+      ctrl.setValue(digits, { emitEvent: false });
+      ctrl.markAsDirty();
+      ctrl.updateValueAndValidity({ onlySelf: true });
+    }
+  }
+
+  // Auto-format Registration No to YYYY/NNNNNN/XX as user types, re-run validators
+  onRegNoInput(event: Event): void {
+    const ctrl = this.registerForm.get('registrationNumber');
+    if (!ctrl) return;
+
+    const input = event.target as HTMLInputElement;
+    const raw = (input.value || '').replace(/\D/g, '').slice(0, 12); // 4+6+2 digits
+
+    let formatted = raw;
+    if (raw.length > 4) formatted = raw.slice(0, 4) + '/' + raw.slice(4);
+    if (raw.length > 10) formatted = formatted.slice(0, 11) + '/' + formatted.slice(11);
+
+    if (formatted !== input.value) input.value = formatted;
+    if (formatted !== ctrl.value) {
+      ctrl.setValue(formatted, { emitEvent: false });
+      ctrl.markAsDirty();
+      ctrl.updateValueAndValidity({ onlySelf: true });
+    }
+  }
+
   // ====================================================
 
   setConsent(state: boolean) {
     this.consent = state;
+  }
+
+  goToConsent(): void {
+    // Normalize any active phone input first
+    this.onPhoneBlur();
+
+    // Mark invalid fields
+    if (!this.registerForm.valid) {
+      Object.values(this.registerForm.controls).forEach(control => {
+        if (control.invalid) {
+          control.markAsDirty();
+          control.updateValueAndValidity({ onlySelf: true });
+        }
+      });
+      return;
+    }
+
+    // Strict verify Reg No & VAT before allowing consent step
+    const regOk = /^(19|20)\d{2}\/\d{6}\/\d{2}$/.test(this.registerForm.value.registrationNumber || '');
+    const vatOk = /^\d{10}$/.test(this.registerForm.value.vatNumber || '');
+
+    if (!regOk || !vatOk) {
+      this.notification.showError(
+        !regOk
+          ? 'Registration number must be YYYY/NNNNNN/XX (e.g. 2024/123456/07).'
+          : 'VAT number must be exactly 10 digits.'
+      );
+      return;
+    }
+
+    this.nzStep = 1;
   }
 
   submitRegister() {
@@ -154,26 +237,42 @@ export class RegisterComponent implements OnInit {
       return;
     }
 
+    // Final strict validation (defensive)
+    const reg = this.registerForm.value.registrationNumber || '';
+    const vat = this.registerForm.value.vatNumber || '';
+
+    const regStrictOk = /^(19|20)\d{2}\/\d{6}\/\d{2}$/.test(reg);
+    const vatStrictOk = /^\d{10}$/.test(vat);
+
+    if (!regStrictOk || !vatStrictOk) {
+      this.notification.showError(
+        !regStrictOk
+          ? 'Registration number must be YYYY/NNNNNN/XX (e.g. 2024/123456/07).'
+          : 'VAT number must be exactly 10 digits.'
+      );
+      return;
+    }
+
     this.isloadingBtn = true;
 
     // Use normalized E.164 value for submission
     const normalizedPhone = this.toE164(this.registerForm.value.phoneNumber || '');
 
     const customer = new addCustomer();
-    customer.title_id = this.registerForm.value.title;
-    customer.name = this.registerForm.value.name;
-    customer.surname = this.registerForm.value.surname;
-    customer.email_address = this.registerForm.value.email;
+    customer.title_id = this.registerForm.value.title as number;
+    customer.name = this.registerForm.value.name!;
+    customer.surname = this.registerForm.value.surname!;
+    customer.email_address = this.registerForm.value.email!;
     customer.phone_number = normalizedPhone;
-    customer.company_name = this.registerForm.value.companyName;
-    customer.telephone = this.registerForm.value.telephone;
-    customer.registration_number = this.registerForm.value.registrationNumber;
-    customer.vat_number = this.registerForm.value.vatNumber;
-    customer.address = this.registerForm.value.address;
+    customer.company_name = this.registerForm.value.companyName!;
+    customer.telephone = this.registerForm.value.telephone!;
+    customer.registration_number = reg;
+    customer.vat_number = vat;
+    customer.address = this.registerForm.value.address!;
 
     this.apiService.create_customer(customer).subscribe({
       next: res => {
-        if (!res.error) {
+        if (!res?.error) {
           this.notification.showSuccess('Success');
           this.registerForm.reset();
           this.nzStep = 2;
