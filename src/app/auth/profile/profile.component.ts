@@ -30,6 +30,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   file?: NzUploadFile;
   fileList: NzUploadFile[] = [];
   image_url = '';
+  isDeleting = false;
 
   customerForm = new FormGroup({
     name: new FormControl<string | null>(null, [Validators.required]),
@@ -143,7 +144,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   private setInitialFormValues(user: any): void {
     this.image_url = user.image || '';
-    
+
     this.customerForm.patchValue({
       name: user.name || '',
       surname: user.surname || '',
@@ -238,7 +239,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.apiService.update_user(update_user_id, update_user_payload).subscribe({
       next: (res) => {
         console.log('User update response:', res);
-        
+
         if (res?.error) {
           this.notificationService.showError('User update failed: ' + res.error);
           this.btnLoading = false;
@@ -246,8 +247,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
         }
 
         // Update auth service with the changed fields only
-        const updatedAuthUser = { 
-          ...authUser, 
+        const updatedAuthUser = {
+          ...authUser,
           name: src.name!,
           surname: src.surname!,
           email_address: src.email!,
@@ -261,7 +262,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       },
       error: (e) => {
         console.error('User update error:', e);
-        
+
         // Handle 422 validation errors specifically
         if (e.status === 422) {
           this.handleValidationErrors(e);
@@ -269,7 +270,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
           const errorMessage = e.error?.message || e.message || 'Unknown error occurred';
           this.notificationService.showError('Failed to update personal details: ' + errorMessage);
         }
-        
+
         this.btnLoading = false;
       }
     });
@@ -277,7 +278,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   private handleValidationErrors(e: any): void {
     let errorMessage = 'Validation failed: ';
-    
+
     if (e.error && e.error.detail) {
       // Handle array of validation errors
       if (Array.isArray(e.error.detail)) {
@@ -304,7 +305,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
           return JSON.stringify(error);
         });
         errorMessage += errors.join(', ');
-      } 
+      }
       // Handle string detail
       else if (typeof e.error.detail === 'string') {
         errorMessage += e.error.detail;
@@ -316,21 +317,21 @@ export class ProfileComponent implements OnInit, OnDestroy {
           .join(', ');
         errorMessage += detailErrors;
       }
-    } 
+    }
     // Handle different error formats
     else if (e.error && typeof e.error === 'object') {
       const errors = Object.entries(e.error)
         .map(([key, value]) => `${key}: ${value}`)
         .join(', ');
       errorMessage += errors;
-    } 
+    }
     else if (e.error && typeof e.error === 'string') {
       errorMessage += e.error;
     }
     else {
       errorMessage += 'Please check all fields and try again.';
     }
-    
+
     this.notificationService.showError(errorMessage);
   }
 
@@ -395,4 +396,53 @@ export class ProfileComponent implements OnInit, OnDestroy {
       }
     });
   }
+
+  async deleteProfilePicture(): Promise<void> {
+    if (!this.auth.user?.user_id) {
+      this.notificationService.showError('User not authenticated');
+      return;
+    }
+
+    this.isDeleting = true;
+
+    try {
+      // Call your existing update_user API with empty image
+      const updatePayload = {
+        image: ''  // This will be converted to NULL in the backend
+      };
+
+      this.apiService.update_user(this.auth.user.user_id, updatePayload).subscribe({
+        next: (res) => {
+          if (res?.error) {
+            this.notificationService.showError('Failed to remove profile picture: ' + res.error);
+            return;
+          }
+
+          // Update local state
+          this.image_url = '';
+          if (this.auth.user) this.auth.user.image = '';
+          if (this.user?.user) this.user.user.image = '';
+
+          // Clear file list
+          this.fileList = [];
+          this.file = undefined;
+
+          this.notificationService.showSuccess('Profile picture removed successfully.');
+          this.isDeleting = false;
+        },
+        error: (e) => {
+          console.error('Profile picture deletion error:', e);
+          const errorMessage = e.error?.message || e.message || 'Unknown error occurred';
+          this.notificationService.showError('Failed to remove profile picture: ' + errorMessage);
+          this.isDeleting = false;
+        }
+      });
+
+    } catch (e) {
+      console.error('Unexpected error:', e);
+      this.notificationService.showError('An unexpected error occurred');
+      this.isDeleting = false;
+    }
+  }
+
 }
