@@ -35,7 +35,12 @@
   </div>
 
   <!-- Report Body with Loading Spinner -->
-  <nz-spin [nzSpinning]="isLoading">
+  <nz-spin
+      [nzSpinning]="isLoading"
+      [nzTip]="'Loading stock data...'"
+      style="display: block;">
+
+    <!-- Table -->
     <div *ngIf="!errorMessage && lowStockItems.length > 0" class="stock-table">
       <table class="pdf-style-table">
         <thead>
@@ -61,10 +66,12 @@
       </table>
     </div>
 
+    <!-- No Data -->
     <div *ngIf="!errorMessage && lowStockItems.length === 0" class="no-data">
       <p>No low stock items found</p>
     </div>
 
+    <!-- Error -->
     <div *ngIf="errorMessage" class="error-message">
       <p>{{ errorMessage }}</p>
     </div>
