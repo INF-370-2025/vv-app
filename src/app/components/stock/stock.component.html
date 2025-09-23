@@ -447,15 +447,6 @@
                           <button nz-button nzType="default" nzSize="small" (click)="deleteType(type)" nz-tooltip="Delete">
                             <i nz-icon nzType="delete" nzTheme="outline"></i>
                           </button>
-                          <nz-select nzSize="small" style="width: 140px; margin-left: 8px;"
-                                    nzPlaceHolder="Move to category"
-                                    (nzChange)="moveTypeToCategory(type, $event)">
-                            <nz-option nzLabel="Select category" nzDisabled nzValue=""></nz-option>
-                            <nz-option *ngFor="let cat of stockCategories"
-                                      [nzValue]="cat.stock_category_id"
-                                      [nzLabel]="cat.category_name">
-                            </nz-option>
-                          </nz-select>
                         </div>
                       </div>
                       <ul *ngIf="type.expanded">
@@ -465,24 +456,15 @@
                             <i nz-icon nzType="file" nzTheme="outline" class="node-icon"></i>
                             <span class="node-title">{{ stock.title }}</span>
                             <div class="node-actions">
-                              <button nz-button nzType="default" nzSize="small" (click)="viewStockFromStructure(stock.stock)" nz-tooltip="View">
-                                <i nz-icon nzType="eye" nzTheme="outline"></i>
-                              </button>
-                              <button nz-button nzType="default" nzSize="small" (click)="openUpdateViewFromStructure(stock.stock)" nz-tooltip="Edit">
-                                <i nz-icon nzType="edit" nzTheme="outline"></i>
-                              </button>
+                            <button nz-button nzType="default" nzSize="small" (click)="viewStockFromStructure(stock.stock)" nz-tooltip="View">
+                              <i nz-icon nzType="eye" nzTheme="outline"></i>
+                            </button>
+                            <button nz-button nzType="default" nzSize="small" (click)="openUpdateViewFromStructure(stock.stock)" nz-tooltip="Edit">
+                              <i nz-icon nzType="edit" nzTheme="outline"></i>
+                            </button>
                               <button nz-button nzType="default" nzSize="small" (click)="deleteStock(stock)" nz-tooltip="Delete">
                                 <i nz-icon nzType="delete" nzTheme="outline"></i>
                               </button>
-                              <nz-select nzSize="small" style="width: 120px; margin-left: 8px;"
-                                        nzPlaceHolder="Move to type"
-                                        (nzChange)="moveStockToType(stock, $event)">
-                                <nz-option nzLabel="Select type" nzDisabled nzValue=""></nz-option>
-                                <nz-option *ngFor="let typ of stockTypes"
-                                          [nzValue]="typ.stock_type_id"
-                                          [nzLabel]="typ.type_name">
-                                </nz-option>
-                              </nz-select>
                             </div>
                           </div>
                         </li>

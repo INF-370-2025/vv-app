@@ -312,16 +312,16 @@ export class StockComponent implements OnInit {
     });
   }
 
-viewStockFromStructure(item: stock): void {
-  this.viewStockItem = item;
+viewStockFromStructure(item: any): void {
+  this.viewStockItem = item.stock;
   this.showStockView = true;
   this.showCreateView = false;
   this.showUpdateView = false;
   this.showStructureView = false;
 }
 
-openUpdateViewFromStructure(item: stock): void {
-  this.stockToUpdate = item;
+openUpdateViewFromStructure(item: any): void {
+  this.stockToUpdate = item.stock;
   this.showUpdateView = true;
   this.showStockView = false;
   this.showCreateView = false;

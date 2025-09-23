@@ -84,12 +84,11 @@
                 <p class="text-gradient" [style.fontSize]="breakpoint.isScreenSmall ? '12px' : '15px'">
                     Enter the verification code we've just sent you at <b>{{ phoneNumber || emailAddress }}</b>.
                 </p>
-                <a style="color: white !important;">
+                <a style="color: white !important; cursor: pointer;" (click)="goBackToInput()">
                     <u class="color">
                       Edit
                       <span *ngIf="isSmsLogin"> phone number</span>
                       <span *ngIf="!isSmsLogin">email address</span>
-
                     </u>
                 </a>
 

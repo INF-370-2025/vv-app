@@ -4,28 +4,23 @@
     <nz-spin [nzSpinning]="isLoadingJobCardDetails || isSubmitting">
 
 
-  <!-- Display Job Card Information -->
-  <nz-card *ngIf="jobCardDetails" style="margin-bottom: 16px;">
-    <div nz-row>
-      <div nz-col nzSpan="24">
-        <h3>Job Card Details</h3>
+    <nz-card *ngIf="jobCardDetails" style="margin-bottom: 16px; text-align: center;">
+      <div nz-row [nzJustify]="'center'">
+        <div nz-col nzSpan="24">
+          <h3>Job Card Details</h3>
+        </div>
       </div>
-    </div>
-    <div nz-row [nzGutter]="16">
-      <div nz-col nzSpan="12">
-        <p><strong>Job Card ID:</strong> #{{ jobCardDetails.job_card_id }}</p>
-        <p><strong>Title:</strong> {{ jobCardDetails.quotation?.job_request?.title }}</p>
-        <p><strong>Description:</strong> {{ jobCardDetails.quotation?.job_request?.description }}</p>
+      <div nz-row [nzJustify]="'center'" [nzGutter]="16">
+        <div nz-col nzSpan="16" style="text-align: center;">
+          <p><strong>Status:</strong>
+            <nz-tag [nzColor]="'green'">Completed</nz-tag>
+          </p>
+          <p><strong>Job Card ID:</strong> #{{ jobCardDetails.job_card_id }}</p>
+          <p><strong>Title:</strong> {{ jobCardDetails.quotation?.job_request?.title }}</p>
+          <p><strong>Description:</strong> {{ jobCardDetails.quotation?.job_request?.description }}</p>
+        </div>
       </div>
-      <div nz-col nzSpan="12">
-        <p><strong>Status:</strong>
-          <nz-tag [nzColor]="'green'">Completed</nz-tag>
-        </p>
-        <p><strong>Completed Date:</strong> {{ jobCardDetails.completed_at | date:'mediumDate' }}</p>
-        <p><strong>Company:</strong> {{ jobCardDetails.quotation?.job_request?.customer?.company_name }}</p>
-      </div>
-    </div>
-  </nz-card>
+    </nz-card>
 
   <form nz-form [formGroup]="deliveryNoteForm" nzLayout="vertical">
     <!-- Hidden job card ID field -->
@@ -55,9 +50,10 @@
       </nz-form-control>
     </nz-form-item>
 
-    <!-- Form Actions -->
     <div class="form-actions">
-      <button nz-button nzType="default" (click)="cancel()" [disabled]="isSubmitting">Cancel</button>
+      <button nz-button nzType="default" routerLink="/delivery_note" [disabled]="isSubmitting">
+        Cancel
+      </button>
       <button
         nz-button
         nzType="primary"

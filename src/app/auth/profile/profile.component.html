@@ -5,24 +5,35 @@
   <div nz-col nzXs="22" nzSm="22" nzMd="22" nzLg="18" nzXL="22">
     <nz-card>
 
-      <!-- === Avatar Upload Section === -->
-      <nz-spin [nzSpinning]="isuploading">
-        <nz-upload
-          [nzBeforeUpload]="beforeUpload"
-          nzListType="picture"
-          [(nzFileList)]="fileList"
-          [nzLimit]="1"
-          [nzSize]="50000"
-          [nzFileType]="'image/png,image/jpeg,image/gif,image/bmp'"
-          [nzShowUploadList]="{ showPreviewIcon: true, showRemoveIcon: true }">
+    <nz-spin [nzSpinning]="isuploading">
+      <nz-upload
+        [nzBeforeUpload]="beforeUpload"
+        nzListType="picture"
+        [(nzFileList)]="fileList"
+        [nzLimit]="1"
+        [nzSize]="50000"
+        [nzFileType]="'image/png,image/jpeg,image/gif,image/bmp'"
+        [nzShowUploadList]="{ showPreviewIcon: true, showRemoveIcon: true }">
 
-          <nz-avatar
-            [nz-tooltip]="'Click to change'"
-            [nzSrc]="image_url || auth.user?.image || ('https://ui-avatars.com/api/?background=random&color=fff&name=' + (auth.user?.name || '') + '+' + (auth.user?.surname || ''))"
-            [nzSize]="100">
-          </nz-avatar>
+        <nz-avatar
+          [nz-tooltip]="'Click to change'"
+          [nzSrc]="image_url || auth.user?.image || ('https://ui-avatars.com/api/?background=random&color=fff&name=' + (auth.user?.name || '') + '+' + (auth.user?.surname || ''))"
+          [nzSize]="100">
+        </nz-avatar>
 
         </nz-upload>
+        <div class="delete-button-container" *ngIf="image_url || auth.user?.image">
+          <button
+            nz-button
+            nzType="link"
+            nzDanger
+            nzSize="small"
+            (click)="deleteProfilePicture()"
+            [nzLoading]="isDeleting"
+            class="delete-profile-pic-btn">
+            <i nz-icon nzType="delete"></i> Remove Profile Picture
+          </button>
+        </div>
       </nz-spin>
 
       <nz-divider></nz-divider>

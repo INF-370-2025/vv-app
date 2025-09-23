@@ -7,12 +7,12 @@ import { BreakpointService } from '../../services/breakpoint.service';
 import { SupabaseService } from '../../services/supabase.service';
 import { NotificationService } from '../../services/notification.service';
 import { AuthService } from '../../services/auth.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [AppModule,NgxMaterialIntlTelInputComponent],
+  imports: [AppModule, NgxMaterialIntlTelInputComponent, RouterLink],
   templateUrl: './login.component.html',
   styleUrl: './login.component.less'
 })
@@ -54,6 +54,14 @@ export class LoginComponent implements OnInit {
     if(this.auth.isLoggedInSubject.value == true) {
       this.router.navigateByUrl('/home')
     }
+  }
+
+  goBackToInput(): void {
+    this.showOTPEnter = false;
+    this.otp = ''; // Clear the OTP input
+    this.showTimer = false; // Reset timer if needed
+    this.timeLeft = 90; // Reset timer countdown
+    this.displayTime = ''; // Clear display time
   }
 
   onOtpInputChange(event: Event): void {
