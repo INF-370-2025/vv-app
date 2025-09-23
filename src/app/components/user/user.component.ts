@@ -53,6 +53,9 @@ export class UserComponent implements OnInit{
   fileList :any[] = [];
   employeeIdToUpdate:number = 0;
   showHelp: boolean = false;
+  showUpdateCustomerModal: boolean = false;
+  customerIdToUpdate: number = 0;
+
 
   i: number = 1;
   j: number = 1;
@@ -61,31 +64,161 @@ export class UserComponent implements OnInit{
   @Output() createdPayslip = new EventEmitter<number>();
   @Output() createdUser = new EventEmitter<number>();
 
-  employeeForm:FormGroup = new FormGroup({
-      title: new FormControl(null, [Validators.required]),
-      name: new FormControl(null, [Validators.required]),
-      surname: new FormControl(null, [Validators.required]),
-      email_address: new FormControl(null, [Validators.required]),
-      phone_number: new FormControl(null, [Validators.required]),
-      role: new FormControl(null, [Validators.required]),
-      address: new FormControl(null, [Validators.required]),
-      emergency_contact: new FormControl(null, [Validators.required]),
-      hourly_rate: new FormControl(null, [Validators.required]),
-      job_scope: new FormControl(null, [Validators.required]),
-    });
+  employeeForm: FormGroup = new FormGroup({
+    title: new FormControl(null, [Validators.required]),
+    name: new FormControl(null, [
+      Validators.required,
+      Validators.minLength(2),
+      Validators.maxLength(50),
+      Validators.pattern(/^[a-zA-Z\s]*$/)
+    ]),
+    surname: new FormControl(null, [
+      Validators.required,
+      Validators.minLength(2),
+      Validators.maxLength(50),
+      Validators.pattern(/^[a-zA-Z\s]*$/)
+    ]),
+    email_address: new FormControl(null, [
+      Validators.required,
+      Validators.email,
+      Validators.maxLength(100)
+    ]),
+    phone_number: new FormControl(null, [
+      Validators.required,
+      Validators.pattern(/^[0-9+]{10,15}$/),
+      Validators.minLength(10),
+      Validators.maxLength(15)
+    ]),
+    role: new FormControl(null, [Validators.required]),
+    address: new FormControl(null, [
+      Validators.required,
+      Validators.minLength(10),
+      Validators.maxLength(200)
+    ]),
+    emergency_contact: new FormControl(null, [
+      Validators.required,
+      Validators.pattern(/^[0-9+]{10,15}$/),
+      Validators.minLength(10),
+      Validators.maxLength(15)
+    ]),
+    hourly_rate: new FormControl(null, [
+      Validators.required,
+      Validators.min(0),
+      Validators.max(1000),
+      Validators.pattern(/^\d+(\.\d{1,2})?$/)
+    ]),
+    job_scope: new FormControl(null, [
+      Validators.required,
+      Validators.minLength(5),
+      Validators.maxLength(100)
+    ]),
+  });
 
-    updateEmployeeForm:FormGroup = new FormGroup({
-      title: new FormControl(null, [Validators.required]),
-      name: new FormControl(null, [Validators.required]),
-      surname: new FormControl(null, [Validators.required]),
-      email_address: new FormControl(null, [Validators.required]),
-      phone_number: new FormControl(null, [Validators.required]),
-      role: new FormControl(null, [Validators.required]),
-      address: new FormControl(null, [Validators.required]),
-      emergency_contact: new FormControl(null, [Validators.required]),
-      hourly_rate: new FormControl(null, [Validators.required]),
-      job_scope: new FormControl(null, [Validators.required]),
-    });
+  // Replace your updateEmployeeForm with this enhanced version:
+  updateEmployeeForm: FormGroup = new FormGroup({
+    title: new FormControl(null, [Validators.required]),
+    name: new FormControl(null, [
+      Validators.required,
+      Validators.minLength(2),
+      Validators.maxLength(50),
+      Validators.pattern(/^[a-zA-Z\s]*$/)
+    ]),
+    surname: new FormControl(null, [
+      Validators.required,
+      Validators.minLength(2),
+      Validators.maxLength(50),
+      Validators.pattern(/^[a-zA-Z\s]*$/)
+    ]),
+    email_address: new FormControl(null, [
+      Validators.required,
+      Validators.email,
+      Validators.maxLength(100)
+    ]),
+    phone_number: new FormControl(null, [
+      Validators.required,
+      Validators.pattern(/^[0-9+]{10,15}$/),
+      Validators.minLength(10),
+      Validators.maxLength(15)
+    ]),
+    role: new FormControl(null, [Validators.required]),
+    address: new FormControl(null, [
+      Validators.required,
+      Validators.minLength(10),
+      Validators.maxLength(200)
+    ]),
+    emergency_contact: new FormControl(null, [
+      Validators.required,
+      Validators.pattern(/^[0-9+]{10,15}$/),
+      Validators.minLength(10),
+      Validators.maxLength(15)
+    ]),
+    hourly_rate: new FormControl(null, [
+      Validators.required,
+      Validators.min(0),
+      Validators.max(1000),
+      Validators.pattern(/^\d+(\.\d{1,2})?$/)
+    ]),
+    job_scope: new FormControl(null, [
+      Validators.required,
+      Validators.minLength(5),
+      Validators.maxLength(100)
+    ]),
+  });
+
+  updateCustomerForm: FormGroup = new FormGroup({
+    title: new FormControl(null, [Validators.required]),
+    name: new FormControl(null, [
+      Validators.required,
+      Validators.minLength(2),
+      Validators.maxLength(50),
+      Validators.pattern(/^[a-zA-Z\s]*$/)
+    ]),
+    surname: new FormControl(null, [
+      Validators.required,
+      Validators.minLength(2),
+      Validators.maxLength(50),
+      Validators.pattern(/^[a-zA-Z\s]*$/)
+    ]),
+    email_address: new FormControl(null, [
+      Validators.required,
+      Validators.email,
+      Validators.maxLength(100)
+    ]),
+    phone_number: new FormControl(null, [
+      Validators.required,
+      Validators.pattern(/^[0-9+]{10,15}$/),
+      Validators.minLength(10),
+      Validators.maxLength(15)
+    ]),
+    company_name: new FormControl(null, [
+      Validators.required,
+      Validators.minLength(2),
+      Validators.maxLength(100)
+    ]),
+    telephone: new FormControl(null, [
+      Validators.required,
+      Validators.pattern(/^[0-9+]{10,15}$/),
+      Validators.minLength(10),
+      Validators.maxLength(15)
+    ]),
+    registration_number: new FormControl(null, [
+      Validators.required,
+      Validators.minLength(5),
+      Validators.maxLength(30),
+      Validators.pattern(/^[a-zA-Z0-9\s\-]*$/)
+    ]),
+    vat_number: new FormControl(null, [
+      Validators.required,
+      Validators.minLength(5),
+      Validators.maxLength(30),
+      Validators.pattern(/^[a-zA-Z0-9\s\-]*$/)
+    ]),
+    address: new FormControl(null, [
+      Validators.required,
+      Validators.minLength(10),
+      Validators.maxLength(200)
+    ]),
+  });
 
     warningForm:FormGroup = new FormGroup({
       reason: new FormControl(null, [Validators.required]),
@@ -222,10 +355,122 @@ export class UserComponent implements OnInit{
       console.log(this.viewingEmployee);
   }
 
-  async viewCustomer(customer:user) {
+  async viewUpdateCustomer(customer?: user): Promise<void> {
+    console.log('viewUpdateCustomer called with:', customer);
+
+    if (customer) {
       this.viewingCustomer = customer;
-      //await this.setViewingImage(employee.user?.image);
-      this.showCustomerModal = true;
+    }
+
+    this.showUpdateCustomerModal = true;
+    this.loadTitles(); // Make sure titles are loaded
+
+    // Pre-populate the form EXACTLY like employee form
+    this.updateCustomerForm.patchValue({
+      title: this.viewingCustomer.title_id,
+      name: this.viewingCustomer.name,
+      surname: this.viewingCustomer.surname,
+      email_address: this.viewingCustomer.email_address,
+      phone_number: this.viewingCustomer.phone_number,
+      company_name: this.viewingCustomer.customer?.company_name,
+      telephone: this.viewingCustomer.customer?.telephone,
+      registration_number: this.viewingCustomer.customer?.registration_number,
+      vat_number: this.viewingCustomer.customer?.vat_number,
+      address: this.viewingCustomer.customer?.address
+    });
+
+    console.log('Update Customer Modal opened for:', this.viewingCustomer.name);
+    console.log('Form values set:', this.updateCustomerForm.value);
+  }
+
+  async updateCustomer(): Promise<void> {
+    // Mark all fields as touched to trigger validation messages
+    this.markFormGroupTouched(this.updateCustomerForm);
+
+    console.log('Form validation status:', this.updateCustomerForm.valid);
+    console.log('Form errors:', this.updateCustomerForm.errors);
+
+    // Check if form is valid
+    if (!this.updateCustomerForm.valid) {
+      this.notification.showError('Please correct all validation errors before submitting');
+
+      // Log individual field errors for debugging
+      Object.keys(this.updateCustomerForm.controls).forEach(key => {
+        const control = this.updateCustomerForm.get(key);
+        if (control?.invalid) {
+          console.log(`Field ${key} errors:`, control.errors);
+        }
+      });
+
+      return;
+    }
+
+    if (!this.viewingCustomer.user_id || !this.viewingCustomer.customer?.customer_id) {
+      this.notification.showError('Invalid customer data. Please refresh and try again.');
+      return;
+    }
+
+    this.customerIdToUpdate = this.viewingCustomer.customer.customer_id;
+
+    // Prepare user update payload
+    const userToUpdate = {
+      title_id: this.updateCustomerForm.value.title,
+      name: this.updateCustomerForm.value.name.trim(),
+      surname: this.updateCustomerForm.value.surname.trim(),
+      email_address: this.updateCustomerForm.value.email_address.trim().toLowerCase(),
+      phone_number: this.updateCustomerForm.value.phone_number.trim(),
+      uuid: this.viewingCustomer.uuid,
+      image: this.viewingCustomer.image,
+      is_employee: false,
+      role_id: this.viewingCustomer.role_id
+    };
+
+    // Prepare customer update payload
+    const customerToUpdate = {
+      user_id: this.viewingCustomer.user_id,
+      company_name: this.updateCustomerForm.value.company_name.trim(),
+      telephone: this.updateCustomerForm.value.telephone.trim(),
+      registration_number: this.updateCustomerForm.value.registration_number.trim(),
+      vat_number: this.updateCustomerForm.value.vat_number.trim(),
+      address: this.updateCustomerForm.value.address.trim()
+    };
+
+    console.log('Updating user with:', userToUpdate);
+    console.log('Updating customer with:', customerToUpdate);
+
+    // Show loading state
+    this.isloading = true;
+
+    // Update user first
+    this.apiService.update_user(this.viewingCustomer.user_id, userToUpdate).subscribe({
+      next: (res) => {
+        console.log('User update response:', res);
+        this.notification.showSuccess('Personal details updated successfully');
+
+        // Then update customer details
+        this.apiService.update_customer(this.customerIdToUpdate, customerToUpdate).subscribe({
+          next: (cRes) => {
+            console.log('Customer update response:', cRes);
+            this.notification.showSuccess('Company details updated successfully');
+            this.showUpdateCustomerModal = false;
+            this.isloading = false;
+            this.loadUsers(); // Refresh the list
+          },
+          error: (error) => {
+            console.error('Customer update error:', error);
+            this.isloading = false;
+            const errorMessage = error.error?.message || error.message || 'Unknown error occurred';
+            this.notification.showError('Failed to update company details: ' + errorMessage);
+          }
+        });
+      },
+      error: (error) => {
+        console.error('User update error:', error);
+        this.isloading = false;
+        const errorMessage = error.error?.message || error.message || 'Unknown error occurred';
+        this.notification.showError('Failed to update personal details: ' + errorMessage);
+      }
+    });
   }
 
   selectedTabChange(index:number) {
@@ -237,58 +482,13 @@ export class UserComponent implements OnInit{
 
   }
 
-  async createEmployee() {
 
-    let userToInsert = new insertUser();
-
-    let employeeToInsert = new insertEmployee();
-
-    userToInsert.title_id = this.employeeForm.value.title;
-    userToInsert.role_id = this.employeeForm.value.role;
-    userToInsert.name = this.employeeForm.value.name;
-    userToInsert.surname = this.employeeForm.value.surname;
-    userToInsert.email_address = this.employeeForm.value.email_address;
-    userToInsert.phone_number = 27 + this.employeeForm.value.phone_number;
-    userToInsert.uuid = "a4952d0b-80d0-47f8-816f-dfce57e43d1f";
-    userToInsert.image = "0";
-    userToInsert.is_employee = true;
-
-    employeeToInsert.address = this.employeeForm.value.address;
-    employeeToInsert.emergency_contact = this.employeeForm.value.emergency_contact;
-    employeeToInsert.job_scope = this.employeeForm.value.job_scope;
-    employeeToInsert.hourly_rate = this.employeeForm.value.hourly_rate;
-
-    this.apiService.create_user(userToInsert).subscribe({
-        next: res => {
-          this.createdUser.emit();
-          console.log(userToInsert);
-          employeeToInsert.user_id = res.user_id;
-
-          this.employees.sort((a, b) => b.user_id - a.user_id);
-        employeeToInsert.user_id = this.employees[0].user_id + 1;
-
-          this.apiService.create_employee(employeeToInsert).subscribe({
-      next: res => {
-        this.notification.showSuccess("Employee successfully created");
-        this.showCreateEmployeeModal = false;
-        console.log(employeeToInsert);
-      },
-      error: (error) => {
-        this.notification.showError("An Error Occoured while creating");
-        this.isloading = false;
-        console.log(employeeToInsert);
-      }
-    });
-        },
-        error: (error) => {
-          this.notification.showError("An Error Occoured while creating");
-          this.isloading = false;
-        }
-      });
-
-      this.loadUsers();
-
+  async viewCustomer(customer:user) {
+      this.viewingCustomer = customer;
+      //await this.setViewingImage(employee.user?.image);
+      this.showCustomerModal = true;
   }
+
 
   async createUser(user:user) {
 
@@ -444,56 +644,135 @@ export class UserComponent implements OnInit{
       this.updateEmployeeForm.controls['role'].setValue(this.viewingEmployee.role?.role_name);
   }
 
-  async updateEmployee() {
+// Enhanced createEmployee method with validation
+async createEmployee(): Promise<void> {
+  // Mark all fields as touched to trigger validation messages
+  this.markFormGroupTouched(this.employeeForm);
 
-    this.employeeIdToUpdate = this.viewingEmployee.employee!.employee_id;
+  if (!this.employeeForm.valid) {
+    this.notification.showError('Please correct all validation errors before submitting');
+    return;
+  }
 
-    let userToUpdate = new insertUser();
+  let userToInsert = new insertUser();
+  let employeeToInsert = new insertEmployee();
 
-    let employeeToUpdate = new insertEmployee();
+  userToInsert.title_id = this.employeeForm.value.title;
+  userToInsert.role_id = this.employeeForm.value.role;
+  userToInsert.name = this.employeeForm.value.name.trim();
+  userToInsert.surname = this.employeeForm.value.surname.trim();
+  userToInsert.email_address = this.employeeForm.value.email_address.trim().toLowerCase();
+  userToInsert.phone_number = '27' + this.employeeForm.value.phone_number.trim();
+  userToInsert.uuid = "a4952d0b-80d0-47f8-816f-dfce57e43d1f";
+  userToInsert.image = "0";
+  userToInsert.is_employee = true;
 
-    userToUpdate.name = this.updateEmployeeForm.value.name;
-    userToUpdate.surname = this.updateEmployeeForm.value.surname;
-    userToUpdate.email_address = this.updateEmployeeForm.value.email_address;
-    userToUpdate.phone_number = this.updateEmployeeForm.value.phone_number;
-    userToUpdate.uuid = this.viewingEmployee.uuid;
-    userToUpdate.image = this.viewingEmployee.image;
-    userToUpdate.is_employee = this.viewingEmployee.is_employee;
+  employeeToInsert.address = this.employeeForm.value.address.trim();
+  employeeToInsert.emergency_contact = this.employeeForm.value.emergency_contact.trim();
+  employeeToInsert.job_scope = this.employeeForm.value.job_scope.trim();
+  employeeToInsert.hourly_rate = this.employeeForm.value.hourly_rate;
 
-    userToUpdate.title_id = this.updateEmployeeForm.value.title;
-    userToUpdate.role_id = this.updateEmployeeForm.value.role;
+  this.isloading = true;
 
-    employeeToUpdate.user_id = this.viewingEmployee.user_id;
-    employeeToUpdate.job_scope = this.updateEmployeeForm.value.job_scope;
-    employeeToUpdate.address = this.updateEmployeeForm.value.address;
-    employeeToUpdate.emergency_contact = this.updateEmployeeForm.value.emergency_contact;
-    employeeToUpdate.hourly_rate = this.updateEmployeeForm.value.hourly_rate;
+  this.apiService.create_user(userToInsert).subscribe({
+    next: res => {
+      this.createdUser.emit();
+      employeeToInsert.user_id = res.user_id;
 
-
-    this.apiService.update_user(this.viewingEmployee.user_id, userToUpdate).subscribe({
+      this.apiService.create_employee(employeeToInsert).subscribe({
         next: res => {
-          this.notification.showSuccess("User successfully updated");
+          this.notification.showSuccess("Employee successfully created");
+          this.showCreateEmployeeModal = false;
+          this.isloading = false;
+          this.loadUsers();
         },
         error: (error) => {
-          this.notification.showError("An Error Occoured while updating");
+          this.notification.showError("An Error Occurred while creating employee");
           this.isloading = false;
         }
       });
+    },
+    error: (error) => {
+      this.notification.showError("An Error Occurred while creating user");
+      this.isloading = false;
+    }
+  });
+}
+
+// Enhanced updateEmployee method with validation
+async updateEmployee(): Promise<void> {
+  // Mark all fields as touched to trigger validation messages
+  this.markFormGroupTouched(this.updateEmployeeForm);
+
+  if (!this.updateEmployeeForm.valid) {
+    this.notification.showError('Please correct all validation errors before submitting');
+    return;
+  }
+
+  if (!this.viewingEmployee.user_id || !this.viewingEmployee.employee?.employee_id) {
+    this.notification.showError('Invalid employee data');
+    return;
+  }
+
+  this.employeeIdToUpdate = this.viewingEmployee.employee.employee_id;
+
+  let userToUpdate = new insertUser();
+  let employeeToUpdate = new insertEmployee();
+
+  userToUpdate.name = this.updateEmployeeForm.value.name.trim();
+  userToUpdate.surname = this.updateEmployeeForm.value.surname.trim();
+  userToUpdate.email_address = this.updateEmployeeForm.value.email_address.trim().toLowerCase();
+  userToUpdate.phone_number = this.updateEmployeeForm.value.phone_number.trim();
+  userToUpdate.uuid = this.viewingEmployee.uuid;
+  userToUpdate.image = this.viewingEmployee.image;
+  userToUpdate.is_employee = this.viewingEmployee.is_employee;
+  userToUpdate.title_id = this.updateEmployeeForm.value.title;
+  userToUpdate.role_id = this.updateEmployeeForm.value.role;
+
+  employeeToUpdate.user_id = this.viewingEmployee.user_id;
+  employeeToUpdate.job_scope = this.updateEmployeeForm.value.job_scope.trim();
+  employeeToUpdate.address = this.updateEmployeeForm.value.address.trim();
+  employeeToUpdate.emergency_contact = this.updateEmployeeForm.value.emergency_contact.trim();
+  employeeToUpdate.hourly_rate = this.updateEmployeeForm.value.hourly_rate;
+
+  this.isloading = true;
+
+  this.apiService.update_user(this.viewingEmployee.user_id, userToUpdate).subscribe({
+    next: res => {
+      this.notification.showSuccess("User successfully updated");
 
       this.apiService.update_employee(this.employeeIdToUpdate, employeeToUpdate).subscribe({
         next: res => {
           this.notification.showSuccess("Employee successfully updated");
-          console.log(employeeToUpdate);
+          this.showUpdateEmployeeModal = false;
+          this.isloading = false;
+          this.loadUsers();
         },
         error: (error) => {
-          this.notification.showError("An Error Occoured while updating");
+          this.notification.showError("An Error Occurred while updating employee");
           this.isloading = false;
-          console.log(employeeToUpdate);
         }
       });
+    },
+    error: (error) => {
+      this.notification.showError("An Error Occurred while updating user");
+      this.isloading = false;
+    }
+  });
+}
 
-      this.showCreateEmployeeModal = false;
+// Helper method to mark form as touched
+  private markFormGroupTouched(formGroup: FormGroup): void {
+    Object.keys(formGroup.controls).forEach(key => {
+      const control = formGroup.get(key);
+      if (control instanceof FormControl) {
+        control.markAsTouched();
+      } else if (control instanceof FormGroup) {
+        this.markFormGroupTouched(control);
+      }
+    });
   }
+
   }
 
 
