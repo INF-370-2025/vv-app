@@ -40,12 +40,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
     companyName: new FormControl<string | null>(null, [Validators.required]),
     telephone: new FormControl<string | null>(null, [Validators.required]),
 
-    // Registration No: YYYY/NNNNNN/XX (YYYY=19xx or 20xx)
+    // Relaxed here so the form can be valid; strict check is in submitForm()
     registrationNumber: new FormControl<string | null>(
       null,
       [
         Validators.required,
-        Validators.pattern(/^(19|20)\d{2}\/\d{6}\/\d{2}$/)
+        Validators.pattern(/^\d{4}\/\d{6}\/\d{2}$/) // YYYY/NNNNNN/XX (any 4-digit year)
       ]
     ),
 
@@ -74,7 +74,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   // Input handlers + helpers
   // =========================
 
-  // Keep only digits (max 10) for VAT as user types
+  // Keep only digits (max 10) for VAT as user types, re-run validators
   onVatInput(event: Event): void {
     const ctrl = this.customerForm.get('vatNumber');
     if (!ctrl) return;
@@ -83,10 +83,14 @@ export class ProfileComponent implements OnInit, OnDestroy {
     const digits = (input.value || '').replace(/\D/g, '').slice(0, 10);
 
     if (digits !== input.value) input.value = digits;
-    if (digits !== ctrl.value) ctrl.setValue(digits, { emitEvent: false });
+    if (digits !== ctrl.value) {
+      ctrl.setValue(digits, { emitEvent: false });
+      ctrl.markAsDirty();
+      ctrl.updateValueAndValidity({ onlySelf: true });
+    }
   }
 
-  // Auto-format Registration No to YYYY/NNNNNN/XX as user types
+  // Auto-format Registration No to YYYY/NNNNNN/XX as user types, re-run validators
   onRegNoInput(event: Event): void {
     const ctrl = this.customerForm.get('registrationNumber');
     if (!ctrl) return;
@@ -99,10 +103,14 @@ export class ProfileComponent implements OnInit, OnDestroy {
     if (raw.length > 10) formatted = formatted.slice(0, 11) + '/' + formatted.slice(11);
 
     if (formatted !== input.value) input.value = formatted;
-    if (formatted !== ctrl.value) ctrl.setValue(formatted, { emitEvent: false });
+    if (formatted !== ctrl.value) {
+      ctrl.setValue(formatted, { emitEvent: false });
+      ctrl.markAsDirty();
+      ctrl.updateValueAndValidity({ onlySelf: true });
+    }
   }
 
-  // --- helpers (used below to normalize inbound/outbound values) ---
+  // --- helpers (normalize inbound/outbound values) ---
   private digitsOnly(v: string | null | undefined): string {
     return (v || '').replace(/\D/g, '');
   }
@@ -227,11 +235,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
     this.image_url = base?.image || this.auth.user?.image || '';
 
-    // --- normalize inbound values ---
+    // normalize inbound values
     const regDigits = this.digitsOnly(customerData?.registration_number || '');
     const regFormatted = this.formatRegNoFromDigits(regDigits); // -> YYYY/NNNNNN/XX
 
-    const vatDigits = this.digitsOnly(customerData?.vat_number || '').slice(0, 10); // 10 digits max
+    const vatDigits = this.digitsOnly(customerData?.vat_number || '').slice(0, 10); // max 10
 
     this.customerForm.patchValue({
       name: base?.name ?? '',
@@ -301,15 +309,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
     const update_user_id = authUser.user_id!;
     const src = this.customerForm.value as any;
 
-    // --- normalize + validate before saving ---
-    // Registration: force YYYY/NNNNNN/XX
+    // normalize + strict validate before saving
     const regDigits = this.digitsOnly(src.registrationNumber || '');
     const regFormatted = this.formatRegNoFromDigits(regDigits);
-
-    // VAT: exactly 10 digits
     const vatDigits = this.digitsOnly(src.vatNumber || '').slice(0, 10);
 
-    const regOk = /^(19|20)\d{2}\/\d{6}\/\d{2}$/.test(regFormatted);
+    const regOk = /^(19|20)\d{2}\/\d{6}\/\d{2}$/.test(regFormatted); // strict year check here
     const vatOk = /^\d{10}$/.test(vatDigits);
 
     if (!regOk || !vatOk) {
@@ -321,42 +326,35 @@ export class ProfileComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Build normalized copy we’ll pass forward
     const normalized = {
       ...src,
       registrationNumber: regFormatted,
       vatNumber: vatDigits
     };
 
-    // Include ALL required fields from insertUser model
+    // update user
     const update_user_payload = {
-      role_id: authUser.role_id!,        // Required by insertUser
-      title_id: authUser.title_id!,      // Required by insertUser
+      role_id: authUser.role_id!,
+      title_id: authUser.title_id!,
       name: src.name!,
       surname: src.surname!,
-      email_address: src.email!,         // Required by insertUser
-      phone_number: src.phone!,          // Required by insertUser
+      email_address: src.email!,
+      phone_number: src.phone!,
       image: this.image_url || authUser.image,
-      uuid: authUser.uuid,               // Optional but included for completeness
-      is_employee: authUser.is_employee  // Optional but included for completeness
+      uuid: authUser.uuid,
+      is_employee: authUser.is_employee
     };
-
-    console.log('Sending user update payload:', update_user_payload);
 
     this.btnLoading = true;
 
-    // First update user table
     this.apiService.update_user(update_user_id, update_user_payload).subscribe({
       next: (res) => {
-        console.log('User update response:', res);
-
         if (res?.error) {
           this.notificationService.showError('User update failed: ' + res.error);
           this.btnLoading = false;
           return;
         }
 
-        // Update auth service with the changed fields only
         const updatedAuthUser = {
           ...authUser,
           name: src.name!,
@@ -367,24 +365,27 @@ export class ProfileComponent implements OnInit, OnDestroy {
         };
         this.auth.userSubject.next(updatedAuthUser);
 
-        // Handle customer data WITH normalized values
+        // now customer data
         this.handleCustomerData(update_user_id, normalized);
+        
       },
       error: (e) => {
-        console.error('User update error:', e);
-
-        // Handle 422 validation errors specifically
         if (e.status === 422) {
           this.handleValidationErrors(e);
         } else {
           const errorMessage = e.error?.message || e.message || 'Unknown error occurred';
           this.notificationService.showError('Failed to update personal details: ' + errorMessage);
         }
-
         this.btnLoading = false;
       }
     });
   }
+
+  // <<< ADDED: Back to dashboard >>>
+  goBack(): void {
+    this.router.navigate(['/home']); // change to your dashboard route if different
+  }
+  // <<< /ADDED >>>
 
   private handleValidationErrors(e: any): void {
     let errorMessage = 'Validation failed: ';
@@ -393,18 +394,13 @@ export class ProfileComponent implements OnInit, OnDestroy {
       if (Array.isArray(e.error.detail)) {
         const errors = e.error.detail.map((error: any) => {
           if (typeof error === 'object') {
-            if (error.msg) {
-              return error.msg;
-            } else if (error.message) {
-              return error.message;
-            } else if (error.loc && error.msg) {
-              return `${error.loc.join('.')}: ${error.msg}`;
-            } else {
-              const fieldErrors = Object.entries(error)
-                .map(([field, message]) => `${field}: ${message}`)
-                .join(', ');
-              return fieldErrors || JSON.stringify(error);
-            }
+            if (error.msg) return error.msg;
+            if (error.message) return error.message;
+            if (error.loc && error.msg) return `${error.loc.join('.')}: ${error.msg}`;
+            const fieldErrors = Object.entries(error)
+              .map(([field, message]) => `${field}: ${message}`)
+              .join(', ');
+            return fieldErrors || JSON.stringify(error);
           } else if (typeof error === 'string') {
             return error;
           }
@@ -434,7 +430,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   private handleCustomerData(user_id: number, src: any): void {
-    // Defensive normalization (in case a different caller passes raw values)
+    // Defensive normalization
     const regDigits = this.digitsOnly(src.registrationNumber || '');
     const regFormatted = this.formatRegNoFromDigits(regDigits);
     const vatDigits = this.digitsOnly(src.vatNumber || '').slice(0, 10);
@@ -443,18 +439,15 @@ export class ProfileComponent implements OnInit, OnDestroy {
       company_name: src.companyName!,
       telephone: src.telephone!,
       address: src.address!,
-      registration_number: regFormatted, // normalized formatted value
-      vat_number: vatDigits,             // digits-only, 10 chars
+      registration_number: regFormatted,
+      vat_number: vatDigits,
       user_id: user_id
     };
 
     if (this.hasCustomerRecord && this.user?.customer_id) {
       this.apiService.update_customer(this.user.customer_id, customerData).subscribe({
-        next: (cRes) => {
-          this.handleSaveResponse(cRes, 'updated');
-        },
+        next: (cRes) => this.handleSaveResponse(cRes, 'updated'),
         error: (e) => {
-          console.error('Customer update error:', e);
           const errorMessage = e.error?.message || e.message || 'Unknown error occurred';
           this.notificationService.showError('Failed to update company details: ' + errorMessage);
           this.btnLoading = false;
@@ -470,7 +463,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
           }
         },
         error: (e) => {
-          console.error('Customer creation error:', e);
           const errorMessage = e.error?.message || e.message || 'Unknown error occurred';
           this.notificationService.showError('Failed to create company details: ' + errorMessage);
           this.btnLoading = false;
