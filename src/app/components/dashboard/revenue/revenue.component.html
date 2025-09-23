@@ -33,11 +33,12 @@
     </div>
 
     <div class="chart-container">
-      <canvas #revenueChart></canvas>
-
-      <div *ngIf="!isLoading && (!chart || revenueData.length === 0)" class="no-data">
-        <nz-empty nzNotFoundContent="No revenue data available"></nz-empty>
-      </div>
+      <nz-spin [nzSpinning]="isLoading">
+        <canvas #revenueChart></canvas>
+        <div *ngIf="!isLoading && (!chart || revenueData.length === 0)" class="no-data">
+          <nz-empty nzNotFoundContent="No revenue data available"></nz-empty>
+        </div>
+      </nz-spin>
     </div>
 
     <div class="report-footer">

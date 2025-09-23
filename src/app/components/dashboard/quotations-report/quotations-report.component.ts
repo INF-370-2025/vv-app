@@ -72,35 +72,41 @@ processData(quotations: any[]): void {
   }>();
 
   quotations.forEach(quote => {
-    // Parse date safely - handle PostgreSQL format
+    // Parse date safely - prefer the API's quotation_created_at, then created_at, then job_request_details.created_at
     let monthKey = 'Unknown';
     let monthLabel = 'Unknown Date';
 
     try {
-            console.log('Original date:', quote.created_at);
-console.log('Month key:', monthKey, 'Month label:', monthLabel);
-      if (quote.created_at) {
+      // Candidate fields (in order of preference)
+      const rawDate = quote.quotation_created_at ?? quote.created_at ?? quote.job_request_details?.created_at ?? quote.job_request_details?.createdAt ?? null;
 
-        // Parse the PostgreSQL timestamp manually
-        const dateParts = quote.created_at.split(' ')[0].split('-');
-        const year = parseInt(dateParts[0]);
-        const month = parseInt(dateParts[1]);
+      if (rawDate) {
+        // Try direct parse
+        let date = new Date(rawDate);
 
-        if (!isNaN(year) && !isNaN(month)) {
-          monthKey = `${year}-${month.toString().padStart(2, '0')}`;
-
-          // Create a date object for formatting
-          const date = new Date(year, month - 1, 1);
-          monthLabel = this.datePipe.transform(date, 'MMMM yyyy') || monthLabel;
-
+        // Some unusual formats (space instead of 'T') may fail in some browsers/environments.
+        // If direct parse fails, try a tiny normalization and parse again.
+        if (isNaN(date.getTime())) {
+          const normalized = String(rawDate).replace(' ', 'T');
+          date = new Date(normalized);
         }
+
+        if (!isNaN(date.getTime())) {
+          const year = date.getFullYear();
+          const month = date.getMonth() + 1;
+          monthKey = `${year}-${month.toString().padStart(2, '0')}`;
+          monthLabel = this.datePipe.transform(date, 'MMMM yyyy') || monthLabel;
+        } else {
+          console.warn('Could not parse date for quote. rawDate:', rawDate, 'quotation_id:', quote.quotation_id ?? quote.id ?? '(unknown id)');
+        }
+      } else {
+        console.warn('No date field found on quote. quotation_id:', quote.quotation_id ?? quote.id ?? '(unknown id)', 'available keys:', Object.keys(quote));
       }
     } catch (e) {
-      console.warn('Date parsing error', e, 'for value', quote.created_at);
-
+      console.warn('Date parsing error', e, 'for value', quote);
     }
 
-    // Rest of the processing remains the same
+    // Ensure month group exists
     if (!monthGroups.has(monthKey)) {
       monthGroups.set(monthKey, {
         monthLabel: monthLabel,
@@ -112,7 +118,7 @@ console.log('Month key:', monthKey, 'Month label:', monthLabel);
 
     const monthGroup = monthGroups.get(monthKey)!;
     const status = quote.quotation_status?.status || 'Unknown Status';
-    const value = quote.total_cost || 0;
+    const value = Number(quote.total_cost) || 0;
 
     // Update status group
     if (!monthGroup.statusGroups.has(status)) {
@@ -134,7 +140,6 @@ console.log('Month key:', monthKey, 'Month label:', monthLabel);
 
   // Convert to array structure
   this.groupedData = Array.from(monthGroups.entries()).map(([key, value]) => {
-    // Convert status groups to array
     const statusGroups = Array.from(value.statusGroups.entries())
       .map((entry) => {
         const [status, data] = entry;
@@ -154,16 +159,14 @@ console.log('Month key:', monthKey, 'Month label:', monthLabel);
     };
   });
 
-  // Sort months chronologically (newest first)
+  // Sort months chronologically (newest first), keep Unknown last
   this.groupedData.sort((a, b) => {
     if (a.monthKey === 'Unknown') return 1;
     if (b.monthKey === 'Unknown') return -1;
     return b.monthKey.localeCompare(a.monthKey);
   });
-
-
-
 }
+
 async exportToPDF() {
   this.isExporting = true;
 

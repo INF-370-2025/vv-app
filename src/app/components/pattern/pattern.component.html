@@ -1,94 +1,79 @@
 <div nz-row [nzJustify]="'center'">
   <div nz-col [nzSpan]="!showCreateForm ? 22 : 18" style="text-align: start;">
     <h1 *ngIf="!showCreateForm"><b>Patterns</b></h1>
-      <button nz-button (click)="showHelpModal()">
-  <span nz-icon nzType="question-circle" nzTheme="outline"></span>
-  Get Help
-</button>
+
     <button *ngIf="showCreateForm" nz-button nzType="default" (click)="handleFormClose()">
-      <span nz-icon nzType="arrow-left" nzTheme="outline"></span>
-      Back to Patterns
+      <span nz-icon nzType="arrow-left" nzTheme="outline"></span> Back to Patterns
     </button>
   </div>
 </div>
 
 <!-- Patterns List View -->
 <div nz-row [nzJustify]="'center'" *ngIf="!showCreateForm">
-  <div nz-col nzSpan="16">
-    <nz-tabset nzType="card" [nzTabBarExtraContent]="extraTemplatePatterns">
-      <nz-tab [nzTitle]="'Patterns'">
-        <nz-spin [nzSpinning]="isLoading">
-          <!-- Error message -->
-          <div *ngIf="errorMessage" class="error-message">
-            <nz-alert nzType="error" [nzMessage]="errorMessage" nzShowIcon></nz-alert>
-            <button nz-button nzType="primary" (click)="loadPatterns()" style="margin-top: 16px;">
-              <i nz-icon nzType="reload"></i> Retry
-            </button>
-          </div>
+  <div nz-col nzSpan="22">
+    <nz-spin [nzSpinning]="isLoading">
 
-          <!-- Empty state -->
-          <div *ngIf="!isLoading && !errorMessage && patterns.length === 0" class="empty-state">
-            <nz-empty nzNotFoundContent="No patterns found"></nz-empty>
-          </div>
+      <!-- Error message -->
+      <div *ngIf="errorMessage" class="error-message">
+        <nz-alert nzType="error" [nzMessage]="errorMessage" nzShowIcon></nz-alert>
+        <button nz-button nzType="primary" (click)="loadPatterns()" style="margin-top: 16px;">
+          <i nz-icon nzType="reload"></i> Retry
+        </button>
+      </div>
 
-          <!-- Patterns table -->
-          <div *ngIf="!isLoading && patterns.length > 0">
-            <nz-table #patternsTable [nzData]="patterns" [nzPageSize]="20" nzSize="middle">
-              <thead>
-                <tr>
-                  <th colSpan="4"> <!-- Changed colSpan from 3 to 4 -->
-                    <nz-input-group [nzSuffix]="suffixIconSearch">
-                      <input
-                        type="text"
-                        nz-input
-                        placeholder="Search patterns..."
-                        (keyup)="searchPatterns($event)"
-                      />
-                    </nz-input-group>
-                    <ng-template #suffixIconSearch>
-                      <i nz-icon nzType="search"></i>
-                    </ng-template>
-                  </th>
-                </tr>
-                <tr>
-                  <th>ID</th>
-                  <th>Pattern Type</th>
-                  <th>Design</th>
-                  <th>Delete</th> <!-- New column added -->
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let pattern of patternsTable.data">
-                  <td><b>#{{pattern.pattern_id}}</b></td>
-                  <td>{{pattern.pattern_type?.type_name || 'N/A'}}</td>
-                  <td>
-                    <div class="truncate-cell">{{pattern.design || 'No design available'}}</div>
-                  </td>
-                  <td>
-                    <button
-                      nz-button
-                      nzType="default"
-                      nzDanger
-                      nzSize="small"
-                      (click)="deletePattern(pattern)"
-                      [nzLoading]="pattern.pattern_id !== undefined && isDeleting[pattern.pattern_id]">
-                      <i nz-icon nzType="delete" nzTheme="outline"></i> Delete
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </nz-table>
-          </div>
-        </nz-spin>
-      </nz-tab>
-    </nz-tabset>
+      <!-- Empty state -->
+      <div *ngIf="!isLoading && !errorMessage && patterns.length === 0" class="empty-state">
+        <nz-empty nzNotFoundContent="No patterns found"></nz-empty>
+      </div>
 
-    <ng-template #extraTemplatePatterns>
-      <button nz-button nzType="primary" (click)="openCreateForm()">
-        Create Pattern
-        <span nz-icon nzType="plus" nzTheme="outline"></span>
-      </button>
-    </ng-template>
+      <!-- Table -->
+      <div *ngIf="!isLoading && patterns.length > 0">
+        <nz-table #patternsTable [nzData]="patterns" [nzPageSize]="20" nzSize="middle">
+          <thead>
+            <tr>
+              <th colSpan="4">
+                <nz-input-group [nzSuffix]="suffixIconSearch">
+                  <input type="text" nz-input placeholder="Search patterns..." (keyup)="searchPatterns($event)" />
+                </nz-input-group>
+                <ng-template #suffixIconSearch>
+                  <i nz-icon nzType="search"></i>
+                </ng-template>
+              </th>
+            </tr>
+            <tr>
+              <th>ID</th>
+              <th>Pattern Type</th>
+              <th>Design</th>
+              <th>Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let pattern of patternsTable.data">
+              <td><b>#{{pattern.pattern_id}}</b></td>
+              <td>{{pattern.pattern_type?.type_name || 'N/A'}}</td>
+              <td><div class="truncate-cell">{{pattern.design || 'No design available'}}</div></td>
+              <td>
+                <button
+                  nz-button
+                  nzType="default"
+                  nzDanger
+                  nzSize="small"
+                  (click)="deletePattern(pattern)"
+                  [nzLoading]="pattern.pattern_id !== undefined && isDeleting[pattern.pattern_id]"
+                >
+                  <i nz-icon nzType="delete" nzTheme="outline"></i> Delete
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+
+    </nz-spin>
+
+    <button nz-button (click)="showHelpModal()" style="margin-top: 16px;">
+      <span nz-icon nzType="question-circle" nzTheme="outline"></span> Get Help
+    </button>
   </div>
 </div>
 
@@ -104,6 +89,8 @@
     </nz-card>
   </div>
 </div>
+
+
 
 
 <!-- Admin help -->
