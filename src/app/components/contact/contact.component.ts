@@ -5,7 +5,8 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { NotificationService } from '../../services/notification.service';
 import { AuthService } from '../../services/auth.service';
 import { ApiService } from '../../services/api.service';
-import { contact } from '../../models/general';
+import { contact, email } from '../../models/general';
+import { employee } from '../../models/user';
 
 @Component({
   selector: 'app-contact',
@@ -48,17 +49,22 @@ export class ContactComponent {
       message.subject = String(this.Form.controls['subject'].value);
       message.message = String(this.Form.controls['message'].value);
       message.user_id = this.authService.user?.user_id!;
-      this.apiService.contactUs(message).subscribe({
-        next: res => {
-          this.isLoading = false;
-          this.notification.showSuccess("Sent Successfully");
-          this.ngOnInit();
-        },
-       error: (error) => {
-          this.notification.showError("An Error Occoured while processing your request");
-          this.isLoading = false;
-        }
-      });
+
+      let newEmail = new email();
+      newEmail.to_email = this.authService.user!.email_address;
+    newEmail.subject = String(this.Form.controls['subject'].value);
+    newEmail.body = String(this.Form.controls['message'].value);
+
+    this.apiService.send_email(newEmail).subscribe({
+      next: (res) => {
+        this.notification.showSuccess('Success', 'Email sent successfully');
+        window.location.href = 'http://localhost:4200/home';
+      },
+      error: (err) => {
+        this.notification.showError('Error', 'Failed to send email');
+        console.log(newEmail);
+      }
+    });
     }
   }
 
