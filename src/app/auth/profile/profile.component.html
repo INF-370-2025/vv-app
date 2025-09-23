@@ -107,25 +107,35 @@
             </div>
 
             <div nz-col nzXs="22" nzSm="22" nzMd="12">
-              <nz-form-item>
-                <nz-form-label>Registration No</nz-form-label>
-                <nz-form-control nzErrorTip="Please input your Registration Number">
-                  <nz-input-group nzPrefixIcon="number">
-                    <input type="text" nz-input formControlName="registrationNumber" placeholder="Registration Number" />
-                  </nz-input-group>
-                </nz-form-control>
-              </nz-form-item>
+            <nz-form-item>
+              <nz-form-label>Registration No</nz-form-label>
+              <nz-form-control nzErrorTip="Format must be YYYY/NNNNNN/XX (e.g. 2024/123456/07)">
+                <nz-input-group nzPrefixIcon="number">
+                  <input
+                    type="text"
+                    nz-input
+                    formControlName="registrationNumber"
+                    placeholder="YYYY/NNNNNN/XX"
+                    (input)="onRegNoInput($event)" />
+                </nz-input-group>
+              </nz-form-control>
+            </nz-form-item>
             </div>
 
             <div nz-col nzXs="22" nzSm="22" nzMd="12">
-              <nz-form-item>
-                <nz-form-label>VAT No</nz-form-label>
-                <nz-form-control nzErrorTip="Please input your VAT Number">
-                  <nz-input-group nzPrefixIcon="file-text">
-                    <input type="text" nz-input formControlName="vatNumber" placeholder="VAT Number" />
-                  </nz-input-group>
-                </nz-form-control>
-              </nz-form-item>
+            <nz-form-item>
+              <nz-form-label>VAT No</nz-form-label>
+              <nz-form-control nzErrorTip="VAT number must be exactly 10 digits">
+                <nz-input-group nzPrefixIcon="file-text">
+                  <input
+                    type="text"
+                    nz-input
+                    formControlName="vatNumber"
+                    placeholder="10-digit VAT number"
+                    (input)="onVatInput($event)" />
+                </nz-input-group>
+              </nz-form-control>
+            </nz-form-item>
             </div>
 
             <div nz-col nzSpan="24">

@@ -1,11 +1,6 @@
 <!--Row-->
 <div nz-row [nzJustify]="'center'">
     <div nz-col nzSpan="22">
-        <button nz-button (click)="showHelp()">
-  <span nz-icon nzType="question-circle" nzTheme="outline"></span>
-  Get Help
-</button>
-
         <br>
         <nz-tabset nzType="card" (nzSelectedIndexChange)="selectedTabChange($event)" [(nzSelectedIndex)]="selectedTabIndex" [nzTabBarExtraContent]="extraTemplate">
 
@@ -257,15 +252,24 @@
                 </nz-spin>
             </nz-tab>
 
-        </nz-tabset>
-        <ng-template #extraTemplate>
-            <button nz-button nzType="primary" (click)="openCreateModal()">
-                Create New
-                <span nz-icon nzType="plus" nzTheme="outline"></span>
-            </button>
-        </ng-template>
-    </div>
+</nz-tabset>
+<ng-template #extraTemplate>
+  <button nz-button nzType="primary" (click)="openCreateModal()">
+    Create New
+    <span nz-icon nzType="plus" nzTheme="outline"></span>
+  </button>
+</ng-template>
+
+<!-- Get Help button moved to bottom -->
+<div style="text-align: center; margin-top: 20px;">
+  <button nz-button (click)="showHelp()">
+    <span nz-icon nzType="question-circle" nzTheme="outline"></span>
+    Get Help
+  </button>
 </div>
+</div>
+</div>
+
 
 <!--Modal-->
 

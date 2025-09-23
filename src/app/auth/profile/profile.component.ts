@@ -36,10 +36,28 @@ export class ProfileComponent implements OnInit, OnDestroy {
     surname: new FormControl<string | null>(null, [Validators.required]),
     email: new FormControl<string | null>(null, [Validators.required, Validators.email]),
     phone: new FormControl<string | null>(null, [Validators.required, Validators.maxLength(20)]),
+
     companyName: new FormControl<string | null>(null, [Validators.required]),
     telephone: new FormControl<string | null>(null, [Validators.required]),
-    registrationNumber: new FormControl<string | null>(null, [Validators.required]),
-    vatNumber: new FormControl<string | null>(null, [Validators.required]),
+
+    // Registration No: YYYY/NNNNNN/XX (YYYY=19xx or 20xx)
+    registrationNumber: new FormControl<string | null>(
+      null,
+      [
+        Validators.required,
+        Validators.pattern(/^(19|20)\d{2}\/\d{6}\/\d{2}$/)
+      ]
+    ),
+
+    // VAT: exactly 10 digits
+    vatNumber: new FormControl<string | null>(
+      null,
+      [
+        Validators.required,
+        Validators.pattern(/^\d{10}$/)
+      ]
+    ),
+
     address: new FormControl<string | null>(null, [Validators.required]),
   });
 
@@ -51,6 +69,54 @@ export class ProfileComponent implements OnInit, OnDestroy {
     private apiService: ApiService,
     private supabase: SupabaseService
   ) {}
+
+  // =========================
+  // Input handlers + helpers
+  // =========================
+
+  // Keep only digits (max 10) for VAT as user types
+  onVatInput(event: Event): void {
+    const ctrl = this.customerForm.get('vatNumber');
+    if (!ctrl) return;
+
+    const input = event.target as HTMLInputElement;
+    const digits = (input.value || '').replace(/\D/g, '').slice(0, 10);
+
+    if (digits !== input.value) input.value = digits;
+    if (digits !== ctrl.value) ctrl.setValue(digits, { emitEvent: false });
+  }
+
+  // Auto-format Registration No to YYYY/NNNNNN/XX as user types
+  onRegNoInput(event: Event): void {
+    const ctrl = this.customerForm.get('registrationNumber');
+    if (!ctrl) return;
+
+    const input = event.target as HTMLInputElement;
+    const raw = (input.value || '').replace(/\D/g, '').slice(0, 12); // 4+6+2 digits
+
+    let formatted = raw;
+    if (raw.length > 4) formatted = raw.slice(0, 4) + '/' + raw.slice(4);
+    if (raw.length > 10) formatted = formatted.slice(0, 11) + '/' + formatted.slice(11);
+
+    if (formatted !== input.value) input.value = formatted;
+    if (formatted !== ctrl.value) ctrl.setValue(formatted, { emitEvent: false });
+  }
+
+  // --- helpers (used below to normalize inbound/outbound values) ---
+  private digitsOnly(v: string | null | undefined): string {
+    return (v || '').replace(/\D/g, '');
+  }
+
+  private formatRegNoFromDigits(digits: string): string {
+    const raw = digits.slice(0, 12); // up to 12 digits
+    if (raw.length <= 4) return raw;
+    if (raw.length <= 10) return `${raw.slice(0,4)}/${raw.slice(4)}`;
+    return `${raw.slice(0,4)}/${raw.slice(4,10)}/${raw.slice(10,12)}`;
+  }
+
+  // =========================
+  // Lifecycle
+  // =========================
 
   ngOnInit(): void {
     this.authSubscription = this.auth.userSubject.pipe(
@@ -84,6 +150,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.authSubscription.unsubscribe();
     }
   }
+
+  // =========================
+  // Data load + form patches
+  // =========================
 
   private loadDetails(): void {
     const u = this.auth.user;
@@ -143,7 +213,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   private setInitialFormValues(user: any): void {
     this.image_url = user.image || '';
-    
+
     this.customerForm.patchValue({
       name: user.name || '',
       surname: user.surname || '',
@@ -157,6 +227,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
     this.image_url = base?.image || this.auth.user?.image || '';
 
+    // --- normalize inbound values ---
+    const regDigits = this.digitsOnly(customerData?.registration_number || '');
+    const regFormatted = this.formatRegNoFromDigits(regDigits); // -> YYYY/NNNNNN/XX
+
+    const vatDigits = this.digitsOnly(customerData?.vat_number || '').slice(0, 10); // 10 digits max
+
     this.customerForm.patchValue({
       name: base?.name ?? '',
       surname: base?.surname ?? '',
@@ -164,11 +240,15 @@ export class ProfileComponent implements OnInit, OnDestroy {
       phone: base?.phone_number ?? '',
       companyName: customerData?.company_name ?? '',
       telephone: customerData?.telephone ?? '',
-      registrationNumber: customerData?.registration_number ?? '',
-      vatNumber: customerData?.vat_number ?? '',
+      registrationNumber: regFormatted,
+      vatNumber: vatDigits,
       address: customerData?.address ?? ''
     });
   }
+
+  // =========================
+  // Upload
+  // =========================
 
   beforeUpload = (file: NzUploadFile, _fileList: NzUploadFile[]): boolean => {
     this.fileList = [file];
@@ -185,7 +265,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       await this.supabase.update_profile_pic(this.auth.user?.user_id!, file_url);
 
       if (this.auth.user) this.auth.user.image = file_url;
-      if (this.user?.user) this.user.user.image = file_url;
+      if (this.user?.user) this.user.user = { ...(this.user.user || {}), image: file_url };
 
       this.image_url = file_url;
       this.notificationService.showSuccess('Profile picture updated.');
@@ -199,6 +279,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.isuploading = false;
     }
   }
+
+  // =========================
+  // Submit
+  // =========================
 
   submitForm(): void {
     if (!this.auth.user?.user_id) {
@@ -215,7 +299,34 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
     const authUser = this.auth.user;
     const update_user_id = authUser.user_id!;
-    const src = this.customerForm.value;
+    const src = this.customerForm.value as any;
+
+    // --- normalize + validate before saving ---
+    // Registration: force YYYY/NNNNNN/XX
+    const regDigits = this.digitsOnly(src.registrationNumber || '');
+    const regFormatted = this.formatRegNoFromDigits(regDigits);
+
+    // VAT: exactly 10 digits
+    const vatDigits = this.digitsOnly(src.vatNumber || '').slice(0, 10);
+
+    const regOk = /^(19|20)\d{2}\/\d{6}\/\d{2}$/.test(regFormatted);
+    const vatOk = /^\d{10}$/.test(vatDigits);
+
+    if (!regOk || !vatOk) {
+      this.notificationService.showError(
+        !regOk
+          ? 'Registration number must be YYYY/NNNNNN/XX (e.g. 2024/123456/07).'
+          : 'VAT number must be exactly 10 digits.'
+      );
+      return;
+    }
+
+    // Build normalized copy we’ll pass forward
+    const normalized = {
+      ...src,
+      registrationNumber: regFormatted,
+      vatNumber: vatDigits
+    };
 
     // Include ALL required fields from insertUser model
     const update_user_payload = {
@@ -238,7 +349,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.apiService.update_user(update_user_id, update_user_payload).subscribe({
       next: (res) => {
         console.log('User update response:', res);
-        
+
         if (res?.error) {
           this.notificationService.showError('User update failed: ' + res.error);
           this.btnLoading = false;
@@ -246,8 +357,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
         }
 
         // Update auth service with the changed fields only
-        const updatedAuthUser = { 
-          ...authUser, 
+        const updatedAuthUser = {
+          ...authUser,
           name: src.name!,
           surname: src.surname!,
           email_address: src.email!,
@@ -256,12 +367,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
         };
         this.auth.userSubject.next(updatedAuthUser);
 
-        // Handle customer data
-        this.handleCustomerData(update_user_id, src!);
+        // Handle customer data WITH normalized values
+        this.handleCustomerData(update_user_id, normalized);
       },
       error: (e) => {
         console.error('User update error:', e);
-        
+
         // Handle 422 validation errors specifically
         if (e.status === 422) {
           this.handleValidationErrors(e);
@@ -269,7 +380,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
           const errorMessage = e.error?.message || e.message || 'Unknown error occurred';
           this.notificationService.showError('Failed to update personal details: ' + errorMessage);
         }
-        
+
         this.btnLoading = false;
       }
     });
@@ -277,22 +388,18 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   private handleValidationErrors(e: any): void {
     let errorMessage = 'Validation failed: ';
-    
+
     if (e.error && e.error.detail) {
-      // Handle array of validation errors
       if (Array.isArray(e.error.detail)) {
         const errors = e.error.detail.map((error: any) => {
           if (typeof error === 'object') {
-            // Handle object validation errors (e.g., {field: "error message"})
             if (error.msg) {
-              return error.msg; // Common format: {msg: "error message"}
+              return error.msg;
             } else if (error.message) {
-              return error.message; // Another common format
+              return error.message;
             } else if (error.loc && error.msg) {
-              // Pydantic-style errors: {loc: ["field"], msg: "error"}
               return `${error.loc.join('.')}: ${error.msg}`;
             } else {
-              // Try to extract field-specific errors
               const fieldErrors = Object.entries(error)
                 .map(([field, message]) => `${field}: ${message}`)
                 .join(', ');
@@ -304,43 +411,40 @@ export class ProfileComponent implements OnInit, OnDestroy {
           return JSON.stringify(error);
         });
         errorMessage += errors.join(', ');
-      } 
-      // Handle string detail
-      else if (typeof e.error.detail === 'string') {
+      } else if (typeof e.error.detail === 'string') {
         errorMessage += e.error.detail;
-      }
-      // Handle object detail
-      else if (typeof e.error.detail === 'object') {
+      } else if (typeof e.error.detail === 'object') {
         const detailErrors = Object.entries(e.error.detail)
           .map(([key, value]) => `${key}: ${value}`)
           .join(', ');
         errorMessage += detailErrors;
       }
-    } 
-    // Handle different error formats
-    else if (e.error && typeof e.error === 'object') {
+    } else if (e.error && typeof e.error === 'object') {
       const errors = Object.entries(e.error)
         .map(([key, value]) => `${key}: ${value}`)
         .join(', ');
       errorMessage += errors;
-    } 
-    else if (e.error && typeof e.error === 'string') {
+    } else if (e.error && typeof e.error === 'string') {
       errorMessage += e.error;
-    }
-    else {
+    } else {
       errorMessage += 'Please check all fields and try again.';
     }
-    
+
     this.notificationService.showError(errorMessage);
   }
 
   private handleCustomerData(user_id: number, src: any): void {
+    // Defensive normalization (in case a different caller passes raw values)
+    const regDigits = this.digitsOnly(src.registrationNumber || '');
+    const regFormatted = this.formatRegNoFromDigits(regDigits);
+    const vatDigits = this.digitsOnly(src.vatNumber || '').slice(0, 10);
+
     const customerData = {
       company_name: src.companyName!,
       telephone: src.telephone!,
       address: src.address!,
-      registration_number: src.registrationNumber!,
-      vat_number: src.vatNumber!,
+      registration_number: regFormatted, // normalized formatted value
+      vat_number: vatDigits,             // digits-only, 10 chars
       user_id: user_id
     };
 
