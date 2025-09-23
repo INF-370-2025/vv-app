@@ -357,7 +357,7 @@
             <nz-form-item>
               <nz-form-label [nzRequired]="true" nzFor="description">Description</nz-form-label>
               <nz-form-control [nzErrorTip]="'Description is required'">
-                <input id="description" type="text" nz-input formControlName="description" placeholder="Enter description" />
+                <textarea id="description" nz-input formControlName="description" placeholder="Enter description" rows="4"></textarea>
               </nz-form-control>
             </nz-form-item>
           </div>

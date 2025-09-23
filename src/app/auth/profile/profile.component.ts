@@ -415,10 +415,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
           return JSON.stringify(error);
         });
         errorMessage += errors.join(', ');
-      } else if (typeof e.error.detail === 'string') {
       }
       // Handle string detail
       else if (typeof e.error.detail === 'string') {
+      } else if (typeof e.error.detail === 'string') {
         errorMessage += e.error.detail;
       } else if (typeof e.error.detail === 'object') {
         const detailErrors = Object.entries(e.error.detail)
@@ -426,10 +426,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
           .join(', ');
         errorMessage += detailErrors;
       }
-    } else if (e.error && typeof e.error === 'object') {
     }
     // Handle different error formats
     else if (e.error && typeof e.error === 'object') {
+    } else if (e.error && typeof e.error === 'object') {
       const errors = Object.entries(e.error)
         .map(([key, value]) => `${key}: ${value}`)
         .join(', ');

@@ -102,13 +102,12 @@
                 </nz-spin>
             </nz-tab>
         </nz-tabset>
-        <!--Button-->
         <ng-template #extraTemplate>
-            <button nz-button nzType="primary" (click)="viewCreate(selectedTabIndex)">
-              Create New
-            <span nzType="plus" nzTheme="outline"></span>
+          <button *ngIf="selectedTabIndex === 1" nz-button nzType="primary" (click)="viewCreate(selectedTabIndex)">
+            Create New
+            <span nz-icon nzType="plus" nzTheme="outline"></span>
           </button>
-          <button nz-button nzType="default" (click)="openHelpModal()" style="float: right; margin-left: 8px;">
+          <button nz-button nzType="default" (click)="openHelpModal()" style="margin-left: 8px;">
             <i nz-icon nzType="question-circle" nzTheme="outline"></i> Help
           </button>
         </ng-template>
@@ -238,103 +237,24 @@
                     </div>
                 </div>
                 <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
-                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
-                        <nz-button-group>
-                            <button nz-button nzType="default">
-                              <span nz-icon nzType="printer" nzTheme="outline"></span>
-                              Edit Customer Type
-                            </button>
-                            <button nz-button nzType="default" style="background-color: lightseagreen;color: white;border: none;">
-                              <span nz-icon nzType="check" nzTheme="outline"></span>
-                              Update Details
-                            </button>
-                            <button nz-button nzType="default" style="background-color: rgb(252, 61, 61);color: white;border: none;">
-                              <span nz-icon nzType="close" nzTheme="outline"></span>
-                              Disable Customer
-                            </button>
-                        </nz-button-group>
-                    </div>
+                  <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+                    <nz-button-group>
+                      <button nz-button nzType="default" style="background-color: lightseagreen;color: white;border: none;"
+                              (click)="viewUpdateCustomer()">
+                        Update Details
+                      </button>
+                      <button nz-button nzType="default" style="background-color: rgb(252, 61, 61);color: white;border: none;">
+                        <span nz-icon nzType="close" nzTheme="outline"></span>
+                        Disable Customer
+                      </button>
+                    </nz-button-group>
+                  </div>
                 </div>
             </div>
         </div>
     </ng-container>
 </nz-modal>
 
-<!--Modal-->
-<!--CreateEmployeeModal-->
-<nz-modal [nzWidth]="800" [(nzVisible)]="showCreateEmployeeModal" nzClosable="true" [nzTitle]="title3" (nzOnCancel)="showCreateEmployeeModal=false;" [nzFooter]="null">
-    <form [formGroup]="employeeForm">
-            <ng-template #title3>
-        <b>Create Employee</b>
-    </ng-template>
-    <ng-container *nzModalContent>
-        <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
-            <br>
-            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="14" [nzLg]="14" [nzXl]="14">
-                <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
-                    <!--Full Name-->
-                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
-                        <span style="font-size: 15px;"><b>Full Name</b></span>
-                        <br style="margin-top: 5px;">
-                        <hr class="hr">
-                        <nz-input-group nzCompact>
-                            <nz-select [(ngModel)]="selectedTitle"  nzShowSearch nzPlaceHolder="Mr" style="width:20%;" formControlName="title">
-                                <nz-option *ngFor="let title of titles" [nzLabel]='title.title_name' [nzValue]='title.title_id'></nz-option>
-                            </nz-select>
-                            <input type="text" nz-input placeholder="Enter first name" formControlName="name" style="width:40%;" />
-                            <input type="text" nz-input placeholder="Enter surname" formControlName="surname" style="width:40%;" />
-                        </nz-input-group>
-                    </div>
-                    <!--Contact Information-->
-                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
-                        <span style="font-size: 15px;"><b>Contact Information</b></span>
-                        <br style="margin-top: 5px;">
-                        <hr class="hr">
-                        <nz-input-group nzCompact>
-                            <input type="email" nz-input placeholder="Enter email" formControlName="email_address" style="width:50%;" />
-                            <input type="text" nz-input placeholder="Enter phone number" formControlName="phone_number" style="width:50%;" />
-                        </nz-input-group>
-                    </div>
-                    <!--Role, Scope and Rate-->
-                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
-                        <span style="font-size: 15px;"><b>Employee Role, Scope & Rate</b></span> <br>
-                        <hr class="hr">
-                        <nz-input-group nzCompact>
-                            <nz-select [(ngModel)]="selectedRole" nzShowSearch nzPlaceHolder="Employee" style="width:25%;" formControlName="role">
-                                <nz-option *ngFor="let role of roles" [nzLabel]='role.role_name' [nzValue]='role.role_id'></nz-option>
-                            </nz-select>
-                            <input type="text" nz-input placeholder="Enter scope" formControlName="job_scope" style="width:50%;" />
-                            <input type="number" step="0.01" min="0" nz-input placeholder="0.00" formControlName="hourly_rate" style="width:25%;" />
-                        </nz-input-group>
-                    </div>
-                    <!--Address & Emergency Contact-->
-                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
-                        <span style="font-size: 15px;"><b>Address & Emergency Contact</b></span> <br>
-                        <hr class="hr">
-                        <nz-input-group nzCompact>
-                            <input type="text" nz-input placeholder="Enter Address" formControlName="address" style="width:50%;" />
-                            <input type="text" nz-input placeholder="Enter Emergency Contact" formControlName="emergency_contact" style="width:50%;" />
-                        </nz-input-group>
-                    </div>
-                </div>
-                <br />
-                <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
-                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
-                        <nz-button-group>
-                            <button nz-button nzType="default" style="background-color: seagreen;color: white;border: none;" (click)="createEmployee()"> <!--(click)="createEmployee()"-->
-                              <span nz-icon nzType="check" nzTheme="outline"></span>
-                              Create Employee
-                            </button>
-                        </nz-button-group>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </ng-container>
-    </form>
-</nz-modal>
-
-<!--Modal-->
 <!--CreateCustomerModal-->
 <nz-modal [nzWidth]="800" [(nzVisible)]="showCreateCustomerModal" nzClosable="true" [nzTitle]="title4" (nzOnCancel)="showCreateCustomerModal=false;" [nzFooter]="null">
     <ng-template #title4>
@@ -375,17 +295,14 @@
                 <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
                     <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
                         <nz-button-group>
-                            <button nz-button nzType="default">
-                              <span nz-icon nzType="printer" nzTheme="outline"></span>
-                              Edit Customer Type
-                            </button>
-                            <button nz-button nzType="default" style="background-color: lightseagreen;color: white;border: none;">
-                              <span nz-icon nzType="check" nzTheme="outline"></span>
-                              Update Details
+                            <button nz-button nzType="default" style="background-color: lightseagreen;color: white;border: none;"
+                                    (click)="viewUpdateCustomer(viewingCustomer)">
+                                <span nz-icon nzType="check" nzTheme="outline"></span>
+                                Update Details
                             </button>
                             <button nz-button nzType="default" style="background-color: rgb(252, 61, 61);color: white;border: none;">
-                              <span nz-icon nzType="close" nzTheme="outline"></span>
-                              Disable Customer
+                                <span nz-icon nzType="close" nzTheme="outline"></span>
+                                Disable Customer
                             </button>
                         </nz-button-group>
                     </div>
@@ -517,78 +434,506 @@
     </ng-container>
 </nz-modal>
 
-<!--Modal-->
-<!--UpdateEmployeeModal-->
-<nz-modal [nzWidth]="800" [(nzVisible)]="showUpdateEmployeeModal" nzClosable="true" [nzTitle]="title8" (nzOnCancel)="showUpdateEmployeeModal=false;" [nzFooter]="null">
-    <form [formGroup]="updateEmployeeForm">
-            <ng-template #title8>
-        <b>Update Employee</b>
+<!-- Create Employee Modal with Validation -->
+<nz-modal [nzWidth]="800" [(nzVisible)]="showCreateEmployeeModal" nzClosable="true" [nzTitle]="title3" (nzOnCancel)="showCreateEmployeeModal=false;" [nzFooter]="null">
+  <form [formGroup]="employeeForm">
+    <ng-template #title3>
+      <b>Create Employee</b>
     </ng-template>
     <ng-container *nzModalContent>
+      <nz-spin [nzSpinning]="isloading">
         <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
-            <br>
-            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="14" [nzLg]="14" [nzXl]="14">
-                <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
-                    <!--Full Name-->
-                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
-                        <span style="font-size: 15px;"><b>Full Name</b></span>
-                        <br style="margin-top: 5px;">
-                        <hr class="hr">
-                        <nz-input-group nzCompact>
-                            <nz-select [(ngModel)]="selectedTitle"  nzShowSearch nzPlaceHolder="Mr" style="width:20%;" formControlName="title">
-                                <nz-option *ngFor="let title of titles" [nzLabel]='title.title_name' [nzValue]='title.title_id'></nz-option>
-                            </nz-select>
-                            <input type="text" nz-input placeholder="Enter first name" formControlName="name" style="width:40%;" />
-                            <input type="text" nz-input placeholder="Enter surname" formControlName="surname" style="width:40%;" />
-                        </nz-input-group>
-                    </div>
-                    <!--Contact Information-->
-                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
-                        <span style="font-size: 15px;"><b>Contact Information</b></span>
-                        <br style="margin-top: 5px;">
-                        <hr class="hr">
-                        <nz-input-group nzCompact>
-                            <input type="email" nz-input placeholder="Enter email" formControlName="email_address" style="width:50%;" />
-                            <input type="text" nz-input placeholder="Enter phone number" formControlName="phone_number" style="width:50%;" />
-                        </nz-input-group>
-                    </div>
-                    <!--Role, Scope and Rate-->
-                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
-                        <span style="font-size: 15px;"><b>Employee Role, Scope & Rate</b></span> <br>
-                        <hr class="hr">
-                        <nz-input-group nzCompact>
-                            <nz-select [(ngModel)]="selectedRole" nzShowSearch nzPlaceHolder="Employee" style="width:25%;" formControlName="role">
-                                <nz-option *ngFor="let role of roles" [nzLabel]='role.role_name' [nzValue]='role.role_id'></nz-option>
-                            </nz-select>
-                            <input type="text" nz-input placeholder="Enter scope" formControlName="job_scope" style="width:50%;" />
-                            <input type="number" step="0.01" min="0" nz-input placeholder="0.00" formControlName="hourly_rate" style="width:25%;" />
-                        </nz-input-group>
-                    </div>
-                    <!--Address & Emergency Contact-->
-                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
-                        <span style="font-size: 15px;"><b>Address & Emergency Contact</b></span> <br>
-                        <hr class="hr">
-                        <nz-input-group nzCompact>
-                            <input type="text" nz-input placeholder="Enter Address" formControlName="address" style="width:50%;" />
-                            <input type="number" nz-input placeholder="Enter Emergency Contact" formControlName="emergency_contact" style="width:50%;" />
-                        </nz-input-group>
-                    </div>
+          <br>
+          <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="14" [nzLg]="14" [nzXl]="14">
+
+            <!-- Full Name -->
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+              <span style="font-size: 15px;"><b>Full Name</b></span>
+              <hr class="hr">
+              <nz-input-group nzCompact>
+                <nz-select
+                  style="width: 20%;"
+                  formControlName="title"
+                  nzPlaceHolder="Title"
+                  [class.error-border]="employeeForm.get('title')?.invalid && employeeForm.get('title')?.touched">
+                  <nz-option *ngFor="let title of titles" [nzLabel]="title.title_name" [nzValue]="title.title_id"></nz-option>
+                </nz-select>
+                <input
+                  style="width: 40%;"
+                  nz-input
+                  formControlName="name"
+                  placeholder="First Name"
+                  [class.error-border]="employeeForm.get('name')?.invalid && employeeForm.get('name')?.touched" />
+                <input
+                  style="width: 40%;"
+                  nz-input
+                  formControlName="surname"
+                  placeholder="Surname"
+                  [class.error-border]="employeeForm.get('surname')?.invalid && employeeForm.get('surname')?.touched" />
+              </nz-input-group>
+
+              <!-- Validation Messages for Name -->
+              <div nz-row style="margin-top: 5px;">
+                <div nz-col nzSpan="8">
+                  <div *ngIf="employeeForm.get('title')?.invalid && employeeForm.get('title')?.touched" class="error-text">
+                    Title is required
+                  </div>
                 </div>
-                <br />
-                <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]" style="width: 100%;">
-                    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
-                        <nz-button-group>
-                            <button nz-button nzType="default" style="background-color: seagreen;color: white;border: none;" (click)="updateEmployee()">
-                              <span nz-icon nzType="check" nzTheme="outline"></span>
-                              Update Employee
-                            </button>
-                        </nz-button-group>
-                    </div>
+                <div nz-col nzSpan="8">
+                  <div *ngIf="employeeForm.get('name')?.errors?.['required'] && employeeForm.get('name')?.touched" class="error-text">
+                    First name is required
+                  </div>
+                  <div *ngIf="employeeForm.get('name')?.errors?.['minlength'] && employeeForm.get('name')?.touched" class="error-text">
+                    Minimum 2 characters
+                  </div>
+                  <div *ngIf="employeeForm.get('name')?.errors?.['pattern'] && employeeForm.get('name')?.touched" class="error-text">
+                    Letters only
+                  </div>
                 </div>
+                <div nz-col nzSpan="8">
+                  <div *ngIf="employeeForm.get('surname')?.errors?.['required'] && employeeForm.get('surname')?.touched" class="error-text">
+                    Surname is required
+                  </div>
+                  <div *ngIf="employeeForm.get('surname')?.errors?.['minlength'] && employeeForm.get('surname')?.touched" class="error-text">
+                    Minimum 2 characters
+                  </div>
+                  <div *ngIf="employeeForm.get('surname')?.errors?.['pattern'] && employeeForm.get('surname')?.touched" class="error-text">
+                    Letters only
+                  </div>
+                </div>
+              </div>
             </div>
+
+            <!-- Contact Information -->
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+              <span style="font-size: 15px;"><b>Contact Information</b></span>
+              <hr class="hr">
+              <nz-input-group nzCompact>
+                <input
+                  style="width: 50%;"
+                  nz-input
+                  formControlName="email_address"
+                  placeholder="Email Address"
+                  type="email"
+                  [class.error-border]="employeeForm.get('email_address')?.invalid && employeeForm.get('email_address')?.touched" />
+                <input
+                  style="width: 50%;"
+                  nz-input
+                  formControlName="phone_number"
+                  placeholder="Phone Number"
+                  [class.error-border]="employeeForm.get('phone_number')?.invalid && employeeForm.get('phone_number')?.touched" />
+              </nz-input-group>
+
+              <!-- Validation Messages for Contact -->
+              <div nz-row style="margin-top: 5px;">
+                <div nz-col nzSpan="12">
+                  <div *ngIf="employeeForm.get('email_address')?.errors?.['required'] && employeeForm.get('email_address')?.touched" class="error-text">
+                    Email is required
+                  </div>
+                  <div *ngIf="employeeForm.get('email_address')?.errors?.['email'] && employeeForm.get('email_address')?.touched" class="error-text">
+                    Invalid email format
+                  </div>
+                </div>
+                <div nz-col nzSpan="12">
+                  <div *ngIf="employeeForm.get('phone_number')?.errors?.['required'] && employeeForm.get('phone_number')?.touched" class="error-text">
+                    Phone number is required
+                  </div>
+                  <div *ngIf="employeeForm.get('phone_number')?.errors?.['pattern'] && employeeForm.get('phone_number')?.touched" class="error-text">
+                    10-15 digits required
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Role, Scope and Rate -->
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+              <span style="font-size: 15px;"><b>Employee Role, Scope & Rate</b></span>
+              <hr class="hr">
+              <nz-input-group nzCompact>
+                <nz-select
+                  style="width: 25%;"
+                  formControlName="role"
+                  nzPlaceHolder="Role"
+                  [class.error-border]="employeeForm.get('role')?.invalid && employeeForm.get('role')?.touched">
+                  <nz-option *ngFor="let role of roles" [nzLabel]="role.role_name" [nzValue]="role.role_id"></nz-option>
+                </nz-select>
+                <input
+                  style="width: 50%;"
+                  nz-input
+                  formControlName="job_scope"
+                  placeholder="Job Scope"
+                  [class.error-border]="employeeForm.get('job_scope')?.invalid && employeeForm.get('job_scope')?.touched" />
+                <input
+                  style="width: 25%;"
+                  nz-input
+                  formControlName="hourly_rate"
+                  placeholder="0.00"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  [class.error-border]="employeeForm.get('hourly_rate')?.invalid && employeeForm.get('hourly_rate')?.touched" />
+              </nz-input-group>
+
+              <!-- Validation Messages for Role/Scope/Rate -->
+              <div nz-row style="margin-top: 5px;">
+                <div nz-col nzSpan="8">
+                  <div *ngIf="employeeForm.get('role')?.invalid && employeeForm.get('role')?.touched" class="error-text">
+                    Role is required
+                  </div>
+                </div>
+                <div nz-col nzSpan="8">
+                  <div *ngIf="employeeForm.get('job_scope')?.errors?.['required'] && employeeForm.get('job_scope')?.touched" class="error-text">
+                    Job scope is required
+                  </div>
+                  <div *ngIf="employeeForm.get('job_scope')?.errors?.['minlength'] && employeeForm.get('job_scope')?.touched" class="error-text">
+                    Minimum 5 characters
+                  </div>
+                </div>
+                <div nz-col nzSpan="8">
+                  <div *ngIf="employeeForm.get('hourly_rate')?.errors?.['required'] && employeeForm.get('hourly_rate')?.touched" class="error-text">
+                    Hourly rate is required
+                  </div>
+                  <div *ngIf="employeeForm.get('hourly_rate')?.errors?.['min'] && employeeForm.get('hourly_rate')?.touched" class="error-text">
+                    Must be positive
+                  </div>
+                  <div *ngIf="employeeForm.get('hourly_rate')?.errors?.['pattern'] && employeeForm.get('hourly_rate')?.touched" class="error-text">
+                    Valid number required
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Address & Emergency Contact -->
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+              <span style="font-size: 15px;"><b>Address & Emergency Contact</b></span>
+              <hr class="hr">
+              <nz-input-group nzCompact>
+                <input
+                  style="width: 50%;"
+                  nz-input
+                  formControlName="address"
+                  placeholder="Address"
+                  [class.error-border]="employeeForm.get('address')?.invalid && employeeForm.get('address')?.touched" />
+                <input
+                  style="width: 50%;"
+                  nz-input
+                  formControlName="emergency_contact"
+                  placeholder="Emergency Contact"
+                  [class.error-border]="employeeForm.get('emergency_contact')?.invalid && employeeForm.get('emergency_contact')?.touched" />
+              </nz-input-group>
+
+              <!-- Validation Messages for Address/Contact -->
+              <div nz-row style="margin-top: 5px;">
+                <div nz-col nzSpan="12">
+                  <div *ngIf="employeeForm.get('address')?.errors?.['required'] && employeeForm.get('address')?.touched" class="error-text">
+                    Address is required
+                  </div>
+                  <div *ngIf="employeeForm.get('address')?.errors?.['minlength'] && employeeForm.get('address')?.touched" class="error-text">
+                    Minimum 10 characters
+                  </div>
+                </div>
+                <div nz-col nzSpan="12">
+                  <div *ngIf="employeeForm.get('emergency_contact')?.errors?.['required'] && employeeForm.get('emergency_contact')?.touched" class="error-text">
+                    Emergency contact is required
+                  </div>
+                  <div *ngIf="employeeForm.get('emergency_contact')?.errors?.['pattern'] && employeeForm.get('emergency_contact')?.touched" class="error-text">
+                    Valid phone number required
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <br />
+
+          <!-- Form Status Summary -->
+          <div nz-row *ngIf="employeeForm.touched && employeeForm.invalid">
+            <div nz-col nzSpan="24">
+              <div class="error-summary">
+                <i nz-icon nzType="exclamation-circle" nzTheme="outline"></i>
+                Please fix the validation errors above before submitting.
+              </div>
+            </div>
+          </div>
+
+          <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+              <nz-button-group>
+                <button
+                  nz-button
+                  nzType="primary"
+                  (click)="createEmployee()"
+                  [nzLoading]="isloading"
+                  [disabled]="!employeeForm.valid">
+                  <span nz-icon nzType="check" nzTheme="outline"></span>
+                  Create Employee
+                </button>
+                <button
+                  nz-button
+                  nzType="default"
+                  (click)="showCreateEmployeeModal = false"
+                  [disabled]="isloading">
+                  <span nz-icon nzType="close" nzTheme="outline"></span>
+                  Cancel
+                </button>
+              </nz-button-group>
+            </div>
+          </div>
         </div>
+      </nz-spin>
     </ng-container>
-    </form>
+  </form>
+</nz-modal>
+
+<!-- Update Employee Modal with Validation -->
+<nz-modal [nzWidth]="800" [(nzVisible)]="showUpdateEmployeeModal" nzClosable="true" [nzTitle]="title8" (nzOnCancel)="showUpdateEmployeeModal=false;" [nzFooter]="null">
+  <form [formGroup]="updateEmployeeForm">
+    <ng-template #title8>
+      <b>Update Employee - {{viewingEmployee?.name}} {{viewingEmployee?.surname}}</b>
+    </ng-template>
+    <ng-container *nzModalContent>
+      <nz-spin [nzSpinning]="isloading">
+        <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+          <br>
+          <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="14" [nzLg]="14" [nzXl]="14">
+
+            <!-- Full Name -->
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+              <span style="font-size: 15px;"><b>Full Name</b></span>
+              <hr class="hr">
+              <nz-input-group nzCompact>
+                <nz-select
+                  style="width: 20%;"
+                  formControlName="title"
+                  nzPlaceHolder="Title"
+                  [class.error-border]="updateEmployeeForm.get('title')?.invalid && updateEmployeeForm.get('title')?.touched">
+                  <nz-option *ngFor="let title of titles" [nzLabel]="title.title_name" [nzValue]="title.title_id"></nz-option>
+                </nz-select>
+                <input
+                  style="width: 40%;"
+                  nz-input
+                  formControlName="name"
+                  placeholder="First Name"
+                  [class.error-border]="updateEmployeeForm.get('name')?.invalid && updateEmployeeForm.get('name')?.touched" />
+                <input
+                  style="width: 40%;"
+                  nz-input
+                  formControlName="surname"
+                  placeholder="Surname"
+                  [class.error-border]="updateEmployeeForm.get('surname')?.invalid && updateEmployeeForm.get('surname')?.touched" />
+              </nz-input-group>
+
+              <!-- Validation Messages for Name -->
+              <div nz-row style="margin-top: 5px;">
+                <div nz-col nzSpan="8">
+                  <div *ngIf="updateEmployeeForm.get('title')?.invalid && updateEmployeeForm.get('title')?.touched" class="error-text">
+                    Title is required
+                  </div>
+                </div>
+                <div nz-col nzSpan="8">
+                  <div *ngIf="updateEmployeeForm.get('name')?.errors?.['required'] && updateEmployeeForm.get('name')?.touched" class="error-text">
+                    First name is required
+                  </div>
+                  <div *ngIf="updateEmployeeForm.get('name')?.errors?.['minlength'] && updateEmployeeForm.get('name')?.touched" class="error-text">
+                    Minimum 2 characters
+                  </div>
+                  <div *ngIf="updateEmployeeForm.get('name')?.errors?.['pattern'] && updateEmployeeForm.get('name')?.touched" class="error-text">
+                    Letters only
+                  </div>
+                </div>
+                <div nz-col nzSpan="8">
+                  <div *ngIf="updateEmployeeForm.get('surname')?.errors?.['required'] && updateEmployeeForm.get('surname')?.touched" class="error-text">
+                    Surname is required
+                  </div>
+                  <div *ngIf="updateEmployeeForm.get('surname')?.errors?.['minlength'] && updateEmployeeForm.get('surname')?.touched" class="error-text">
+                    Minimum 2 characters
+                  </div>
+                  <div *ngIf="updateEmployeeForm.get('surname')?.errors?.['pattern'] && updateEmployeeForm.get('surname')?.touched" class="error-text">
+                    Letters only
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+              <span style="font-size: 15px;"><b>Contact Information</b></span>
+              <hr class="hr">
+              <nz-input-group nzCompact>
+                <input
+                  style="width: 50%;"
+                  nz-input
+                  formControlName="email_address"
+                  placeholder="Email Address"
+                  type="email"
+                  [class.error-border]="updateEmployeeForm.get('email_address')?.invalid && updateEmployeeForm.get('email_address')?.touched" />
+                <input
+                  style="width: 50%;"
+                  nz-input
+                  formControlName="phone_number"
+                  placeholder="Phone Number"
+                  [class.error-border]="updateEmployeeForm.get('phone_number')?.invalid && updateEmployeeForm.get('phone_number')?.touched" />
+              </nz-input-group>
+
+              <!-- Validation Messages for Contact -->
+              <div nz-row style="margin-top: 5px;">
+                <div nz-col nzSpan="12">
+                  <div *ngIf="updateEmployeeForm.get('email_address')?.errors?.['required'] && updateEmployeeForm.get('email_address')?.touched" class="error-text">
+                    Email is required
+                  </div>
+                  <div *ngIf="updateEmployeeForm.get('email_address')?.errors?.['email'] && updateEmployeeForm.get('email_address')?.touched" class="error-text">
+                    Invalid email format
+                  </div>
+                </div>
+                <div nz-col nzSpan="12">
+                  <div *ngIf="updateEmployeeForm.get('phone_number')?.errors?.['required'] && updateEmployeeForm.get('phone_number')?.touched" class="error-text">
+                    Phone number is required
+                  </div>
+                  <div *ngIf="updateEmployeeForm.get('phone_number')?.errors?.['pattern'] && updateEmployeeForm.get('phone_number')?.touched" class="error-text">
+                    10-15 digits required
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Role, Scope and Rate -->
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+              <span style="font-size: 15px;"><b>Employee Role, Scope & Rate</b></span>
+              <hr class="hr">
+              <nz-input-group nzCompact>
+                <nz-select
+                  style="width: 25%;"
+                  formControlName="role"
+                  nzPlaceHolder="Role"
+                  [class.error-border]="updateEmployeeForm.get('role')?.invalid && updateEmployeeForm.get('role')?.touched">
+                  <nz-option *ngFor="let role of roles" [nzLabel]="role.role_name" [nzValue]="role.role_id"></nz-option>
+                </nz-select>
+                <input
+                  style="width: 50%;"
+                  nz-input
+                  formControlName="job_scope"
+                  placeholder="Job Scope"
+                  [class.error-border]="updateEmployeeForm.get('job_scope')?.invalid && updateEmployeeForm.get('job_scope')?.touched" />
+                <input
+                  style="width: 25%;"
+                  nz-input
+                  formControlName="hourly_rate"
+                  placeholder="0.00"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  [class.error-border]="updateEmployeeForm.get('hourly_rate')?.invalid && updateEmployeeForm.get('hourly_rate')?.touched" />
+              </nz-input-group>
+
+              <!-- Validation Messages for Role/Scope/Rate -->
+              <div nz-row style="margin-top: 5px;">
+                <div nz-col nzSpan="8">
+                  <div *ngIf="updateEmployeeForm.get('role')?.invalid && updateEmployeeForm.get('role')?.touched" class="error-text">
+                    Role is required
+                  </div>
+                </div>
+                <div nz-col nzSpan="8">
+                  <div *ngIf="updateEmployeeForm.get('job_scope')?.errors?.['required'] && updateEmployeeForm.get('job_scope')?.touched" class="error-text">
+                    Job scope is required
+                  </div>
+                  <div *ngIf="updateEmployeeForm.get('job_scope')?.errors?.['minlength'] && updateEmployeeForm.get('job_scope')?.touched" class="error-text">
+                    Minimum 5 characters
+                  </div>
+                </div>
+                <div nz-col nzSpan="8">
+                  <div *ngIf="updateEmployeeForm.get('hourly_rate')?.errors?.['required'] && updateEmployeeForm.get('hourly_rate')?.touched" class="error-text">
+                    Hourly rate is required
+                  </div>
+                  <div *ngIf="updateEmployeeForm.get('hourly_rate')?.errors?.['min'] && updateEmployeeForm.get('hourly_rate')?.touched" class="error-text">
+                    Must be positive
+                  </div>
+                  <div *ngIf="updateEmployeeForm.get('hourly_rate')?.errors?.['pattern'] && updateEmployeeForm.get('hourly_rate')?.touched" class="error-text">
+                    Valid number required
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Address & Emergency Contact -->
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+              <span style="font-size: 15px;"><b>Address & Emergency Contact</b></span>
+              <hr class="hr">
+              <nz-input-group nzCompact>
+                <input
+                  style="width: 50%;"
+                  nz-input
+                  formControlName="address"
+                  placeholder="Address"
+                  [class.error-border]="updateEmployeeForm.get('address')?.invalid && updateEmployeeForm.get('address')?.touched" />
+                <input
+                  style="width: 50%;"
+                  nz-input
+                  formControlName="emergency_contact"
+                  placeholder="Emergency Contact"
+                  [class.error-border]="updateEmployeeForm.get('emergency_contact')?.invalid && updateEmployeeForm.get('emergency_contact')?.touched" />
+              </nz-input-group>
+
+              <!-- Validation Messages for Address/Contact -->
+              <div nz-row style="margin-top: 5px;">
+                <div nz-col nzSpan="12">
+                  <div *ngIf="updateEmployeeForm.get('address')?.errors?.['required'] && updateEmployeeForm.get('address')?.touched" class="error-text">
+                    Address is required
+                  </div>
+                  <div *ngIf="updateEmployeeForm.get('address')?.errors?.['minlength'] && updateEmployeeForm.get('address')?.touched" class="error-text">
+                    Minimum 10 characters
+                  </div>
+                </div>
+                <div nz-col nzSpan="12">
+                  <div *ngIf="updateEmployeeForm.get('emergency_contact')?.errors?.['required'] && updateEmployeeForm.get('emergency_contact')?.touched" class="error-text">
+                    Emergency contact is required
+                  </div>
+                  <div *ngIf="updateEmployeeForm.get('emergency_contact')?.errors?.['pattern'] && updateEmployeeForm.get('emergency_contact')?.touched" class="error-text">
+                    Valid phone number required
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <br />
+
+          <!-- Form Status Summary -->
+          <div nz-row *ngIf="updateEmployeeForm.touched && updateEmployeeForm.invalid">
+            <div nz-col nzSpan="24">
+              <div class="error-summary">
+                <i nz-icon nzType="exclamation-circle" nzTheme="outline"></i>
+                Please fix the validation errors above before submitting.
+              </div>
+            </div>
+          </div>
+
+          <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+              <nz-button-group>
+                <button
+                  nz-button
+                  nzType="primary"
+                  (click)="updateEmployee()"
+                  [nzLoading]="isloading"
+                  [disabled]="!updateEmployeeForm.valid">
+                  <span nz-icon nzType="check" nzTheme="outline"></span>
+                  Update Employee
+                </button>
+                <button
+                  nz-button
+                  nzType="default"
+                  (click)="showUpdateEmployeeModal = false"
+                  [disabled]="isloading">
+                  <span nz-icon nzType="close" nzTheme="outline"></span>
+                  Cancel
+                </button>
+              </nz-button-group>
+            </div>
+          </div>
+        </div>
+      </nz-spin>
+    </ng-container>
+  </form>
 </nz-modal>
 
 <!-- Users Help Modal -->
@@ -714,4 +1059,263 @@
       </div>
     </div>
   </ng-container>
+</nz-modal>
+
+<!-- Update Customer Modal with Validation -->
+<nz-modal [nzWidth]="800" [(nzVisible)]="showUpdateCustomerModal" nzClosable="true" [nzTitle]="titleCustomer" (nzOnCancel)="showUpdateCustomerModal=false;" [nzFooter]="null">
+  <form [formGroup]="updateCustomerForm">
+    <ng-template #titleCustomer>
+      <b>Update Customer - {{viewingCustomer?.name}} {{viewingCustomer?.surname}}</b>
+    </ng-template>
+    <ng-container *nzModalContent>
+      <nz-spin [nzSpinning]="isloading">
+        <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+          <br>
+          <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+
+            <!-- Full Name -->
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+              <span style="font-size: 15px;"><b>Full Name</b></span>
+              <hr class="hr">
+              <nz-input-group nzCompact>
+                <nz-select
+                  style="width: 20%;"
+                  formControlName="title"
+                  nzPlaceHolder="Title"
+                  [class.error-border]="updateCustomerForm.get('title')?.invalid && updateCustomerForm.get('title')?.touched">
+                  <nz-option *ngFor="let title of titles" [nzLabel]="title.title_name" [nzValue]="title.title_id"></nz-option>
+                </nz-select>
+                <input
+                  style="width: 40%;"
+                  nz-input
+                  formControlName="name"
+                  placeholder="First Name"
+                  [class.error-border]="updateCustomerForm.get('name')?.invalid && updateCustomerForm.get('name')?.touched" />
+                <input
+                  style="width: 40%;"
+                  nz-input
+                  formControlName="surname"
+                  placeholder="Surname"
+                  [class.error-border]="updateCustomerForm.get('surname')?.invalid && updateCustomerForm.get('surname')?.touched" />
+              </nz-input-group>
+
+              <!-- Validation Messages for Name -->
+              <div nz-row style="margin-top: 5px;">
+                <div nz-col nzSpan="8">
+                  <div *ngIf="updateCustomerForm.get('title')?.invalid && updateCustomerForm.get('title')?.touched" class="error-text">
+                    Title is required
+                  </div>
+                </div>
+                <div nz-col nzSpan="8">
+                  <div *ngIf="updateCustomerForm.get('name')?.errors?.['required'] && updateCustomerForm.get('name')?.touched" class="error-text">
+                    First name is required
+                  </div>
+                  <div *ngIf="updateCustomerForm.get('name')?.errors?.['minlength'] && updateCustomerForm.get('name')?.touched" class="error-text">
+                    Minimum 2 characters
+                  </div>
+                  <div *ngIf="updateCustomerForm.get('name')?.errors?.['pattern'] && updateCustomerForm.get('name')?.touched" class="error-text">
+                    Letters only
+                  </div>
+                </div>
+                <div nz-col nzSpan="8">
+                  <div *ngIf="updateCustomerForm.get('surname')?.errors?.['required'] && updateCustomerForm.get('surname')?.touched" class="error-text">
+                    Surname is required
+                  </div>
+                  <div *ngIf="updateCustomerForm.get('surname')?.errors?.['minlength'] && updateCustomerForm.get('surname')?.touched" class="error-text">
+                    Minimum 2 characters
+                  </div>
+                  <div *ngIf="updateCustomerForm.get('surname')?.errors?.['pattern'] && updateCustomerForm.get('surname')?.touched" class="error-text">
+                    Letters only
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+              <span style="font-size: 15px;"><b>Contact Information</b></span>
+              <hr class="hr">
+              <nz-input-group nzCompact>
+                <input
+                  style="width: 50%;"
+                  nz-input
+                  formControlName="email_address"
+                  placeholder="Email Address"
+                  type="email"
+                  [class.error-border]="updateCustomerForm.get('email_address')?.invalid && updateCustomerForm.get('email_address')?.touched" />
+                <input
+                  style="width: 50%;"
+                  nz-input
+                  formControlName="phone_number"
+                  placeholder="Phone Number"
+                  [class.error-border]="updateCustomerForm.get('phone_number')?.invalid && updateCustomerForm.get('phone_number')?.touched" />
+              </nz-input-group>
+
+              <!-- Validation Messages for Contact -->
+              <div nz-row style="margin-top: 5px;">
+                <div nz-col nzSpan="12">
+                  <div *ngIf="updateCustomerForm.get('email_address')?.errors?.['required'] && updateCustomerForm.get('email_address')?.touched" class="error-text">
+                    Email is required
+                  </div>
+                  <div *ngIf="updateCustomerForm.get('email_address')?.errors?.['email'] && updateCustomerForm.get('email_address')?.touched" class="error-text">
+                    Invalid email format
+                  </div>
+                </div>
+                <div nz-col nzSpan="12">
+                  <div *ngIf="updateCustomerForm.get('phone_number')?.errors?.['required'] && updateCustomerForm.get('phone_number')?.touched" class="error-text">
+                    Phone number is required
+                  </div>
+                  <div *ngIf="updateCustomerForm.get('phone_number')?.errors?.['pattern'] && updateCustomerForm.get('phone_number')?.touched" class="error-text">
+                    10-15 digits required
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Company Details -->
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+              <span style="font-size: 15px;"><b>Company Details</b></span>
+              <hr class="hr">
+              <nz-input-group nzCompact>
+                <input
+                  style="width: 50%;"
+                  nz-input
+                  formControlName="company_name"
+                  placeholder="Company Name"
+                  [class.error-border]="updateCustomerForm.get('company_name')?.invalid && updateCustomerForm.get('company_name')?.touched" />
+                <input
+                  style="width: 50%;"
+                  nz-input
+                  formControlName="telephone"
+                  placeholder="Company Telephone"
+                  [class.error-border]="updateCustomerForm.get('telephone')?.invalid && updateCustomerForm.get('telephone')?.touched" />
+              </nz-input-group>
+
+              <!-- Validation Messages for Company -->
+              <div nz-row style="margin-top: 5px;">
+                <div nz-col nzSpan="12">
+                  <div *ngIf="updateCustomerForm.get('company_name')?.errors?.['required'] && updateCustomerForm.get('company_name')?.touched" class="error-text">
+                    Company name is required
+                  </div>
+                  <div *ngIf="updateCustomerForm.get('company_name')?.errors?.['minlength'] && updateCustomerForm.get('company_name')?.touched" class="error-text">
+                    Minimum 2 characters
+                  </div>
+                </div>
+                <div nz-col nzSpan="12">
+                  <div *ngIf="updateCustomerForm.get('telephone')?.errors?.['required'] && updateCustomerForm.get('telephone')?.touched" class="error-text">
+                    Company telephone is required
+                  </div>
+                  <div *ngIf="updateCustomerForm.get('telephone')?.errors?.['pattern'] && updateCustomerForm.get('telephone')?.touched" class="error-text">
+                    Invalid telephone format
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Registration Numbers -->
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+              <span style="font-size: 15px;"><b>Registration Numbers</b></span>
+              <hr class="hr">
+              <nz-input-group nzCompact>
+                <input
+                  style="width: 50%;"
+                  nz-input
+                  formControlName="registration_number"
+                  placeholder="Registration Number"
+                  [class.error-border]="updateCustomerForm.get('registration_number')?.invalid && updateCustomerForm.get('registration_number')?.touched" />
+                <input
+                  style="width: 50%;"
+                  nz-input
+                  formControlName="vat_number"
+                  placeholder="VAT Number"
+                  [class.error-border]="updateCustomerForm.get('vat_number')?.invalid && updateCustomerForm.get('vat_number')?.touched" />
+              </nz-input-group>
+
+              <!-- Validation Messages for Registration -->
+              <div nz-row style="margin-top: 5px;">
+                <div nz-col nzSpan="12">
+                  <div *ngIf="updateCustomerForm.get('registration_number')?.errors?.['required'] && updateCustomerForm.get('registration_number')?.touched" class="error-text">
+                    Registration number is required
+                  </div>
+                  <div *ngIf="updateCustomerForm.get('registration_number')?.errors?.['minlength'] && updateCustomerForm.get('registration_number')?.touched" class="error-text">
+                    Minimum 5 characters
+                  </div>
+                </div>
+                <div nz-col nzSpan="12">
+                  <div *ngIf="updateCustomerForm.get('vat_number')?.errors?.['required'] && updateCustomerForm.get('vat_number')?.touched" class="error-text">
+                    VAT number is required
+                  </div>
+                  <div *ngIf="updateCustomerForm.get('vat_number')?.errors?.['minlength'] && updateCustomerForm.get('vat_number')?.touched" class="error-text">
+                    Minimum 5 characters
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Address -->
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+              <span style="font-size: 15px;"><b>Address</b></span>
+              <hr class="hr">
+              <textarea
+                nz-input
+                formControlName="address"
+                placeholder="Company Address"
+                rows="3"
+                style="width: 100%;"
+                [class.error-border]="updateCustomerForm.get('address')?.invalid && updateCustomerForm.get('address')?.touched">
+              </textarea>
+
+              <div style="margin-top: 5px;">
+                <div *ngIf="updateCustomerForm.get('address')?.errors?.['required'] && updateCustomerForm.get('address')?.touched" class="error-text">
+                  Address is required
+                </div>
+                <div *ngIf="updateCustomerForm.get('address')?.errors?.['minlength'] && updateCustomerForm.get('address')?.touched" class="error-text">
+                  Minimum 10 characters
+                </div>
+                <div *ngIf="updateCustomerForm.get('address')?.errors?.['maxlength'] && updateCustomerForm.get('address')?.touched" class="error-text">
+                  Maximum 200 characters
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <br />
+
+          <!-- Form Status Summary -->
+          <div nz-row *ngIf="updateCustomerForm.touched && updateCustomerForm.invalid">
+            <div nz-col nzSpan="24">
+              <div class="error-summary">
+                <i nz-icon nzType="exclamation-circle" nzTheme="outline"></i>
+                Please fix the validation errors above before submitting.
+              </div>
+            </div>
+          </div>
+
+          <div nz-row [nzJustify]="'center'" [nzGutter]="[24,24]">
+            <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24" [nzXl]="24">
+              <nz-button-group>
+                <button
+                  nz-button
+                  nzType="primary"
+                  (click)="updateCustomer()"
+                  [nzLoading]="isloading"
+                  [disabled]="!updateCustomerForm.valid">
+                  <span nz-icon nzType="check" nzTheme="outline"></span>
+                  Update Customer
+                </button>
+                <button
+                  nz-button
+                  nzType="default"
+                  (click)="showUpdateCustomerModal = false"
+                  [disabled]="isloading">
+                  <span nz-icon nzType="close" nzTheme="outline"></span>
+                  Cancel
+                </button>
+              </nz-button-group>
+            </div>
+          </div>
+        </div>
+      </nz-spin>
+    </ng-container>
+  </form>
 </nz-modal>
