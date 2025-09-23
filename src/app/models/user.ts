@@ -101,6 +101,7 @@ export class employeeWarning {
   reason!:string;
   employee_warning_type_id!:number;
   employee_id!:number;
+  is_disputed!:boolean;
   employee?:employee;
 }
 

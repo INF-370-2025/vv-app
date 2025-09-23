@@ -1,219 +1,268 @@
 <div nz-row [nzJustify]="'center'" class="login-row" nzalign="middle">
-    <div nz-col nzXs="0" nzSm="0" nzMd="14" nzLg="14" class="image-side">
-        <!--image in class-->
-    </div>
-    <div nz-col nzXs="20" nzSm="18" nzMd="10" nzLg="10" class="login-side">
-        <div class="login-card">
+  <div nz-col nzXs="0" nzSm="0" nzMd="14" nzLg="14" class="image-side">
+    <!--image in class-->
+  </div>
+  <div nz-col nzXs="20" nzSm="18" nzMd="10" nzLg="10" class="login-side">
+    <div class="login-card">
 
-            <!--Logo-->
-            <img alt="example" src="../../../assets/images/logo.png" height="200" *ngIf="nzStep < 3" loading="eager" />
+      <!--Logo-->
+      <img alt="example" src="../../../assets/images/logo.png" height="200" *ngIf="nzStep < 3" loading="eager" />
 
-            <br><br>
+      <br /><br />
 
-            <!--Steps-->
-            <nz-steps [nzCurrent]="nzStep" *ngIf="nzStep < 2">
-                <nz-step></nz-step>
-                <nz-step></nz-step>
-            </nz-steps>
+      <!--Steps-->
+      <nz-steps [nzCurrent]="nzStep" *ngIf="nzStep < 2">
+        <nz-step></nz-step>
+        <nz-step></nz-step>
+      </nz-steps>
 
-            <br>
+      <br />
 
+      <!--Register Form-->
+      <ng-container *ngIf="nzStep == 0">
+        <form nz-form [formGroup]="registerForm" style="color: black;">
 
-            <!--Register Form-->
-            <ng-container *ngIf="nzStep == 0">
-                <form nz-form [formGroup]="registerForm" style="color: black;">
+          <p class="text-gradient" [style.fontSize]="breakpoint.isScreenSmall ? '12px' : '15px'">Registration</p>
 
-                    <p class="text-gradient" [style.fontSize]="breakpoint.isScreenSmall ? '12px' : '15px'">Registration</p>
+          <div class="separator">
+            <hr class="line" />
+            <span class="text">Personal Details</span>
+            <hr class="line" />
+          </div>
 
-                    <div class="separator">
-                        <hr class="line">
-                        <span class="text">Personal Details</span>
-                        <hr class="line">
-                    </div>
+          <div nz-row [nzGutter]="24">
+            <!--Name + Title-->
+            <div nz-col nzXs="24" nzSm="24" nzMd="24" nzLg="24">
+              <nz-form-item>
+                <nz-form-label nzRequired>Name</nz-form-label><br />
+                <nz-select [autofocus]="true"
+                           formControlName="title"
+                           nzPlaceHolder="Mrs"
+                           style="margin-right: 2%;width: 35% !important;color: black;">
+                  <nz-option *ngFor="let title of titles" [nzValue]="title.title_id" [nzLabel]="title.title_name"></nz-option>
+                </nz-select>
 
-                    <div nz-row [nzGutter]="24">
-                        <!--Name-->
-                        <div nz-col nzXs="24" nzSm="24" nzMd="24" nzLg="24">
-                            <nz-form-item>
-                                <nz-form-label nzRequired>Name</nz-form-label><br>
-                                <nz-select [autofocus]="true" formControlName="title" nzPlaceHolder="Mrs" style="margin-right: 2%;width: 35% !important;color: black;">
-                                    <nz-option *ngFor="let title of titles" [nzValue]="title.title_id" [nzLabel]="title.title_name"></nz-option>
-                                </nz-select>
-                                <nz-form-control nzErrorTip="The input is not valid Name">
-                                    <input placeholder="Name" nz-input formControlName="name" />
-                                </nz-form-control>
-                            </nz-form-item>
-                        </div>
-                        <!--Surname-->
-                        <div nz-col nzXs="24" nzSm="24" nzMd="24" nzLg="24">
-                            <nz-form-item>
-                                <nz-form-label nzRequired>Surname</nz-form-label><br>
-                                <nz-form-control nzErrorTip="The input is not valid Surname!">
-                                    <input placeholder="Surname" nz-input formControlName="surname" />
-                                </nz-form-control>
-                            </nz-form-item>
-                        </div>
-                    </div>
+                <nz-form-control [nzValidateStatus]="registerForm.controls['name']"
+                                 nzErrorTip="The input is not valid Name">
+                  <input placeholder="Name" nz-input formControlName="name" />
+                </nz-form-control>
+              </nz-form-item>
+            </div>
 
-                    <div nz-row [nzGutter]="24">
-                        <!--Phone-->
-                        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="12">
-                            <nz-form-item>
-                                <nz-form-label nzRequired>Contact</nz-form-label>
-                                <nz-form-control [nzValidateStatus]="registerForm.controls['phoneNumber']" [nzErrorTip]="phoneErrorTpl">
-                                    <input placeholder="+27824742562" formControlName="phoneNumber" nz-input (input)="cleanPhoneNumber()" />
-                                </nz-form-control>
-                                <ng-template #phoneErrorTpl let-control>
-                                    <ng-container *ngIf="control.hasError('required')">
-                                        Phone number is required!
-                                    </ng-container>
-                                    <ng-container *ngIf="control.hasError('invalidPhone')">
-                                        Enter a valid phone number (e.g. +27824742562)
-                                    </ng-container>
-                                </ng-template>
-                            </nz-form-item>
-                        </div>
-                        <!--Email-->
-                        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="12">
-                            <nz-form-item>
-                                <nz-form-label nzRequired>E-mail</nz-form-label><br>
-                                <nz-form-control nzErrorTip="The input is not valid E-mail!">
-                                    <input placeholder="email@gmail.com" nz-input formControlName="email" />
-                                </nz-form-control>
-                            </nz-form-item>
-                        </div>
-                    </div>
+            <!--Surname-->
+            <div nz-col nzXs="24" nzSm="24" nzMd="24" nzLg="24">
+              <nz-form-item>
+                <nz-form-label nzRequired>Surname</nz-form-label><br />
+                <nz-form-control [nzValidateStatus]="registerForm.controls['surname']"
+                                 nzErrorTip="The input is not valid Surname!">
+                  <input placeholder="Surname" nz-input formControlName="surname" />
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
 
-                    <div class="separator">
-                        <hr class="line">
-                        <span class="text">Company Details</span>
-                        <hr class="line">
-                    </div>
+          <div nz-row [nzGutter]="24">
+            <!--Phone-->
+            <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="12">
+              <nz-form-item>
+                <nz-form-label nzRequired>Contact</nz-form-label>
+                <nz-form-control [nzValidateStatus]="registerForm.controls['phoneNumber']" [nzErrorTip]="phoneErrorTpl">
+                  <input
+                    nz-input
+                    formControlName="phoneNumber"
+                    placeholder="e.g. 0821234567, 27821234567, or +27821234567"
+                    inputmode="tel"
+                    (input)="cleanPhoneNumber()"
+                    (blur)="onPhoneBlur()" />
+                </nz-form-control>
+                <ng-template #phoneErrorTpl let-control>
+                  <ng-container *ngIf="control.hasError('required')">
+                    Phone number is required!
+                  </ng-container>
+                  <ng-container *ngIf="control.hasError('invalidPhone')">
+                    Enter a valid phone number (e.g. 0821234567, 27821234567, or +27821234567)
+                  </ng-container>
+                </ng-template>
+              </nz-form-item>
+            </div>
 
-                    <div nz-row [nzGutter]="24">
-                        <!--Company Name-->
-                        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="12">
-                            <nz-form-item>
-                                <nz-form-label nzRequired>Company Name</nz-form-label><br>
-                                <nz-form-control nzErrorTip="The input is not valid">
-                                    <input placeholder="Company Name" nz-input formControlName="companyName" />
-                                </nz-form-control>
-                            </nz-form-item>
-                        </div>
-                        <!--Telephone-->
-                        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="12">
-                            <nz-form-item>
-                                <nz-form-label nzRequired>Telephone</nz-form-label><br>
-                                <nz-form-control nzErrorTip="The input is not valid">
-                                    <input placeholder="Telephone" nz-input formControlName="telephone" />
-                                </nz-form-control>
-                            </nz-form-item>
-                        </div>
-                    </div>
+            <!--Email-->
+            <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="12">
+              <nz-form-item>
+                <nz-form-label nzRequired>E-mail</nz-form-label><br />
+                <nz-form-control [nzValidateStatus]="registerForm.controls['email']"
+                                 [nzErrorTip]="emailErrorTpl">
+                  <input placeholder="email@gmail.com" nz-input formControlName="email" />
+                </nz-form-control>
+                <ng-template #emailErrorTpl let-control>
+                  <ng-container *ngIf="control.hasError('required')">Email is required!</ng-container>
+                  <ng-container *ngIf="control.hasError('email')">Enter a valid email address</ng-container>
+                </ng-template>
+              </nz-form-item>
+            </div>
+          </div>
 
-                    <div nz-row [nzGutter]="24">
-                        <!--Registration Number-->
-                        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="12">
-                            <nz-form-item>
-                                <nz-form-label nzRequired>Reg No</nz-form-label><br>
-                                <nz-form-control nzErrorTip="The input is not valid">
-                                    <input placeholder="Registration Number" nz-input formControlName="registrationNumber" />
-                                </nz-form-control>
-                            </nz-form-item>
-                        </div>
-                        <!--VAT Number-->
-                        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="12">
-                            <nz-form-item>
-                                <nz-form-label nzRequired>VAT No</nz-form-label><br>
-                                <nz-form-control nzErrorTip="The input is not valid">
-                                    <input placeholder="VAT No" nz-input formControlName="vatNumber" />
-                                </nz-form-control>
-                            </nz-form-item>
-                        </div>
-                    </div>
+          <div class="separator">
+            <hr class="line" />
+            <span class="text">Company Details</span>
+            <hr class="line" />
+          </div>
 
-                    <div nz-row [nzGutter]="24">
-                        <!--Address-->
-                        <div nz-col nzXs="24" nzSm="24" nzMd="24" nzLg="24">
-                            <nz-form-item>
-                                <nz-form-label nzRequired>Address</nz-form-label><br>
-                                <nz-form-control nzErrorTip="The input is not valid">
-                                    <textarea rows="2" type="text" placeholder="Address" nz-input formControlName="address"></textarea>
-                                </nz-form-control>
-                            </nz-form-item>
-                        </div>
-                    </div>
+          <div nz-row [nzGutter]="24">
+            <!--Company Name-->
+            <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="12">
+              <nz-form-item>
+                <nz-form-label nzRequired>Company Name</nz-form-label><br />
+                <nz-form-control [nzValidateStatus]="registerForm.controls['companyName']"
+                                 nzErrorTip="The input is not valid">
+                  <input placeholder="Company Name" nz-input formControlName="companyName" />
+                </nz-form-control>
+              </nz-form-item>
+            </div>
 
-                    <button [nzLoading]="isloadingBtn" nz-button [nzType]="'primary'" [disabled]="!registerForm.valid" (click)="nzStep=1">
-                    Continue
-                  </button>
+            <!--Telephone-->
+            <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="12">
+              <nz-form-item>
+                <nz-form-label nzRequired>Telephone</nz-form-label><br />
+                <nz-form-control [nzValidateStatus]="registerForm.controls['telephone']"
+                                 nzErrorTip="The input is not valid">
+                  <input placeholder="Telephone" nz-input formControlName="telephone" />
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
 
-                    <br><br>
+          <div nz-row [nzGutter]="24">
+            <!--Registration Number (auto-format: YYYY/NNNNNN/XX)-->
+            <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="12">
+              <nz-form-item>
+                <nz-form-label nzRequired>Reg No</nz-form-label><br />
+                <nz-form-control [nzValidateStatus]="registerForm.controls['registrationNumber']"
+                                 [nzErrorTip]="regErrorTpl">
+                  <input
+                    placeholder="e.g. 2024/123456/07"
+                    nz-input
+                    formControlName="registrationNumber"
+                    (input)="onRegNoInput($event)" />
+                </nz-form-control>
+                <ng-template #regErrorTpl let-control>
+                  <ng-container *ngIf="control.hasError('required')">Registration number is required.</ng-container>
+                  <ng-container *ngIf="control.hasError('pattern')">
+                    Must be <b>YYYY/NNNNNN/XX</b> (e.g. 2024/123456/07)
+                  </ng-container>
+                </ng-template>
+              </nz-form-item>
+            </div>
 
-                    <a href="/login">Back to Login</a>
+            <!--VAT Number (digits only, exactly 10)-->
+            <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="12">
+              <nz-form-item>
+                <nz-form-label nzRequired>VAT No</nz-form-label><br />
+                <nz-form-control [nzValidateStatus]="registerForm.controls['vatNumber']"
+                                 [nzErrorTip]="vatErrorTpl">
+                  <input
+                    placeholder="10 digits"
+                    nz-input
+                    formControlName="vatNumber"
+                    (input)="onVatInput($event)" />
+                </nz-form-control>
+                <ng-template #vatErrorTpl let-control>
+                  <ng-container *ngIf="control.hasError('required')">VAT number is required.</ng-container>
+                  <ng-container *ngIf="control.hasError('pattern')">VAT number must be exactly 10 digits.</ng-container>
+                </ng-template>
+              </nz-form-item>
+            </div>
+          </div>
 
+          <div nz-row [nzGutter]="24">
+            <!--Address-->
+            <div nz-col nzXs="24" nzSm="24" nzMd="24" nzLg="24">
+              <nz-form-item>
+                <nz-form-label nzRequired>Address</nz-form-label><br />
+                <nz-form-control [nzValidateStatus]="registerForm.controls['address']"
+                                 nzErrorTip="The input is not valid">
+                  <textarea rows="2" type="text" placeholder="Address" nz-input formControlName="address"></textarea>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
 
+          <button [nzLoading]="isloadingBtn"
+                  nz-button
+                  [nzType]="'primary'"
+                  [disabled]="!registerForm.valid"
+                  (click)="goToConsent()">
+            Continue
+          </button>
 
-                </form>
-            </ng-container>
+          <br /><br />
 
-            <!--Consent-->
-            <ng-container *ngIf="nzStep == 1">
-                <h3><b>Data Protection and Compliance Statement</b></h3>
-                <p class="p-text">
-                    All parties acknowledge and commit to full compliance with the Protection of Personal Information Act, 2013 (Act No. 4 of 2013) ("POPIA"). This includes the lawful collection, processing, storage, and safeguarding of personal information in accordance
-                    with the conditions set out in POPIA. Personal information shall be processed solely for purposes directly related to the services rendered under applicable South African legislation governing engineering practices. Wikipedia By submitting
-                    personal information to <b>Foundry zone Engineering</b>, regardless of the method of submission, you consent to the collection, processing, and storage of such information. This processing will be conducted in alignment
-                    with POPIA and any other applicable South African laws, ensuring that personal data is handled responsibly and transparently. For more information on POPIA and your rights under this legislation, please visit the Information Regulator's
-                    official website:
-                </p>
+          <a href="/login">Back to Login</a>
 
-                <label nz-checkbox [(ngModel)]="consent" (ngModelChange)="setConsent($event)"> I have read and Agree</label>
-                <a (click)="termsModal = true;"><u>Terms</u></a>
+        </form>
+      </ng-container>
 
-                <br><br>
+      <!--Consent-->
+      <ng-container *ngIf="nzStep == 1">
+        <h3><b>Data Protection and Compliance Statement</b></h3>
+        <p class="p-text">
+          All parties acknowledge and commit to full compliance with the Protection of Personal Information Act, 2013 (Act No. 4 of 2013) ("POPIA"). This includes the lawful collection, processing, storage, and safeguarding of personal information in accordance
+          with the conditions set out in POPIA. Personal information shall be processed solely for purposes directly related to the services rendered under applicable South African legislation governing engineering practices. Wikipedia By submitting
+          personal information to <b>Foundry zone Engineering</b>, regardless of the method of submission, you consent to the collection, processing, and storage of such information. This processing will be conducted in alignment
+          with POPIA and any other applicable South African laws, ensuring that personal data is handled responsibly and transparently. For more information on POPIA and your rights under this legislation, please visit the Information Regulator's
+          official website:
+        </p>
 
-                <button [nzLoading]="isloadingBtn" nz-button [nzType]="'primary'" (click)="submitRegister()" [disabled]="!consent">
-                    Continue
-                </button>
+        <label nz-checkbox [(ngModel)]="consent" (ngModelChange)="setConsent($event)"> I have read and Agree</label>
+        <a (click)="termsModal = true;"><u>Terms</u></a>
 
-            </ng-container>
+        <br /><br />
 
-            <!--Instructions-->
-            <ng-container *ngIf="nzStep == 2">
-                <div nz-row [nzGutter]="24" *ngIf="showCompleteError">
-                    <div nz-col nzXs="24" nzSm="24" nzMd="24" nzLg="24">
-                        <span nz-icon nzType="vv:warning" nzTheme="outline" style="font-size: 50px !important;color: rgb(255, 206, 45)"></span>
-                        <h3><b>Account Registration Error</b></h3>
-                        <p>
-                            Something went wrong whilst attempting to create your account <br> We have been notified but if you would like assistance contact <br> <a href="mailto:admin@foundryzone.org"><u>support</u></a>
-                        </p>
-                        <br><br>
-                        <a href="/login">Back to Login</a>
-                    </div>
-                </div>
+        <button [nzLoading]="isloadingBtn" nz-button [nzType]="'primary'" (click)="submitRegister()" [disabled]="!consent">
+          Continue
+        </button>
+      </ng-container>
 
-                <div nz-row [nzGutter]="24" *ngIf="!showCompleteError">
-                    <div nz-col nzXs="24" nzSm="24" nzMd="24" nzLg="24">
-                        <span nz-icon nzType="vv:success" nzTheme="outline" style="font-size: 50px !important;color: seagreen"></span>
-                        <h3><b>Account Registration Complete</b></h3>
-                        <p>
-                            Your Account was created Successfully , Please Navigate back to the Login Page and enter your mobile number to receive your access code to login to the system <br><a href="/login">Login</a>
-                        </p>
-                    </div>
-                </div>
-            </ng-container>
-
-
+      <!--Instructions-->
+      <ng-container *ngIf="nzStep == 2">
+        <div nz-row [nzGutter]="24" *ngIf="showCompleteError">
+          <div nz-col nzXs="24" nzSm="24" nzMd="24" nzLg="24">
+            <span nz-icon nzType="vv:warning" nzTheme="outline" style="font-size: 50px !important;color: rgb(255, 206, 45)"></span>
+            <h3><b>Account Registration Error</b></h3>
+            <p>
+              Something went wrong whilst attempting to create your account <br />
+              We have been notified but if you would like assistance contact <br />
+              <a href="mailto:admin@foundryzone.org"><u>support</u></a>
+            </p>
+            <br /><br />
+            <a href="/login">Back to Login</a>
+          </div>
         </div>
+
+        <div nz-row [nzGutter]="24" *ngIf="!showCompleteError">
+          <div nz-col nzXs="24" nzSm="24" nzMd="24" nzLg="24">
+            <span nz-icon nzType="vv:success" nzTheme="outline" style="font-size: 50px !important;color: seagreen"></span>
+            <h3><b>Account Registration Complete</b></h3>
+            <p>
+              Your Account was created Successfully , Please Navigate back to the Login Page and enter your mobile number to receive your access code to login to the system
+              <br /><a href="/login">Login</a>
+            </p>
+          </div>
+        </div>
+      </ng-container>
+
     </div>
+  </div>
 </div>
 
-
-<nz-modal [(nzVisible)]="termsModal" nzClosable="true" [nzTitle]="'Terms & Conditions'" (nzOnCancel)="termsModal = false;" [nzFooter]="null">
-    <ng-container *nzModalContent>
-        <p style="text-align: center;">
-            <i>Get FZE Terms and Conditions</i>
-        </p>
-    </ng-container>
+<nz-modal [(nzVisible)]="termsModal"
+          nzClosable="true"
+          [nzTitle]="'Terms & Conditions'"
+          (nzOnCancel)="termsModal = false;"
+          [nzFooter]="null">
+  <ng-container *nzModalContent>
+    <p style="text-align: center;">
+      <i>Get FZE Terms and Conditions</i>
+    </p>
+  </ng-container>
 </nz-modal>

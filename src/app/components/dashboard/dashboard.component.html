@@ -277,13 +277,6 @@
 <!-- Customer Dashboard -->
 <ng-container *ngIf="authService.user?.role_id == 6">
   <div class="customer-dashboard">
-    <div class="dashboard-header">
-      <button nz-button nzType="default" (click)="openCustomerHelpModal()" class="help-button">
-        <span nz-icon nzType="question-circle" nzTheme="outline"></span>
-        Get Help
-      </button>
-    </div>
-
     <div class="dashboard-cards">
       <div nz-row [nzJustify]="'space-between'" [nzGutter]="[16, 24]">
         <!-- Job Requests Card -->
@@ -337,8 +330,17 @@
         </div>
       </div>
     </div>
+
+    <!-- Get Help button moved to bottom (like zip) -->
+    <div style="text-align: center; margin-top: 24px;">
+      <button nz-button nzType="default" (click)="openCustomerHelpModal()" class="help-button">
+        <span nz-icon nzType="question-circle" nzTheme="outline"></span>
+        Get Help
+      </button>
+    </div>
   </div>
 </ng-container>
+
 
 <!--Employee Dashboard-->
 

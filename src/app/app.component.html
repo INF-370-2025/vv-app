@@ -114,7 +114,7 @@
     <!-- Header -->
     <nz-header>
       <div nz-row nzJustify="center" nzAlign="top">
-        <!-- Left Column: Role selector (optional) -->
+        <!-- Left Column: Role selector + Dashboard (customer only) -->
         <div nz-col nzXs="0" nzSm="0" nzMd="8" nzLg="8" nzXL="8" style="text-align: left;">
           <nz-select *ngIf="(authService.isloggedIn | async)"
                      [(ngModel)]="selectedRole"
@@ -127,6 +127,16 @@
             <nz-option *ngFor="let role of roles" [nzLabel]="role.role_name" [nzValue]="role.role_id" [nzDisabled]="role.role_id === 7">
             </nz-option>
           </nz-select>
+
+          <!-- Dashboard button next to role selector (customers only) -->
+          <button *ngIf="authService.user?.role_id === 6"
+                  nz-button
+                  [routerLink]="'/home'"
+                  nzType="primary"
+                  style="margin-left:10px; margin-right:10px;">
+            <span nz-icon nzType="dashboard" nzTheme="outline" style="font-size:18px; margin-right:6px;"></span>
+            Dashboard
+          </button>
         </div>
 
         <!-- Center Column: Title -->
@@ -136,7 +146,11 @@
 
         <!-- Right Column: Profile & Buttons -->
         <div nz-col nzXs="24" nzSm="24" nzMd="8" nzLg="8" nzXL="8" style="text-align: right;">
-          <nz-avatar routerLink="/profile" nzIcon="user" style="cursor: pointer;"
+          <!-- Show profile avatar only if user is a customer -->
+          <nz-avatar *ngIf="authService.user?.role_id === 6"
+                     routerLink="/profile"
+                     nzIcon="user"
+                     style="cursor: pointer;"
                      nzTooltipPlacement="bottom"
                      [nzSrc]="authService.user?.image || 'https://ui-avatars.com/api/?background=17726d&color=fff&&name='+ authService.user?.name">
           </nz-avatar>

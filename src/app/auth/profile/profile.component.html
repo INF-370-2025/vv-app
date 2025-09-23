@@ -48,7 +48,7 @@
             <div nz-col nzXs="22" nzSm="22" nzMd="12">
               <nz-form-item>
                 <nz-form-label>Name</nz-form-label>
-                <nz-form-control nzErrorTip="Please input your Name">
+                <nz-form-control nzErrorTip="Please input your Name" [nzValidateStatus]="customerForm.controls['name']">
                   <nz-input-group nzPrefixIcon="user">
                     <input type="text" nz-input formControlName="name" placeholder="Name" />
                   </nz-input-group>
@@ -59,7 +59,7 @@
             <div nz-col nzXs="22" nzSm="22" nzMd="12">
               <nz-form-item>
                 <nz-form-label>Surname</nz-form-label>
-                <nz-form-control nzErrorTip="Please input your Surname">
+                <nz-form-control nzErrorTip="Please input your Surname" [nzValidateStatus]="customerForm.controls['surname']">
                   <nz-input-group nzPrefixIcon="user">
                     <input type="text" nz-input formControlName="surname" placeholder="Surname" />
                   </nz-input-group>
@@ -72,7 +72,7 @@
             <div nz-col nzXs="22" nzSm="22" nzMd="12">
               <nz-form-item>
                 <nz-form-label>Email</nz-form-label>
-                <nz-form-control nzErrorTip="Please input your Email">
+                <nz-form-control nzErrorTip="Please input your Email" [nzValidateStatus]="customerForm.controls['email']">
                   <nz-input-group nzPrefixIcon="mail">
                     <input type="text" readonly nz-input formControlName="email" placeholder="Email" />
                   </nz-input-group>
@@ -83,7 +83,7 @@
             <div nz-col nzXs="22" nzSm="22" nzMd="12">
               <nz-form-item>
                 <nz-form-label>Phone</nz-form-label>
-                <nz-form-control nzErrorTip="Please input your Phone">
+                <nz-form-control nzErrorTip="Please input your Phone" [nzValidateStatus]="customerForm.controls['phone']">
                   <nz-input-group nzPrefixIcon="phone">
                     <input type="text" readonly nz-input formControlName="phone" placeholder="Phone" />
                   </nz-input-group>
@@ -98,7 +98,7 @@
             <div nz-col nzXs="22" nzSm="22" nzMd="12">
               <nz-form-item>
                 <nz-form-label>Company Name</nz-form-label>
-                <nz-form-control nzErrorTip="Please input your Company Name">
+                <nz-form-control nzErrorTip="Please input your Company Name" [nzValidateStatus]="customerForm.controls['companyName']">
                   <nz-input-group nzPrefixIcon="apartment">
                     <input type="text" nz-input formControlName="companyName" placeholder="Company Name" />
                   </nz-input-group>
@@ -109,7 +109,7 @@
             <div nz-col nzXs="22" nzSm="22" nzMd="12">
               <nz-form-item>
                 <nz-form-label>Telephone</nz-form-label>
-                <nz-form-control nzErrorTip="Please input your Telephone">
+                <nz-form-control nzErrorTip="Please input your Telephone" [nzValidateStatus]="customerForm.controls['telephone']">
                   <nz-input-group nzPrefixIcon="phone">
                     <input type="text" nz-input formControlName="telephone" placeholder="Telephone" />
                   </nz-input-group>
@@ -120,9 +120,16 @@
             <div nz-col nzXs="22" nzSm="22" nzMd="12">
               <nz-form-item>
                 <nz-form-label>Registration No</nz-form-label>
-                <nz-form-control nzErrorTip="Please input your Registration Number">
+                <nz-form-control
+                  [nzValidateStatus]="customerForm.controls['registrationNumber']"
+                  nzErrorTip="Format must be YYYY/NNNNNN/XX (e.g. 2024/123456/07)">
                   <nz-input-group nzPrefixIcon="number">
-                    <input type="text" nz-input formControlName="registrationNumber" placeholder="Registration Number" />
+                    <input
+                      type="text"
+                      nz-input
+                      formControlName="registrationNumber"
+                      placeholder="YYYY/NNNNNN/XX"
+                      (input)="onRegNoInput($event)" />
                   </nz-input-group>
                 </nz-form-control>
               </nz-form-item>
@@ -131,9 +138,16 @@
             <div nz-col nzXs="22" nzSm="22" nzMd="12">
               <nz-form-item>
                 <nz-form-label>VAT No</nz-form-label>
-                <nz-form-control nzErrorTip="Please input your VAT Number">
+                <nz-form-control
+                  [nzValidateStatus]="customerForm.controls['vatNumber']"
+                  nzErrorTip="VAT number must be exactly 10 digits">
                   <nz-input-group nzPrefixIcon="file-text">
-                    <input type="text" nz-input formControlName="vatNumber" placeholder="VAT Number" />
+                    <input
+                      type="text"
+                      nz-input
+                      formControlName="vatNumber"
+                      placeholder="10-digit VAT number"
+                      (input)="onVatInput($event)" />
                   </nz-input-group>
                 </nz-form-control>
               </nz-form-item>
@@ -142,7 +156,7 @@
             <div nz-col nzSpan="24">
               <nz-form-item>
                 <nz-form-label>Address</nz-form-label>
-                <nz-form-control nzErrorTip="Please input your Address">
+                <nz-form-control nzErrorTip="Please input your Address" [nzValidateStatus]="customerForm.controls['address']">
                   <nz-input-group nzPrefixIcon="home">
                     <textarea nz-input formControlName="address" placeholder="Address" rows="2"></textarea>
                   </nz-input-group>
@@ -151,16 +165,29 @@
             </div>
           </div>
 
-          <button
-            type="button"
-            [disabled]="!customerForm.valid"
-            [nzLoading]="btnLoading"
-            nz-button
-            class="login-form-button login-form-margin"
-            nzType="primary"
-            (click)="submitForm()">
-            Save
-          </button>
+          <!-- Actions -->
+          <div style="display:flex; justify-content:flex-end; gap:8px; margin-top: 8px;">
+            <button
+              *ngIf="auth.user?.role_id === 6"
+              nz-button
+              nzType="default"
+              nzShape="round"
+              (click)="goBack()">
+              <span nz-icon nzType="arrow-left" nzTheme="outline"></span>
+              Back to Dashboard
+            </button>
+
+            <button
+              type="button"
+              [disabled]="!customerForm.valid"
+              [nzLoading]="btnLoading"
+              nz-button
+              class="login-form-button login-form-margin"
+              nzType="primary"
+              (click)="submitForm()">
+              Save
+            </button>
+        </div>
         </form>
       </nz-spin>
 
